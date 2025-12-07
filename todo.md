@@ -82,3 +82,7 @@
 - [x] userSettingsテーブルへの暗号化保存
 - [x] HomeページでAPIキーを自動入力
 - [ ] APIキーの削除機能
+
+## Bug Fix: settings.get APIエラー
+- [x] settings.get APIがundefinedを返すエラーを修正
+- [x] 設定が存在しない場合はデフォルト値を返すように変更

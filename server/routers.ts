@@ -80,7 +80,19 @@ export const appRouter = router({
   settings: router({
     get: protectedProcedure.query(async ({ ctx }) => {
       const settings = await getUserSettings(ctx.user.id);
-      return settings;
+      // Return default values if settings don't exist
+      return settings || {
+        userId: ctx.user.id,
+        encryptedApiKey: null,
+        defaultSkin: "kansai_banter",
+        defaultTemperature: null,
+        defaultTopP: null,
+        defaultMaxTokens: null,
+        defaultLengthRatio: null,
+        safetyLevel: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
     }),
     
     update: protectedProcedure
