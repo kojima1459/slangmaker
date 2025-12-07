@@ -16,6 +16,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import { Tutorial } from "@/components/Tutorial";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -30,6 +31,7 @@ export default function Home() {
   const [addCore3, setAddCore3] = useState(false);
   const [addGlossary, setAddGlossary] = useState(false);
   const [addQuestions, setAddQuestions] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
   const { data: favoritesData } = trpc.favorites.list.useQuery(undefined, {
@@ -43,6 +45,19 @@ export default function Home() {
   const { data: settings } = trpc.settings.get.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+
+  // Check if first visit
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  const handleCloseTutorial = () => {
+    setShowTutorial(false);
+    localStorage.setItem('hasVisited', 'true');
+  };
 
   // Load settings when available
   useEffect(() => {
@@ -430,6 +445,9 @@ export default function Home() {
           記事を様々な文体で楽しむPWAアプリ
         </p>
       </div>
+
+      {/* Tutorial */}
+      {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
     </div>
   );
 }
