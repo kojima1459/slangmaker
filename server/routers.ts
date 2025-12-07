@@ -6,6 +6,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 // extractArticle is no longer needed - users paste text directly
 import { transformArticle } from "./transform";
+import { invokeLLM } from "./_core/llm";
+import { SKINS } from "../shared/skins";
 import { 
   getUserSettings, 
   upsertUserSettings, 
@@ -66,9 +68,10 @@ export const appRouter = router({
       const result = await transformArticle(input);
 
       // Save to history if user is authenticated
+      let historyId: number | undefined;
       if (ctx.user) {
         const snippet = result.output.substring(0, 200);
-        await createTransformHistory({
+        historyId = await createTransformHistory({
           userId: ctx.user.id,
           url: input.url || "",
           title: input.title || "記事",
@@ -81,7 +84,10 @@ export const appRouter = router({
         });
       }
 
-      return result;
+      return {
+        ...result,
+        historyId,
+      };
     }),
 
   // User settings
@@ -210,6 +216,91 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const result = await getFeedbackList(input || {});
         return result;
+      }),
+
+    improveSkin: protectedProcedure
+      .input(z.object({
+        skinKey: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Admin only
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "管理者権限が必要です" });
+        }
+
+        const skin = SKINS[input.skinKey as keyof typeof SKINS];
+        if (!skin) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "スキンが見つかりません" });
+        }
+
+        // Get feedback stats
+        const stats = await getFeedbackStats({ skinKey: input.skinKey });
+        const skinStats = stats.find(s => s.skinKey === input.skinKey);
+
+        if (!skinStats || skinStats.totalCount < 5) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "フィードバックが不足しています（5件以上必要）" });
+        }
+
+        // Get negative feedback comments
+        const feedbackList = await getFeedbackList({ skinKey: input.skinKey, rating: "bad", limit: 20 });
+
+        // Generate improvement suggestions using LLM
+        const prompt = `あなたは文体変換スキンの改善エキスパートです。以下のスキンに対して、ユーザーからのネガティブフィードバックを考慮して改善提案を作成してください。
+
+**現在のスキン:**
+名前: ${skin.name}
+説明: ${skin.description}
+ルール: ${skin.rules}
+DOリスト: ${skin.doList.join(", ")}
+DON'Tリスト: ${skin.dontList.join(", ")}
+
+**フィードバック統計:**
+総フィードバック数: ${skinStats.totalCount}
+良い評価: ${skinStats.goodCount} (${skinStats.goodPercentage.toFixed(1)}%)
+悪い評価: ${skinStats.badCount} (${(100 - skinStats.goodPercentage).toFixed(1)}%)
+
+**改善提案を以下のJSON形式で出力してください:**
+{
+  "improvedRules": "改善されたルール",
+  "improvedDoList": ["改善されたDOリスト"],
+  "improvedDontList": ["改善されたDON'Tリスト"],
+  "improvedFewShots": ["改善された例文"],
+  "reasoning": "改善理由の説明"
+}`;
+
+        const response = await invokeLLM({
+          messages: [
+            { role: "system", content: "あなたは文体変換スキンの改善エキスパートです。" },
+            { role: "user", content: prompt },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "skin_improvement",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  improvedRules: { type: "string" },
+                  improvedDoList: { type: "array", items: { type: "string" } },
+                  improvedDontList: { type: "array", items: { type: "string" } },
+                  improvedFewShots: { type: "array", items: { type: "string" } },
+                  reasoning: { type: "string" },
+                },
+                required: ["improvedRules", "improvedDoList", "improvedDontList", "improvedFewShots", "reasoning"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const improvement = JSON.parse(response.choices[0].message.content || "{}");
+
+        return {
+          original: skin,
+          improved: improvement,
+          stats: skinStats,
+        };
       }),
   }),
 

@@ -135,6 +135,7 @@ export default function Home() {
         article,
         result,
         skin: selectedSkin,
+        historyId: result.historyId,
       }));
       setLocation("/reader");
     } catch (error) {

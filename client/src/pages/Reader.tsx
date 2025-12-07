@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
@@ -23,6 +23,7 @@ interface ReaderData {
     };
   };
   skin: string;
+  historyId?: number;
 }
 
 export default function Reader() {
@@ -33,6 +34,8 @@ export default function Reader() {
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
   const createShareMutation = trpc.share.create.useMutation();
+  const submitFeedbackMutation = trpc.feedback.submit.useMutation();
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState<'positive' | 'negative' | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('readerData');
@@ -90,6 +93,31 @@ export default function Reader() {
   const handleBack = () => {
     sessionStorage.removeItem('readerData');
     setLocation("/");
+  };
+
+  const handleFeedback = async (isPositive: boolean) => {
+    if (!isAuthenticated) {
+      toast.error("フィードバックを送信するにはログインが必要です");
+      return;
+    }
+
+    if (!data.historyId) {
+      toast.error("履歴IDが見つかりませんでした");
+      return;
+    }
+
+    try {
+      await submitFeedbackMutation.mutateAsync({
+        historyId: data.historyId,
+        rating: isPositive ? "good" : "bad",
+        comment: undefined,
+      });
+      setFeedbackSubmitted(isPositive ? 'positive' : 'negative');
+      toast.success("フィードバックを送信しました！ありがとうございます。");
+    } catch (error) {
+      console.error("Feedback error:", error);
+      toast.error("フィードバックの送信に失敗しました");
+    }
   };
 
   return (
@@ -186,6 +214,35 @@ export default function Reader() {
             <CardContent>
               <div className="prose prose-lg max-w-none">
                 <Streamdown>{data.result.output}</Streamdown>
+              </div>
+              
+              <Separator className="my-6" />
+              
+              {/* Feedback Section */}
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <p className="text-sm text-gray-600">この変換結果はいかがでしたか？</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant={feedbackSubmitted === 'positive' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleFeedback(true)}
+                    disabled={feedbackSubmitted !== null || submitFeedbackMutation.isPending}
+                    className={feedbackSubmitted === 'positive' ? 'bg-green-500 hover:bg-green-600' : ''}
+                  >
+                    <ThumbsUp className="mr-2 h-4 w-4" />
+                    良い
+                  </Button>
+                  <Button
+                    variant={feedbackSubmitted === 'negative' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleFeedback(false)}
+                    disabled={feedbackSubmitted !== null || submitFeedbackMutation.isPending}
+                    className={feedbackSubmitted === 'negative' ? 'bg-red-500 hover:bg-red-600' : ''}
+                  >
+                    <ThumbsDown className="mr-2 h-4 w-4" />
+                    悪い
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

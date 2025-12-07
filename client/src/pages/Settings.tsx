@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -128,6 +128,34 @@ export default function Settings() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Admin Section */}
+        {user?.role === "admin" && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                管理者ツール
+              </CardTitle>
+              <CardDescription>
+                管理者専用の機能と分析ツール
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setLocation("/feedback")}
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                フィードバック分析ダッシュボード
+              </Button>
+              <p className="text-xs text-gray-500">
+                ユーザーからのフィードバックを分析し、スキンの評価を確認できます。
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
