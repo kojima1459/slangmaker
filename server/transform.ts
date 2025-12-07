@@ -66,7 +66,12 @@ Please rewrite this article in the "${skinDef.name}" style.
 `.trim();
 
   try {
-    const response = await ai.models.generateContent({
+    // Set timeout for API call (30 seconds)
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('API request timed out after 30 seconds')), 30000);
+    });
+
+    const apiPromise = ai.models.generateContent({
       model: 'gemini-2.0-flash',
       contents: userPrompt,
       config: {
@@ -76,6 +81,8 @@ Please rewrite this article in the "${skinDef.name}" style.
         maxOutputTokens: params.maxOutputTokens,
       },
     });
+
+    const response = await Promise.race([apiPromise, timeoutPromise]);
 
     console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
     

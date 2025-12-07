@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import DOMPurify from "isomorphic-dompurify";
 
 interface ReaderData {
   article: {
@@ -185,7 +186,7 @@ export default function Reader() {
             </CardHeader>
             <CardContent>
               <div className="prose prose-lg max-w-none">
-                <Streamdown>{data.result.output}</Streamdown>
+                <Streamdown>{DOMPurify.sanitize(data.result.output)}</Streamdown>
               </div>
             </CardContent>
           </Card>
