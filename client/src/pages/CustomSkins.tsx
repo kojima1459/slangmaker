@@ -78,7 +78,7 @@ export default function CustomSkins() {
       example: "",
     });
     setIsDialogOpen(true);
-    toast.success(t('customSkins.templateApplied'));
+    toast.success(t('customSkinsDetail.templateApplied'));
   };
 
   const handleOpenCreateDialog = () => {
@@ -171,10 +171,10 @@ export default function CustomSkins() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-purple-600" />
-              <CardTitle>{t('customSkins.templates.title')}</CardTitle>
+              <CardTitle>{t('customSkinsDetail.templates.title')}</CardTitle>
             </div>
             <CardDescription>
-              {t('customSkins.templates.description')}
+              {t('customSkinsDetail.templates.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -185,7 +185,7 @@ export default function CustomSkins() {
                 size="sm"
                 onClick={() => setSelectedCategory('all')}
               >
-                {t('customSkins.templates.categories.all')}
+                {t('customSkinsDetail.templates.categories.all')}
               </Button>
               {getAllCategories().map((category) => (
                 <Button
@@ -194,7 +194,7 @@ export default function CustomSkins() {
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
                 >
-                  {t(`customSkins.templates.categories.${category}`)}
+                  {t(`customSkinsDetail.templates.categories.${category}`)}
                 </Button>
               ))}
             </div>
@@ -221,7 +221,7 @@ export default function CustomSkins() {
                     <CardContent>
                       <Button size="sm" className="w-full">
                         <Plus className="mr-2 h-4 w-4" />
-                        {t('customSkins.templates.useTemplate')}
+                        {t('customSkinsDetail.templates.useTemplate')}
                       </Button>
                     </CardContent>
                   </Card>

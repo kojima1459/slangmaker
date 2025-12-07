@@ -7,7 +7,7 @@ const resources = {
   ja: {
     translation: {
       // ヘッダー
-      appTitle: '言い換えメーカー',
+      appTitle: 'AI言い換えメーカー',
       appSubtitle: '言葉を着せ替え、表現を楽しむ\n同じ内容、違う世界。文体マジック',
       login: 'ログイン',
       
@@ -83,7 +83,7 @@ const resources = {
       customSkinsButton: 'カスタムスキン',
       howToUse: '使い方',
       backToTop: 'トップに戻る',
-      appDescription: 'ニュース記事を様々な文体で読み直すことで、日本語の表現力を楽しく学べます',
+      appDescription: 'ワンタップで言葉は変身。スタイルも、あなたの印象も、自在にカスタマイズ。言葉を鍛える、個性を放つ。唯一無二の自分スラング表現工房。',
       creator: '作者',
       contact: 'お問い合わせ',
       donation: '寄付',
@@ -169,7 +169,7 @@ const resources = {
   en: {
     translation: {
       // Header
-      appTitle: 'Paraphrase Maker',
+      appTitle: 'AI Paraphrase Maker',
       appSubtitle: 'Read news in different styles - Enjoy articles in various writing styles',
       login: 'Login',
       
