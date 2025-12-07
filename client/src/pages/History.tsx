@@ -1,19 +1,14 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Clock, ExternalLink } from "lucide-react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
-import { useState } from "react";
 
 export default function History() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [showOriginal, setShowOriginal] = useState(false);
-  const [showOutput, setShowOutput] = useState(false);
   const { data: history, isLoading } = trpc.history.list.useQuery(
     { limit: 50 },
     { enabled: isAuthenticated }
@@ -82,22 +77,9 @@ export default function History() {
                   <p className="text-sm text-gray-700 mb-4">{item.snippet}...</p>
                   <div className="flex gap-2">
                     <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedItem(item);
-                        setShowOutput(true);
-                      }}
-                    >
-                      👀 変換結果を見る
-                    </Button>
-                    <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        setSelectedItem(item);
-                        setShowOriginal(true);
-                      }}
+                      onClick={() => window.open(item.url, "_blank")}
                     >
                       <ExternalLink className="mr-2 h-3 w-3" />
                       元記事
@@ -122,40 +104,6 @@ export default function History() {
           </Card>
         )}
       </div>
-
-      {/* 変換結果表示モーダル */}
-      <Dialog open={showOutput} onOpenChange={setShowOutput}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>変換結果</DialogTitle>
-            <DialogDescription>
-              {selectedItem?.title} - {selectedItem?.site} - スキン: {selectedItem?.skin}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="whitespace-pre-wrap text-sm leading-relaxed">{selectedItem?.output || "変換結果が見つかりません"}</p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* 元記事表示モーダル */}
-      <Dialog open={showOriginal} onOpenChange={setShowOriginal}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>元記事</DialogTitle>
-            <DialogDescription>
-              {selectedItem?.title} - {selectedItem?.site}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="whitespace-pre-wrap text-sm leading-relaxed">{selectedItem?.extracted || "元記事が見つかりません"}</p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

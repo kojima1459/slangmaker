@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
-import DOMPurify from "isomorphic-dompurify";
 
 interface ReaderData {
   article: {
@@ -77,11 +76,9 @@ export default function Reader() {
   };
 
   const handleTwitterShare = () => {
-    const siteUrl = window.location.origin;
-    const skinName = data.skin;
-    const text = `【${skinName}】で変換しました！\n\n${data.result.output.substring(0, 120)}...\n\n#言い換えメーカー #文体変換 #${skinName.replace(/[\s・]/g, '')}`;
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(siteUrl)}`;
-    window.open(tweetUrl, '_blank', 'width=550,height=420');
+    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 100)}...`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'width=550,height=420');
   };
 
   const handleLineShare = () => {
@@ -188,7 +185,7 @@ export default function Reader() {
             </CardHeader>
             <CardContent>
               <div className="prose prose-lg max-w-none">
-                <Streamdown>{DOMPurify.sanitize(data.result.output)}</Streamdown>
+                <Streamdown>{data.result.output}</Streamdown>
               </div>
             </CardContent>
           </Card>

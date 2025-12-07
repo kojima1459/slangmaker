@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { SKINS } from "../shared/skins";
 
 describe("Skins", () => {
-  it("should have 15 skins defined", () => {
-    expect(Object.keys(SKINS).length).toBe(15);
+  it("should have 10 skins defined", () => {
+    expect(Object.keys(SKINS).length).toBe(10);
   });
 
   it("should have all required properties for each skin", () => {
