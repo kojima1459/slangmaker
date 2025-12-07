@@ -259,4 +259,19 @@
 - [x] スキップ機能を追加 (Tutorialコンポーネント内に実装済み)
 
 ### Phase 4: チェックポイント作成
+- [x] チェックポイント作成 (version: 863eee33)
+
+## OGP設定追加
+
+### Phase 1: OGPプレビュー画像作成
+- [x] OGP用プレビュー画像を生成（1200x630px推奨）
+- [x] 画像をclient/publicに配置
+
+### Phase 2: OGPメタタグ実装
+- [x] client/index.htmlにOGPメタタグを追加
+- [x] Twitter Card用メタタグを追加
+- [x] Facebook用メタタグを追加
+
+### Phase 3: 動作確認
+- [x] OGPメタタグが正しく設定されているか確認
 - [ ] チェックポイント作成
