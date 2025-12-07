@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, ThumbsUp, ThumbsDown } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
@@ -23,7 +23,6 @@ interface ReaderData {
     };
   };
   skin: string;
-  historyId?: number;
 }
 
 export default function Reader() {
@@ -34,8 +33,6 @@ export default function Reader() {
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
   const createShareMutation = trpc.share.create.useMutation();
-  const submitFeedbackMutation = trpc.feedback.submit.useMutation();
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState<'positive' | 'negative' | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('readerData');
@@ -78,65 +75,21 @@ export default function Reader() {
     }
   };
 
-  const getSiteUrl = () => {
-    return import.meta.env.VITE_SITE_URL || window.location.origin;
-  };
-
   const handleTwitterShare = () => {
-    const siteUrl = getSiteUrl();
-    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 100)}...\n\n${siteUrl}`;
+    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 100)}...`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank', 'width=550,height=420');
   };
 
   const handleLineShare = () => {
-    const siteUrl = getSiteUrl();
-    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...\n\n${siteUrl}`;
+    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...`;
     const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
     window.open(url, '_blank');
-  };
-
-  const handleFacebookShare = () => {
-    const siteUrl = getSiteUrl();
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}`;
-    window.open(url, '_blank', 'width=550,height=420');
-  };
-
-  const handleLinkedInShare = () => {
-    const siteUrl = getSiteUrl();
-    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 100)}...`;
-    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`;
-    window.open(url, '_blank', 'width=550,height=420');
   };
 
   const handleBack = () => {
     sessionStorage.removeItem('readerData');
     setLocation("/");
-  };
-
-  const handleFeedback = async (isPositive: boolean) => {
-    if (!isAuthenticated) {
-      toast.error("フィードバックを送信するにはログインが必要です");
-      return;
-    }
-
-    if (!data.historyId) {
-      toast.error("履歴IDが見つかりませんでした");
-      return;
-    }
-
-    try {
-      await submitFeedbackMutation.mutateAsync({
-        historyId: data.historyId,
-        rating: isPositive ? "good" : "bad",
-        comment: undefined,
-      });
-      setFeedbackSubmitted(isPositive ? 'positive' : 'negative');
-      toast.success("フィードバックを送信しました！ありがとうございます。");
-    } catch (error) {
-      console.error("Feedback error:", error);
-      toast.error("フィードバックの送信に失敗しました");
-    }
   };
 
   return (
@@ -227,63 +180,12 @@ export default function Reader() {
                     </svg>
                     LINE
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleFacebookShare}
-                    className="bg-blue-50 hover:bg-blue-100 border-blue-200"
-                  >
-                    <svg className="mr-2 h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    Facebook
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLinkedInShare}
-                    className="bg-blue-50 hover:bg-blue-100 border-blue-300"
-                  >
-                    <svg className="mr-2 h-4 w-4 text-blue-700" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                    LinkedIn
-                  </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="prose prose-lg max-w-none">
                 <Streamdown>{data.result.output}</Streamdown>
-              </div>
-              
-              <Separator className="my-6" />
-              
-              {/* Feedback Section */}
-              <div className="flex items-center justify-center gap-4 mt-6">
-                <p className="text-sm text-gray-600">この変換結果はいかがでしたか？</p>
-                <div className="flex gap-2">
-                  <Button
-                    variant={feedbackSubmitted === 'positive' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFeedback(true)}
-                    disabled={feedbackSubmitted !== null || submitFeedbackMutation.isPending}
-                    className={feedbackSubmitted === 'positive' ? 'bg-green-500 hover:bg-green-600' : ''}
-                  >
-                    <ThumbsUp className="mr-2 h-4 w-4" />
-                    良い
-                  </Button>
-                  <Button
-                    variant={feedbackSubmitted === 'negative' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFeedback(false)}
-                    disabled={feedbackSubmitted !== null || submitFeedbackMutation.isPending}
-                    className={feedbackSubmitted === 'negative' ? 'bg-red-500 hover:bg-red-600' : ''}
-                  >
-                    <ThumbsDown className="mr-2 h-4 w-4" />
-                    悪い
-                  </Button>
-                </div>
               </div>
             </CardContent>
           </Card>

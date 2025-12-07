@@ -22,7 +22,7 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { isAuthenticated } = useAuth();
   const [articleText, setArticleText] = useState("");
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || "");
+  const [apiKey, setApiKey] = useState("");
   const [selectedSkin, setSelectedSkin] = useState("kansai_banter");
   const [temperature, setTemperature] = useState(1.3);
   const [topP, setTopP] = useState(0.9);
@@ -59,12 +59,29 @@ export default function Home() {
     localStorage.setItem('hasVisited', 'true');
   };
 
-  // Save API key to localStorage when changed
+  // Load settings when available
   useEffect(() => {
-    if (apiKey) {
-      localStorage.setItem('gemini_api_key', apiKey);
+    if (settings) {
+      if (settings.encryptedApiKey) {
+        setApiKey(settings.encryptedApiKey);
+      }
+      if (settings.defaultSkin) {
+        setSelectedSkin(settings.defaultSkin);
+      }
+      if (settings.defaultTemperature !== undefined && settings.defaultTemperature !== null) {
+        setTemperature(settings.defaultTemperature);
+      }
+      if (settings.defaultTopP !== undefined && settings.defaultTopP !== null) {
+        setTopP(settings.defaultTopP);
+      }
+      if (settings.defaultMaxTokens !== undefined && settings.defaultMaxTokens !== null) {
+        setMaxTokens(settings.defaultMaxTokens);
+      }
+      if (settings.defaultLengthRatio !== undefined && settings.defaultLengthRatio !== null) {
+        setLengthRatio(settings.defaultLengthRatio);
+      }
     }
-  }, [apiKey]);
+  }, [settings]);
 
   const handleTransform = async () => {
     // Validate inputs
@@ -118,7 +135,6 @@ export default function Home() {
         article,
         result,
         skin: selectedSkin,
-        historyId: result.historyId,
       }));
       setLocation("/reader");
     } catch (error) {
@@ -148,7 +164,10 @@ export default function Home() {
                   <HistoryIcon className="w-4 h-4 mr-2" />
                   {t('history')}
                 </Button>
-
+                <Button variant="outline" size="sm" onClick={() => setLocation("/settings")}>
+                  <SettingsIcon className="w-4 h-4 mr-2" />
+                  Settings
+                </Button>
               </>
             )}
           </div>
@@ -217,29 +236,9 @@ export default function Home() {
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={isLoading}
               />
-              <div className="text-xs text-gray-500 space-y-1">
-                <p>APIキーはローカルに保存され、サーバーには送信されません</p>
-                <p>
-                  APIキーをお持ちでない場合は、
-                  <a 
-                    href="https://ai.google.dev/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-purple-600 hover:text-purple-700 underline"
-                  >
-                    Google AI Studio
-                  </a>
-                  で無料で取得できます。
-                  <a 
-                    href="https://ai.google.dev/gemini-api/docs/api-key?hl=ja" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-purple-600 hover:text-purple-700 underline ml-1"
-                  >
-                    詳しい手順はこちら
-                  </a>
-                </p>
-              </div>
+              <p className="text-xs text-gray-500">
+                APIキーはローカルに保存され、サーバーには送信されません
+              </p>
             </div>
 
             {/* Skin Selection */}
@@ -260,8 +259,8 @@ export default function Home() {
                             : 'border-gray-200 hover:border-purple-300'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
-                        <div className="font-semibold text-sm mb-1">{t(`skins.${key}.name`)}</div>
-                        <div className="text-xs text-gray-600 line-clamp-2">{t(`skins.${key}.description`)}</div>
+                        <div className="font-semibold text-sm mb-1">{skin.name}</div>
+                        <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
                       </button>
                       {isAuthenticated && (
                         <button
@@ -364,7 +363,7 @@ export default function Home() {
                     value={[lengthRatio]}
                     onValueChange={([v]) => setLengthRatio(v)}
                     min={0.5}
-                    max={1.6}
+                    max={2}
                     step={0.1}
                     disabled={isLoading}
                   />

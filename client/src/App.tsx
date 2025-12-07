@@ -9,9 +9,8 @@ import Guide from "./pages/Guide";
 import Share from "./pages/Share";
 import Reader from "./pages/Reader";
 import History from "./pages/History";
-
+import Settings from "./pages/Settings";
 import About from "./pages/About";
-import FeedbackDashboard from "./pages/FeedbackDashboard";
 
 function Router() {
   return (
@@ -22,8 +21,7 @@ function Router() {
       <Route path={"/reader"} component={Reader} />
       <Route path={"/share/:id"} component={Share} />
       <Route path={"/history"} component={History} />
-
-      <Route path={"/feedback"} component={FeedbackDashboard} />
+      <Route path={"/settings"} component={Settings} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
