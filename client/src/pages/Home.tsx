@@ -185,8 +185,8 @@ export default function Home() {
       {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
       
       <div className="container max-w-5xl py-8">
-        {/* Top Navigation - シンプルなレイアウト */}
-        <div className="flex items-center justify-end gap-3 mb-8 pb-4 border-b border-gray-200">
+        {/* Top Navigation - バランスの取れたレイアウト */}
+        <div className="flex items-center justify-center gap-3 mb-8 pb-4 border-b border-gray-200">
           <Button
             variant="ghost"
             size="sm"
