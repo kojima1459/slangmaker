@@ -80,6 +80,7 @@ const resources = {
       share: '共有',
       customSkinsPage: 'カスタムスキン',
       customSkins: 'カスタムスキン',
+      customSkinsButton: 'カスタムスキン',
       howToUse: '使い方',
       backToTop: 'トップに戻る',
       appDescription: 'ニュース記事を様々な文体で読み直すことで、日本語の表現力を楽しく学べます',
