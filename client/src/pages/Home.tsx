@@ -185,52 +185,59 @@ export default function Home() {
       {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
       
       <div className="container max-w-5xl py-8">
-        {/* Top Navigation */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Top Navigation - 改善されたレイアウト */}
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+          {/* 左側: ブランドロゴ */}
           <button
             onClick={() => setLocation("/")}
-            className="flex items-center gap-2 text-purple-700 hover:text-purple-900 transition-colors font-semibold"
+            className="flex items-center gap-2 text-purple-700 hover:text-purple-900 transition-all hover:scale-105 font-bold text-lg"
           >
-            <Sparkles className="w-5 h-5" />
-            {t('backToTop')}
+            <Sparkles className="w-6 h-6" />
+            <span className="hidden sm:inline">{t('backToTop')}</span>
           </button>
-          <div className="flex items-center gap-3">
+          
+          {/* 中央: メインナビゲーション */}
+          <div className="hidden md:flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowTutorial(true)}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
             >
-              <BookOpen className="h-4 w-4 mr-2" />
+              <BookOpen className="h-4 w-4 mr-1.5" />
               {t('howToUse')}
             </Button>
-            <LanguageSwitcher />
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation("/custom-skins")}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
             >
-              <Star className="h-4 w-4 mr-2" />
+              <Star className="h-4 w-4 mr-1.5" />
               {t('customSkins')}
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation("/history")}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
             >
-              <HistoryIcon className="h-4 w-4 mr-2" />
+              <HistoryIcon className="h-4 w-4 mr-1.5" />
               {t('history')}
             </Button>
+          </div>
+          
+          {/* 右側: 設定と言語切替 */}
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation("/settings")}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
             >
-              <SettingsIcon className="h-4 w-4 mr-2" />
-              {t('settings')}
+              <SettingsIcon className="h-4 w-4 mr-1.5" />
+              <span className="hidden sm:inline">{t('settings')}</span>
             </Button>
           </div>
         </div>
