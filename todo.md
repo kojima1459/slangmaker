@@ -34,3 +34,14 @@
 - [x] Gemini APIモデル名を修正（gemini-1.5-flash → gemini-1.5-flash-latest）
 - [x] Gemini APIの正しいモデル名を調査（v1beta APIで動作するモデル名）
 - [x] 正しいモデル名でコードを修正（gemini-2.5-flashに変更）
+- [x] 変換ボタンを押してもソースしか表示されない問題を調査（CORS/Bot対策が原因）
+- [x] 問題の原因を特定して修正（Firecrawl MCPを使用した記事抽出に変更）
+
+## 仕様変更: URL入力からテキスト入力方式へ
+- [x] Home.tsxのURL入力欄をテキストエリア（textarea）に変更
+- [x] 記事タイトルとソースURL入力欄を追加
+- [x] バックエンドAPIから記事抽出処理を削除
+- [x] transform APIを記事テキスト直接受付に変更（既に対応済み）
+- [x] Reader.tsxの表示ロジックを新しいデータ構造に対応
+- [x] 動作テストとブラウザでの確認（成功）
+- [x] maxOutputTokensのバリデーションエラーを修正（デフォルト値を1500に変更）

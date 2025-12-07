@@ -92,7 +92,9 @@ Please rewrite this article in the "${skinDef.name}" style.
     });
 
     const response = result.response;
+    console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
     let output = response.text();
+    console.log('[Transform] Extracted output:', output);
 
     // Ensure Source URL is appended
     if (!output.includes("Source:")) {

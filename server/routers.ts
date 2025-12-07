@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
-import { extractArticle } from "./extract";
+// extractArticle is no longer needed - users paste text directly
 import { transformArticle } from "./transform";
 import { 
   getUserSettings, 
@@ -28,15 +28,7 @@ export const appRouter = router({
     }),
   }),
 
-  // Extract article from URL
-  extract: publicProcedure
-    .input(z.object({
-      url: z.string().url(),
-    }))
-    .mutation(async ({ input }) => {
-      const article = await extractArticle(input.url);
-      return article;
-    }),
+  // extract endpoint removed - users paste text directly
 
   // Transform article with Gemini
   transform: publicProcedure
