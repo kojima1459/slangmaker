@@ -593,10 +593,14 @@
 - [x] Settings.tsxのhandleSave関数を確認
 - [x] server/routers.tsのsettings.update procedureを確認
 - [x] server/db.tsのupsertUserSettings関数を確認
-- [ ] データベースに実際に保存されているか確認
+- [x] データベースに実際に保存されているか確認（複数レコードが保存されている問題を発見）
+- [x] getUserSettings関数がAPIキーを正しく返しているか確認（最初のレコードを返しているため、APIキーがnull）
 
 ### 修正内容
 - [x] Settings.tsxで空のAPIキーを送信しないように修正
 - [x] upsertUserSettingsでundefinedのフィールドを除外
 - [x] デバッグログを追加
-- [ ] 動作確認
+- [x] user_settingsテーブルにuserI dのユニーク制約を追加
+- [x] 重複レコードを削除（最新のレコードのみ残す）
+- [x] データベーススキーマの変更を適用（pnpm db:push）
+- [x] 動作確認

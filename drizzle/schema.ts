@@ -24,7 +24,7 @@ export type InsertUser = typeof users.$inferInsert;
  */
 export const userSettings = mysqlTable("user_settings", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
   /** Encrypted Gemini API key (client-side encryption, stored as reference) */
   encryptedApiKey: text("encryptedApiKey"),
   defaultSkin: varchar("defaultSkin", { length: 64 }).default("kansai_banter"),
