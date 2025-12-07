@@ -85,3 +85,25 @@ export const shareLinks = mysqlTable("share_links", {
 
 export type ShareLink = typeof shareLinks.$inferSelect;
 export type InsertShareLink = typeof shareLinks.$inferInsert;
+
+/**
+ * Feedback table
+ * Stores user feedback (good/bad) for transformation results
+ */
+export const feedback = mysqlTable("feedback", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  historyId: int("historyId").notNull().references(() => transformHistory.id, { onDelete: "cascade" }),
+  rating: mysqlEnum("rating", ["good", "bad"]).notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  // Unique constraint: one feedback per user per history
+  uniqueUserHistory: {
+    columns: [table.userId, table.historyId],
+    name: "unique_user_history"
+  }
+}));
+
+export type Feedback = typeof feedback.$inferSelect;
+export type InsertFeedback = typeof feedback.$inferInsert;

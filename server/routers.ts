@@ -11,7 +11,10 @@ import {
   createTransformHistory,
   getUserTransformHistory,
   createShareLink,
-  getShareLink
+  getShareLink,
+  submitFeedback,
+  getFeedbackStats,
+  getFeedbackList
 } from "./db";
 import { nanoid } from "nanoid";
 
@@ -160,6 +163,48 @@ export const appRouter = router({
           throw new Error("Share link not found or expired");
         }
         return link;
+      }),
+  }),
+
+  // Feedback endpoints
+  feedback: router({
+    submit: protectedProcedure
+      .input(z.object({
+        historyId: z.number(),
+        rating: z.enum(["good", "bad"]),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await submitFeedback({
+          userId: ctx.user.id,
+          historyId: input.historyId,
+          rating: input.rating,
+          comment: input.comment,
+        });
+        return { success: true, message: "フィードバックありがとうございました！" };
+      }),
+
+    stats: protectedProcedure
+      .input(z.object({
+        skinKey: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const stats = await getFeedbackStats(input || {});
+        return { stats };
+      }),
+
+    list: protectedProcedure
+      .input(z.object({
+        skinKey: z.string().optional(),
+        rating: z.enum(["good", "bad"]).optional(),
+        limit: z.number().default(50),
+        offset: z.number().default(0),
+      }).optional())
+      .query(async ({ input }) => {
+        const result = await getFeedbackList(input || {});
+        return result;
       }),
   }),
 });
