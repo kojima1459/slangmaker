@@ -19,7 +19,15 @@ import {
   addFavoriteSkin,
   removeFavoriteSkin,
   getFavoriteSkins,
-  isFavoriteSkin
+  isFavoriteSkin,
+  reorderFavoriteSkins,
+  checkRateLimit,
+  getRateLimitStatus,
+  createCustomSkin,
+  getCustomSkinsByUserId,
+  getCustomSkinById,
+  updateCustomSkin,
+  deleteCustomSkin
 } from "./db";
 import { nanoid } from "nanoid";
 
@@ -39,7 +47,7 @@ export const appRouter = router({
   // extract endpoint removed - users paste text directly
 
   // Transform article with Gemini
-  transform: publicProcedure
+  transform: protectedProcedure
     .input(z.object({
       url: z.string().optional(),
       title: z.string().optional(),
@@ -50,8 +58,8 @@ export const appRouter = router({
       params: z.object({
         temperature: z.number().min(0).max(2),
         topP: z.number().min(0).max(1),
-        maxOutputTokens: z.number().min(50).max(2000),
-        lengthRatio: z.number().min(0.6).max(1.6),
+        maxOutputTokens: z.number().min(50).max(8000),
+        lengthRatio: z.number().min(0.5).max(1.5),
         humor: z.number().min(0).max(1).optional(),
         insightLevel: z.number().min(0).max(1).optional(),
       }),
@@ -60,10 +68,44 @@ export const appRouter = router({
         addCore3: z.boolean().optional(),
         addQuestions: z.boolean().optional(),
       }).optional(),
-      apiKey: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const result = await transformArticle(input);
+      // Check rate limit
+      const rateLimit = await checkRateLimit(ctx.user.id);
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: '一日の変換回数上限（100回）に達しました。明日またお試しください。',
+        });
+      }
+
+      // Get API key from user settings
+      const settings = await getUserSettings(ctx.user.id);
+      if (!settings || !settings.encryptedApiKey) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Gemini APIキーが設定されていません。設定ページで登録してください。',
+        });
+      }
+
+      // Check if it's a custom skin
+      let customSkinPrompt: string | undefined;
+      if (input.skin.startsWith('custom_')) {
+        const customSkinId = parseInt(input.skin.replace('custom_', ''));
+        const customSkin = await getCustomSkinById(customSkinId, ctx.user.id);
+        if (!customSkin) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'カスタムスキンが見つかりません',
+          });
+        }
+        customSkinPrompt = customSkin.prompt;
+      }
+
+      const result = await transformArticle({
+        ...input,
+        apiKey: settings.encryptedApiKey,
+      }, customSkinPrompt);
 
       // Save to history if user is authenticated
       if (ctx.user) {
@@ -72,11 +114,13 @@ export const appRouter = router({
           userId: ctx.user.id,
           url: input.url || "",
           title: input.title || "記事",
-          site: input.site || "NewsSkins",
+          site: input.site || "AI言い換えメーカー",
           lang: input.lang || "ja",
           skin: input.skin,
           params: JSON.stringify(input.params),
+          extracted: input.extracted,
           snippet,
+          output: result.output,
           outputHash: undefined,
         });
       }
@@ -114,10 +158,15 @@ export const appRouter = router({
         safetyLevel: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
+        console.log('[settings.update] Received input:', JSON.stringify(input, null, 2));
+        console.log('[settings.update] User ID:', ctx.user.id);
+        
         await upsertUserSettings({
           userId: ctx.user.id,
           ...input,
         });
+        
+        console.log('[settings.update] Settings saved successfully');
         return { success: true };
       }),
   }),
@@ -252,6 +301,88 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         const isFavorite = await isFavoriteSkin(ctx.user.id, input.skinKey);
         return { isFavorite };
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({
+        orderedSkinKeys: z.array(z.string()),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = await reorderFavoriteSkins(ctx.user.id, input.orderedSkinKeys);
+        if (!result.success) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "並び替えに失敗しました" });
+        }
+        return { success: true, message: "並び替えを保存しました" };
+      }),
+  }),
+
+  // Rate limit status
+  rateLimit: router({
+    status: protectedProcedure
+      .query(async ({ ctx }) => {
+        const status = await getRateLimitStatus(ctx.user.id);
+        return status;
+      }),
+  }),
+
+  // Custom skins endpoints
+  customSkins: router({
+    list: protectedProcedure
+      .query(async ({ ctx }) => {
+        const skins = await getCustomSkinsByUserId(ctx.user.id);
+        return { skins };
+      }),
+
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const skin = await getCustomSkinById(input.id, ctx.user.id);
+        if (!skin) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "カスタムスキンが見つかりません" });
+        }
+        return { skin };
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        key: z.string().min(1).max(64),
+        name: z.string().min(1).max(100),
+        description: z.string().optional(),
+        prompt: z.string().min(1),
+        example: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await createCustomSkin({
+          userId: ctx.user.id,
+          key: input.key,
+          name: input.name,
+          description: input.description,
+          prompt: input.prompt,
+          example: input.example,
+          isActive: 1,
+        });
+        return { success: true, id, message: "カスタムスキンを作成しました" };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).max(100).optional(),
+        description: z.string().optional(),
+        prompt: z.string().min(1).optional(),
+        example: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, ...data } = input;
+        await updateCustomSkin(id, ctx.user.id, data);
+        return { success: true, message: "カスタムスキンを更新しました" };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await deleteCustomSkin(input.id, ctx.user.id);
+        return { success: true, message: "カスタムスキンを削除しました" };
       }),
   }),
 });

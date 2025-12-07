@@ -11,6 +11,7 @@ import Reader from "./pages/Reader";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import About from "./pages/About";
+import CustomSkins from "./pages/CustomSkins";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path={"/share/:id"} component={Share} />
       <Route path={"/history"} component={History} />
       <Route path={"/settings"} component={Settings} />
+      <Route path={"/custom-skins"} component={CustomSkins} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -12,7 +12,11 @@ import {
   feedback,
   InsertFeedback,
   favoriteSkins,
-  InsertFavoriteSkin
+  InsertFavoriteSkin,
+  rateLimits,
+  InsertRateLimit,
+  customSkins,
+  InsertCustomSkin
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -107,16 +111,37 @@ export async function getUserSettings(userId: number) {
   if (!db) return undefined;
 
   const result = await db.select().from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  if (result.length === 0) return undefined;
+  
+  // Normalize values: database stores values * 100 to avoid floating point issues
+  const settings = result[0];
+  return {
+    ...settings,
+    defaultTemperature: settings.defaultTemperature !== null && settings.defaultTemperature !== undefined ? settings.defaultTemperature / 100 : undefined,
+    defaultTopP: settings.defaultTopP !== null && settings.defaultTopP !== undefined ? settings.defaultTopP / 100 : undefined,
+    defaultMaxTokens: settings.defaultMaxTokens !== null && settings.defaultMaxTokens !== undefined ? settings.defaultMaxTokens : undefined,
+    defaultLengthRatio: settings.defaultLengthRatio !== null && settings.defaultLengthRatio !== undefined ? settings.defaultLengthRatio / 100 : undefined,
+  };
 }
 
 export async function upsertUserSettings(settings: InsertUserSettings) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.insert(userSettings).values(settings).onDuplicateKeyUpdate({
-    set: settings,
+  console.log('[upsertUserSettings] Original settings:', JSON.stringify(settings, null, 2));
+
+  // Remove undefined fields to avoid overwriting existing values
+  const cleanedSettings = Object.fromEntries(
+    Object.entries(settings).filter(([_, value]) => value !== undefined)
+  ) as InsertUserSettings;
+
+  console.log('[upsertUserSettings] Cleaned settings:', JSON.stringify(cleanedSettings, null, 2));
+
+  await db.insert(userSettings).values(cleanedSettings).onDuplicateKeyUpdate({
+    set: cleanedSettings,
   });
+  
+  console.log('[upsertUserSettings] Database update completed');
 }
 
 // Transform History
@@ -306,9 +331,18 @@ export async function addFavoriteSkin(userId: number, skinKey: string) {
   if (!db) return null;
 
   try {
+    // Get the maximum orderIndex for this user
+    const maxOrderResult = await db
+      .select({ maxOrder: sql<number>`COALESCE(MAX(${favoriteSkins.orderIndex}), -1)` })
+      .from(favoriteSkins)
+      .where(eq(favoriteSkins.userId, userId));
+    
+    const nextOrderIndex = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+
     await db.insert(favoriteSkins).values({
       userId,
       skinKey,
+      orderIndex: nextOrderIndex,
     });
     return { success: true };
   } catch (error) {
@@ -344,11 +378,12 @@ export async function getFavoriteSkins(userId: number) {
   const favorites = await db
     .select({
       skinKey: favoriteSkins.skinKey,
+      orderIndex: favoriteSkins.orderIndex,
       createdAt: favoriteSkins.createdAt,
     })
     .from(favoriteSkins)
     .where(eq(favoriteSkins.userId, userId))
-    .orderBy(desc(favoriteSkins.createdAt));
+    .orderBy(favoriteSkins.orderIndex); // Order by orderIndex for drag-and-drop
 
   return favorites;
 }
@@ -369,4 +404,180 @@ export async function isFavoriteSkin(userId: number, skinKey: string) {
     .limit(1);
 
   return result.length > 0;
+}
+
+export async function reorderFavoriteSkins(userId: number, orderedSkinKeys: string[]) {
+  const db = await getDb();
+  if (!db) return { success: false };
+
+  try {
+    // Update each skin's orderIndex based on the new order
+    for (let i = 0; i < orderedSkinKeys.length; i++) {
+      await db
+        .update(favoriteSkins)
+        .set({ orderIndex: i })
+        .where(
+          and(
+            eq(favoriteSkins.userId, userId),
+            eq(favoriteSkins.skinKey, orderedSkinKeys[i])
+          )
+        );
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('[reorderFavoriteSkins] Error:', error);
+    return { success: false };
+  }
+}
+
+// ============================================================
+// Rate Limiting
+// ============================================================
+
+const DAILY_LIMIT = 100;
+
+export async function checkRateLimit(userId: number): Promise<{ allowed: boolean; remaining: number }> {
+  const db = await getDb();
+  if (!db) return { allowed: true, remaining: DAILY_LIMIT }; // Allow if DB is unavailable
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  try {
+    // Get or create today's rate limit record
+    const [record] = await db
+      .select()
+      .from(rateLimits)
+      .where(
+        and(
+          eq(rateLimits.userId, userId),
+          eq(rateLimits.date, today)
+        )
+      )
+      .limit(1);
+
+    if (!record) {
+      // Create new record for today
+      await db.insert(rateLimits).values({
+        userId,
+        date: today,
+        count: 1,
+      });
+      return { allowed: true, remaining: DAILY_LIMIT - 1 };
+    }
+
+    if (record.count >= DAILY_LIMIT) {
+      return { allowed: false, remaining: 0 };
+    }
+
+    // Increment count
+    await db
+      .update(rateLimits)
+      .set({ count: record.count + 1 })
+      .where(eq(rateLimits.id, record.id));
+
+    return { allowed: true, remaining: DAILY_LIMIT - record.count - 1 };
+  } catch (error) {
+    console.error('[RateLimit] Error checking rate limit:', error);
+    return { allowed: true, remaining: DAILY_LIMIT }; // Allow on error
+  }
+}
+
+export async function getRateLimitStatus(userId: number): Promise<{ count: number; limit: number; remaining: number }> {
+  const db = await getDb();
+  if (!db) return { count: 0, limit: DAILY_LIMIT, remaining: DAILY_LIMIT };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const [record] = await db
+    .select()
+    .from(rateLimits)
+    .where(
+      and(
+        eq(rateLimits.userId, userId),
+        eq(rateLimits.date, today)
+      )
+    )
+    .limit(1);
+
+  const count = record?.count || 0;
+  return {
+    count,
+    limit: DAILY_LIMIT,
+    remaining: Math.max(0, DAILY_LIMIT - count),
+  };
+}
+
+// ============================================================
+// Custom Skins
+// ============================================================
+
+export async function createCustomSkin(data: InsertCustomSkin) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db.insert(customSkins).values(data);
+  return result.insertId;
+}
+
+export async function getCustomSkinsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(customSkins)
+    .where(
+      and(
+        eq(customSkins.userId, userId),
+        eq(customSkins.isActive, 1)
+      )
+    )
+    .orderBy(desc(customSkins.createdAt));
+}
+
+export async function getCustomSkinById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const [skin] = await db
+    .select()
+    .from(customSkins)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    )
+    .limit(1);
+
+  return skin || null;
+}
+
+export async function updateCustomSkin(id: number, userId: number, data: Partial<InsertCustomSkin>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(customSkins)
+    .set(data)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    );
+}
+
+export async function deleteCustomSkin(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .delete(customSkins)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    );
 }

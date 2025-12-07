@@ -1,0 +1,1 @@
+ALTER TABLE `user_settings` MODIFY COLUMN `defaultMaxTokens` int DEFAULT 1500;

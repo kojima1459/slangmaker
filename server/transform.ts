@@ -41,20 +41,29 @@ export interface TransformResponse {
 /**
  * Transform article content using Gemini 2.5 Flash
  */
-export async function transformArticle(request: TransformRequest): Promise<TransformResponse> {
+export async function transformArticle(request: TransformRequest, customSkinPrompt?: string): Promise<TransformResponse> {
   const { url, title, extracted, skin, params, extras, apiKey } = request;
 
-  // Get skin definition
-  const skinDef = SKINS[skin];
-  if (!skinDef) {
-    throw new Error(`Unknown skin: ${skin}`);
+  // Get skin definition (either from default skins or use custom prompt)
+  let systemPrompt: string;
+  let skinName: string;
+  
+  if (customSkinPrompt) {
+    // Use custom prompt directly as system instruction
+    systemPrompt = customSkinPrompt;
+    skinName = "Custom Style";
+  } else {
+    // Use default skin definition
+    const skinDef = SKINS[skin];
+    if (!skinDef) {
+      throw new Error(`Unknown skin: ${skin}`);
+    }
+    systemPrompt = buildSystemPrompt(skinDef, params, extras);
+    skinName = skinDef.name;
   }
 
   // Initialize Gemini with new SDK
   const ai = new GoogleGenAI({ apiKey });
-
-  // Build system prompt
-  const systemPrompt = buildSystemPrompt(skinDef, params, extras);
 
   // Build user prompt (URL and title are now optional)
   const userPrompt = `
@@ -62,11 +71,16 @@ ${title ? `Title: ${title}` : ''}
 Content:
 ${extracted}
 
-Please rewrite this article in the "${skinDef.name}" style.
+Please rewrite this article in the "${skinName}" style.
 `.trim();
 
   try {
-    const response = await ai.models.generateContent({
+    // Set timeout for API call (30 seconds)
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('API request timed out after 30 seconds')), 30000);
+    });
+
+    const apiPromise = ai.models.generateContent({
       model: 'gemini-2.0-flash',
       contents: userPrompt,
       config: {
@@ -76,6 +90,8 @@ Please rewrite this article in the "${skinDef.name}" style.
         maxOutputTokens: params.maxOutputTokens,
       },
     });
+
+    const response = await Promise.race([apiPromise, timeoutPromise]);
 
     console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
     
@@ -136,7 +152,7 @@ preserving the original meaning and facts.
 Constraints:
 - Do not imitate real person's identity. Use the provided style rules instead.
 - Avoid disallowed content. For suggestive style, keep R-15 with metaphors only.
-- Keep output length ≈ original × ${lengthRatio}. If fixed length is provided, prefer it.
+- **IMPORTANT**: Keep output length approximately ${Math.round(lengthRatio * 100)}% of the original text length. Do NOT make it too short. If the original is 1000 characters, output should be around ${Math.round(lengthRatio * 1000)} characters.
 - Language: follow input lang; if ja, keep natural Japanese.
 
 Style Rules:

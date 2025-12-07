@@ -1,0 +1,1 @@
+ALTER TABLE `favorite_skins` ADD `orderIndex` int DEFAULT 0 NOT NULL;

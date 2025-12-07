@@ -24,14 +24,14 @@ export type InsertUser = typeof users.$inferInsert;
  */
 export const userSettings = mysqlTable("user_settings", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
   /** Encrypted Gemini API key (client-side encryption, stored as reference) */
   encryptedApiKey: text("encryptedApiKey"),
   defaultSkin: varchar("defaultSkin", { length: 64 }).default("kansai_banter"),
   defaultTemperature: int("defaultTemperature").default(130), // 1.3 * 100
   defaultTopP: int("defaultTopP").default(90), // 0.9 * 100
-  defaultMaxTokens: int("defaultMaxTokens").default(220),
-  defaultLengthRatio: int("defaultLengthRatio").default(100), // 1.0 * 100
+  defaultMaxTokens: int("defaultMaxTokens").default(4000), // Max output tokens (range: 50-8000)
+  defaultLengthRatio: int("defaultLengthRatio").default(100), // 1.0 * 100 (range: 0.5-1.5)
   safetyLevel: varchar("safetyLevel", { length: 32 }).default("moderate"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -41,6 +41,22 @@ export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = typeof userSettings.$inferInsert;
 
 /**
+ * Rate limiting table
+ * Tracks API usage per user per day
+ */
+export const rateLimits = mysqlTable("rate_limits", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD format
+  count: int("count").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type RateLimit = typeof rateLimits.$inferSelect;
+export type InsertRateLimit = typeof rateLimits.$inferInsert;
+
+/**
  * Favorite skins
  * Stores user's favorite skins for quick access
  */
@@ -48,6 +64,7 @@ export const favoriteSkins = mysqlTable("favorite_skins", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
   skinKey: varchar("skinKey", { length: 64 }).notNull(),
+  orderIndex: int("orderIndex").notNull().default(0), // Order for drag-and-drop sorting
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   // Unique constraint: one user can only favorite a skin once
@@ -72,8 +89,12 @@ export const transformHistory = mysqlTable("transform_history", {
   skin: varchar("skin", { length: 64 }).notNull(),
   /** JSON string of transformation parameters */
   params: text("params").notNull(),
+  /** Original extracted text (input) */
+  extracted: text("extracted"),
   /** Short snippet of output for preview (max 200 chars) */
   snippet: text("snippet"),
+  /** Full output text */
+  output: text("output"),
   /** Hash of output for deduplication (optional) */
   outputHash: varchar("outputHash", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -124,3 +145,32 @@ export const feedback = mysqlTable("feedback", {
 
 export type Feedback = typeof feedback.$inferSelect;
 export type InsertFeedback = typeof feedback.$inferInsert;
+
+/**
+ * Custom skins table
+ * Stores user-created custom skins (prompts)
+ */
+export const customSkins = mysqlTable("custom_skins", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  /** Unique key for this custom skin (user-scoped) */
+  key: varchar("key", { length: 64 }).notNull(),
+  /** Display name */
+  name: varchar("name", { length: 100 }).notNull(),
+  /** Description */
+  description: text("description"),
+  /** Custom prompt/rules */
+  prompt: text("prompt").notNull(),
+  /** Example output (optional) */
+  example: text("example"),
+  /** Whether this skin is active */
+  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = inactive
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  // Unique constraint: one user can only have one skin with a given key
+  uniqueUserKey: unique().on(table.userId, table.key),
+}));
+
+export type CustomSkin = typeof customSkins.$inferSelect;
+export type InsertCustomSkin = typeof customSkins.$inferInsert;
