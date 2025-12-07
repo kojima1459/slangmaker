@@ -184,9 +184,11 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50">
       {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
       
-      <div className="container max-w-5xl py-8">
-        {/* Top Navigation - バランスの取れたレイアウト */}
-        <div className="flex items-center justify-center gap-3 mb-8 pb-4 border-b border-gray-200">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div className="container max-w-5xl mx-auto px-4 py-4">
+          {/* Top Navigation - バランスの取れたレイアウト */}
+          <div className="flex items-center justify-center gap-3">
           <Button
             variant="ghost"
             size="sm"
@@ -224,8 +226,12 @@ export default function Home() {
             <SettingsIcon className="h-4 w-4 mr-1.5" />
             <span className="hidden sm:inline">{t('settings')}</span>
           </Button>
+          </div>
         </div>
-
+      </div>
+      
+      {/* Main Content - Offset for fixed header */}
+      <div className="container max-w-5xl mx-auto px-4 pt-24">
         {/* Hero Section - 改善されたヘッダー */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
