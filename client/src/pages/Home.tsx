@@ -441,9 +441,52 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-8">
-          記事を様々な文体で楽しむPWAアプリ
-        </p>
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="max-w-2xl mx-auto space-y-4">
+            {/* App Description */}
+            <p className="text-center text-sm text-gray-500">
+              記事を様々な文体で楽しむPWAアプリ
+            </p>
+            
+            {/* Creator & Contact Info */}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">製作者:</span>
+                <a 
+                  href="https://x.com/kojima920" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:text-purple-700 hover:underline"
+                >
+                  @kojima920
+                </a>
+              </div>
+              <span className="hidden sm:inline text-gray-300">|</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">問い合わせ:</span>
+                <a 
+                  href="mailto:mk19830920@gmail.com"
+                  className="text-purple-600 hover:text-purple-700 hover:underline"
+                >
+                  mk19830920@gmail.com
+                </a>
+              </div>
+            </div>
+            
+            {/* Donation Info */}
+            <div className="flex justify-center items-center gap-2 text-sm text-gray-600">
+              <span className="font-medium">寄付先:</span>
+              <span className="bg-purple-50 px-3 py-1 rounded-md text-purple-700 font-mono">
+                PayPay ID: kojima1459
+              </span>
+            </div>
+            
+            {/* Copyright */}
+            <p className="text-center text-xs text-gray-400 pt-4">
+              © 2025 言い換えメーカー. All rights reserved.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tutorial */}
