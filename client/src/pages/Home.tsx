@@ -12,6 +12,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
 import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown, BookOpen, Star } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -258,19 +259,30 @@ export default function Home() {
                   const isFavorite = favoriteSkinKeys.includes(key);
                   return (
                     <div key={key} className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedSkin(key)}
-                        disabled={isLoading}
-                        className={`w-full p-4 border-2 rounded-lg text-left transition-all hover:shadow-md ${
-                          selectedSkin === key
-                            ? 'border-purple-500 bg-purple-50 shadow-md'
-                            : 'border-gray-200 hover:border-purple-300'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        <div className="font-semibold text-sm mb-1">{t(`skin.${key}`)}</div>
-                        <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
-                      </button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSkin(key)}
+                              disabled={isLoading}
+                              className={`w-full p-4 border-2 rounded-lg text-left transition-all hover:shadow-md ${
+                                selectedSkin === key
+                                  ? 'border-purple-500 bg-purple-50 shadow-md'
+                                  : 'border-gray-200 hover:border-purple-300'
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              <div className="font-semibold text-sm mb-1">{t(`skin.${key}`)}</div>
+                              <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
+                            </button>
+                          </TooltipTrigger>
+                          {skin.example && (
+                            <TooltipContent side="top" className="max-w-xs">
+                              <p className="text-sm whitespace-pre-wrap">{skin.example}</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
                       {isAuthenticated && (
                         <button
                           type="button"
