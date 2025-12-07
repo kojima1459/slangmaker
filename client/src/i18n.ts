@@ -78,6 +78,10 @@ const resources = {
       history: '履歴',
       guide: '使い方',
       share: '共有',
+      customSkinsPage: 'カスタムスキン',
+      customSkins: 'カスタムスキン',
+      howToUse: '使い方',
+      backToTop: 'トップに戻る',
       
       // チュートリアル
       'tutorial.step1.title': '記事を貼り付け',
@@ -105,8 +109,8 @@ const resources = {
       rateLimitStatus: '今日の残り変換回数',
       rateLimitRemaining: '{{remaining}}/{{limit}}回',
       
-      // Custom Skins
-      customSkins: {
+      // Custom Skins Page
+      customSkinsDetail: {
         templateApplied: 'テンプレートを適用しました',
         templates: {
           title: '人気テンプレート',
