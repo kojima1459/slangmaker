@@ -97,9 +97,26 @@ export default function Settings() {
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
-              <p className="text-xs text-gray-500">
-                {t('apiKeyEncrypted')}
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-gray-500">
+                  {t('apiKeyEncrypted')}
+                </p>
+                <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-md space-y-1">
+                  <p className="font-semibold">🔑 Gemini APIキーの取得方法：</p>
+                  <ol className="list-decimal list-inside space-y-1 ml-2">
+                    <li>
+                      <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        Google AI Studio
+                      </a>
+                      にアクセス
+                    </li>
+                    <li>Googleアカウントでログイン</li>
+                    <li>「Get API key」ボタンをクリック</li>
+                    <li>「Create API key in new project」を選択</li>
+                    <li>生成されたAPIキーをコピー</li>
+                  </ol>
+                </div>
+              </div>
             </div>
 
             {/* Default Skin */}

@@ -386,4 +386,10 @@
 - [x] skin.aphorism → 哲学名言風
 - [x] skin.speech_poem → 熱血演説風
 - [x] skin.debate_politico → 定量分析政治家風
+- [x] 動作確認とチェックポイント作成 (version: 8dfd0ea1)
+
+## APIキー取得方法の追加
+
+### Phase 1: Settings.tsx修正
+- [x] Settings.tsxのAPIキー入力欄にGemini APIキー取得方法を追加
 - [ ] 動作確認とチェックポイント作成
