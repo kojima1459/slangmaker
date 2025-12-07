@@ -14,6 +14,8 @@ import { SKINS } from "../../../shared/skins";
 import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown, BookOpen, Star } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect } from "react";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -128,19 +130,44 @@ export default function Home() {
 
   const isLoading = transformMutation.isPending;
 
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <div className="container max-w-4xl py-12">
+        {/* Top Navigation */}
+        <div className="flex justify-between items-center mb-8">
+          <a href="/about" className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors">
+            <BookOpen className="w-5 h-5" />
+            <span className="font-medium">{t('learnJapaneseSlang')}</span>
+          </a>
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher />
+            {isAuthenticated && (
+              <>
+                <Button variant="outline" size="sm" onClick={() => setLocation("/history")}>
+                  <HistoryIcon className="w-4 h-4 mr-2" />
+                  {t('history')}
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setLocation("/settings")}>
+                  <SettingsIcon className="w-4 h-4 mr-2" />
+                  Settings
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="w-8 h-8 text-purple-600" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              言い換えメーカー
+              {t('appTitle')}
             </h1>
           </div>
           <p className="text-lg text-gray-600">
-            ニュースをスキンで読む - 記事を様々な文体で楽しむ
+            {t('appSubtitle')}
           </p>
         </div>
 

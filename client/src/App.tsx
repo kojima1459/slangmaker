@@ -10,11 +10,13 @@ import Share from "./pages/Share";
 import Reader from "./pages/Reader";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
+import About from "./pages/About";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/about"} component={About} />
       <Route path={"/guide"} component={Guide} />
       <Route path={"/reader"} component={Reader} />
       <Route path={"/share/:id"} component={Share} />
