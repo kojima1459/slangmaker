@@ -77,27 +77,28 @@ export default function Reader() {
   };
 
   const handleTwitterShare = () => {
-    const siteUrl = window.location.origin;
+    const siteUrl = 'https://slang-maker.manus.space';
     const skinName = data.skin;
-    const text = `【${skinName}】で変換しました！\n\n${data.result.output.substring(0, 120)}...\n\n#言い換えメーカー #文体変換 #${skinName.replace(/[\s・]/g, '')}`;
+    const text = `【${skinName}】で変換しました！\n\n${data.result.output.substring(0, 120)}...\n\n#AIスラングメーカー #文体変換 #${skinName.replace(/[\s・]/g, '')}`;
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(siteUrl)}`;
     window.open(tweetUrl, '_blank', 'width=550,height=420');
   };
 
   const handleLineShare = () => {
-    const text = `言い換えメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...`;
+    const siteUrl = 'https://slang-maker.manus.space';
+    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...\n\n${siteUrl}`;
     const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
 
   const handleFacebookShare = () => {
-    const siteUrl = window.location.origin;
+    const siteUrl = 'https://slang-maker.manus.space';
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(`【${data.skin}】で変換しました！\n\n${data.result.output.substring(0, 200)}...`)}`;
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };
 
   const handleLinkedInShare = () => {
-    const siteUrl = window.location.origin;
+    const siteUrl = 'https://slang-maker.manus.space';
     const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`;
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };

@@ -7,7 +7,7 @@ const resources = {
   ja: {
     translation: {
       // ヘッダー
-      appTitle: 'AI言い換えメーカー',
+      appTitle: 'AIスラングメーカー',
       appSubtitle: '言葉を着せ替え、表現を楽しむ\n同じ内容、違う世界。文体マジック',
       login: 'ログイン',
       
@@ -169,7 +169,7 @@ const resources = {
   en: {
     translation: {
       // Header
-      appTitle: 'AI Paraphrase Maker',
+      appTitle: 'AI Slang Maker',
       appSubtitle: 'Read news in different styles - Enjoy articles in various writing styles',
       login: 'Login',
       

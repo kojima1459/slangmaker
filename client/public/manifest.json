@@ -1,7 +1,7 @@
 {
-  "name": "言い換えメーカー - 記事を様々な文体で楽しむ",
-  "short_name": "言い換えメーカー",
-  "description": "記事を様々な文体で楽しむPWAアプリ",
+  "name": "AIスラングメーカー - テキストを様々なスタイルで変換",
+  "short_name": "AIスラングメーカー",
+  "description": "テキストを様々なスタイルで変換するPWAアプリ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
