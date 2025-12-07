@@ -57,8 +57,8 @@ export const appRouter = router({
       params: z.object({
         temperature: z.number().min(0).max(2),
         topP: z.number().min(0).max(1),
-        maxOutputTokens: z.number().min(50).max(2000),
-        lengthRatio: z.number().min(0.6).max(1.6),
+        maxOutputTokens: z.number().min(50).max(8000),
+        lengthRatio: z.number().min(0.5).max(1.5),
         humor: z.number().min(0).max(1).optional(),
         insightLevel: z.number().min(0).max(1).optional(),
       }),

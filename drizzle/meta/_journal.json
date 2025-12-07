@@ -57,6 +57,13 @@
       "when": 1765134295638,
       "tag": "0007_moaning_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1765135627680,
+      "tag": "0008_overjoyed_warpath",
+      "breakpoints": true
     }
   ]
 }

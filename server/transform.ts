@@ -152,7 +152,7 @@ preserving the original meaning and facts.
 Constraints:
 - Do not imitate real person's identity. Use the provided style rules instead.
 - Avoid disallowed content. For suggestive style, keep R-15 with metaphors only.
-- Keep output length ≈ original × ${lengthRatio}. If fixed length is provided, prefer it.
+- **IMPORTANT**: Keep output length approximately ${Math.round(lengthRatio * 100)}% of the original text length. Do NOT make it too short. If the original is 1000 characters, output should be around ${Math.round(lengthRatio * 1000)} characters.
 - Language: follow input lang; if ja, keep natural Japanese.
 
 Style Rules:

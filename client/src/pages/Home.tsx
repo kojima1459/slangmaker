@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
@@ -29,7 +30,7 @@ export default function Home() {
   const [selectedSkin, setSelectedSkin] = useState("kansai_banter");
   const [temperature, setTemperature] = useState(1.3);
   const [topP, setTopP] = useState(0.9);
-  const [maxTokens, setMaxTokens] = useState(1500);
+  const [maxTokens, setMaxTokens] = useState(4000);
   const [lengthRatio, setLengthRatio] = useState(1.0);
   const [addCore3, setAddCore3] = useState(false);
   const [addGlossary, setAddGlossary] = useState(false);
@@ -37,6 +38,8 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [skinCategory, setSkinCategory] = useState<"all" | "dialect" | "character" | "genre" | "sns">("all");
   const [showResult, setShowResult] = useState(false);
+  const [transformedText, setTransformedText] = useState("");
+  const [transformedData, setTransformedData] = useState<any>(null);
 
   const transformMutation = trpc.transform.useMutation();
   const { data: favoritesData } = trpc.favorites.list.useQuery(undefined, {
@@ -127,6 +130,9 @@ export default function Home() {
         origin: { y: 0.6 }
       });
 
+      // 変換結果を保存
+      setTransformedText(result.output);
+      setTransformedData(result);
       setShowResult(true);
       
       // 成功メッセージ
@@ -137,18 +143,6 @@ export default function Home() {
         </div>,
         {
           duration: 3000,
-        }
-      );
-
-      // Show result in a modal or navigate to result display
-      // Since we don't have a result ID, we'll show it in a toast or modal
-      toast.success(
-        <div className="max-w-md">
-          <p className="font-semibold mb-2">変換結果:</p>
-          <p className="text-sm whitespace-pre-wrap">{result.output.substring(0, 200)}...</p>
-        </div>,
-        {
-          duration: 5000,
         }
       );
     } catch (error) {
@@ -584,8 +578,8 @@ export default function Home() {
                   </div>
                   <Slider
                     id="maxTokens"
-                    min={500}
-                    max={4000}
+                    min={50}
+                    max={8000}
                     step={100}
                     value={[maxTokens]}
                     onValueChange={(value) => setMaxTokens(value[0])}
@@ -604,7 +598,7 @@ export default function Home() {
                   <Slider
                     id="lengthRatio"
                     min={0.5}
-                    max={1.6}
+                    max={1.5}
                     step={0.1}
                     value={[lengthRatio]}
                     onValueChange={(value) => setLengthRatio(value[0])}
@@ -724,6 +718,50 @@ export default function Home() {
           <p className="mt-4 text-xs text-gray-500">© 2025 {t('appTitle')}. All rights reserved.</p>
         </footer>
       </div>
+
+      {/* 変換結果モーダル */}
+      <Dialog open={showResult} onOpenChange={setShowResult}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-600" />
+              変換結果
+            </DialogTitle>
+            <DialogDescription>
+              スキン: {Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">{transformedText}</p>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(transformedText);
+                  toast.success("コピーしました！");
+                }}
+              >
+                <span className="mr-2">📋</span>
+                コピー
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const text = encodeURIComponent(transformedText.substring(0, 200) + "... #NewsSkins");
+                  window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+                }}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Xで共有
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
