@@ -53,12 +53,19 @@ export default function Settings() {
 
   const handleSave = async () => {
     try {
-      await updateMutation.mutateAsync({
+      const updateData: any = {
         defaultSkin,
-        encryptedApiKey: apiKey || undefined,
-      });
+      };
+      
+      // Only include API key if it's not empty
+      if (apiKey && apiKey.trim() !== '') {
+        updateData.encryptedApiKey = apiKey.trim();
+      }
+      
+      await updateMutation.mutateAsync(updateData);
       toast.success(t('settingsSaved'));
     } catch (error) {
+      console.error('Settings save error:', error);
       toast.error(t('settingsSaveFailed'));
     }
   };
@@ -90,10 +97,15 @@ export default function Settings() {
             {/* API Key */}
             <div className="space-y-2">
               <Label htmlFor="apiKey">{t('geminiApiKey')}</Label>
+              {settings?.encryptedApiKey && (
+                <div className="text-sm text-green-600 bg-green-50 p-2 rounded-md mb-2">
+                  ✓ APIキーが設定されています（新しいキーを入力すると上書きされます）
+                </div>
+              )}
               <Input
                 id="apiKey"
                 type="password"
-                placeholder={t('geminiApiKeyPlaceholder')}
+                placeholder={settings?.encryptedApiKey ? "新しいAPIキーを入力（変更する場合のみ）" : t('geminiApiKeyPlaceholder')}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />

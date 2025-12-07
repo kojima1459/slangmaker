@@ -128,9 +128,20 @@ export async function upsertUserSettings(settings: InsertUserSettings) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  await db.insert(userSettings).values(settings).onDuplicateKeyUpdate({
-    set: settings,
+  console.log('[upsertUserSettings] Original settings:', JSON.stringify(settings, null, 2));
+
+  // Remove undefined fields to avoid overwriting existing values
+  const cleanedSettings = Object.fromEntries(
+    Object.entries(settings).filter(([_, value]) => value !== undefined)
+  ) as InsertUserSettings;
+
+  console.log('[upsertUserSettings] Cleaned settings:', JSON.stringify(cleanedSettings, null, 2));
+
+  await db.insert(userSettings).values(cleanedSettings).onDuplicateKeyUpdate({
+    set: cleanedSettings,
   });
+  
+  console.log('[upsertUserSettings] Database update completed');
 }
 
 // Transform History

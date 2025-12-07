@@ -582,3 +582,21 @@
 
 ### 原因
 データベーススキーマで、小数値を整数型（int）で保存するために100倍して保存していたが、取得時に100で割る処理が抜けていた。
+
+## APIキーが保存されない問題
+
+### 問題点
+- [ ] Settings.tsxでAPIキーを入力して「設定を保存」しても保存されない
+- [ ] 変換時に「APIキーが設定されていません」というエラーが出る
+
+### 調査内容
+- [x] Settings.tsxのhandleSave関数を確認
+- [x] server/routers.tsのsettings.update procedureを確認
+- [x] server/db.tsのupsertUserSettings関数を確認
+- [ ] データベースに実際に保存されているか確認
+
+### 修正内容
+- [x] Settings.tsxで空のAPIキーを送信しないように修正
+- [x] upsertUserSettingsでundefinedのフィールドを除外
+- [x] デバッグログを追加
+- [ ] 動作確認

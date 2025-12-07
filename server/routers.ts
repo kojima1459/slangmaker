@@ -155,10 +155,15 @@ export const appRouter = router({
         safetyLevel: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
+        console.log('[settings.update] Received input:', JSON.stringify(input, null, 2));
+        console.log('[settings.update] User ID:', ctx.user.id);
+        
         await upsertUserSettings({
           userId: ctx.user.id,
           ...input,
         });
+        
+        console.log('[settings.update] Settings saved successfully');
         return { success: true };
       }),
   }),
