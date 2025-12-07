@@ -8,16 +8,16 @@ const resources = {
     translation: {
       // ヘッダー
       appTitle: '言い換えメーカー',
-      appSubtitle: 'ニュースをスキンで読む - 記事を様々な文体で楽しむ',
+      appSubtitle: '言葉を着せ替え、表現を楽しむ\n同じ内容、違う世界。文体マジック',
       login: 'ログイン',
       
       // ホームページ
-      transformArticle: '記事を変換',
-      pasteArticle: '記事本文を貼り付けて、お好みのスキン（文体）で読み直しましょう',
-      articleText: '記事本文',
-      articlePlaceholder: '記事の本文をここに貼り付けてください...',
+      transformArticle: 'テキストを変換',
+      pasteArticle: 'テキストを貼り付けて、お好みのスキン（文体）で読み直しましょう',
+      articleText: 'テキスト',
+      articlePlaceholder: '変換したいテキストをここに貼り付けてください...',
       characterCount: '{{count}} / 10000文字',
-      characterWarning: '変換したい記事の本文をコピー&ペーストしてください',
+      characterWarning: '変換したいテキストをコピー&ペーストしてください',
       characterLimit: '文字数が上限（10000文字）を超えています',
       geminiApiKey: 'Gemini API Key',
       geminiApiKeyPlaceholder: 'AIza...',
@@ -30,7 +30,7 @@ const resources = {
       temperatureDesc: '値が高いほどランダムな変換になります',
       maxOutputTokens: '最大出力トークン数',
       maxOutputTokensDesc: '変換後の文章の最大長さを指定します',
-      articleTextRequired: '記事テキストを入力してください',
+      articleTextRequired: 'テキストを入力してください',
       apiKeyRequired: 'Gemini APIキーを入力してください',
       settings: '設定',
       recommended5000: '推奨: 5000文字以内',
@@ -61,7 +61,7 @@ const resources = {
       'skin.keigo_excessive': '敬語過剰風',
       
       // 説明ページ
-      learnJapaneseSlang: '日本語のスラングや言い回しを学ぼう',
+      learnJapaneseSlang: '言い回しを楽しもう！',
       multipleStyles: '複数の表現を提案',
       multipleStylesDesc: 'シーンやニュアンスごとのちょうどいい表現を提案してくれます',
       funLearning: '楽しく学べる',

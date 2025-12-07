@@ -12,7 +12,9 @@ import {
   feedback,
   InsertFeedback,
   favoriteSkins,
-  InsertFavoriteSkin
+  InsertFavoriteSkin,
+  rateLimits,
+  InsertRateLimit
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -369,4 +371,81 @@ export async function isFavoriteSkin(userId: number, skinKey: string) {
     .limit(1);
 
   return result.length > 0;
+}
+
+// ============================================================
+// Rate Limiting
+// ============================================================
+
+const DAILY_LIMIT = 100;
+
+export async function checkRateLimit(userId: number): Promise<{ allowed: boolean; remaining: number }> {
+  const db = await getDb();
+  if (!db) return { allowed: true, remaining: DAILY_LIMIT }; // Allow if DB is unavailable
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  try {
+    // Get or create today's rate limit record
+    const [record] = await db
+      .select()
+      .from(rateLimits)
+      .where(
+        and(
+          eq(rateLimits.userId, userId),
+          eq(rateLimits.date, today)
+        )
+      )
+      .limit(1);
+
+    if (!record) {
+      // Create new record for today
+      await db.insert(rateLimits).values({
+        userId,
+        date: today,
+        count: 1,
+      });
+      return { allowed: true, remaining: DAILY_LIMIT - 1 };
+    }
+
+    if (record.count >= DAILY_LIMIT) {
+      return { allowed: false, remaining: 0 };
+    }
+
+    // Increment count
+    await db
+      .update(rateLimits)
+      .set({ count: record.count + 1 })
+      .where(eq(rateLimits.id, record.id));
+
+    return { allowed: true, remaining: DAILY_LIMIT - record.count - 1 };
+  } catch (error) {
+    console.error('[RateLimit] Error checking rate limit:', error);
+    return { allowed: true, remaining: DAILY_LIMIT }; // Allow on error
+  }
+}
+
+export async function getRateLimitStatus(userId: number): Promise<{ count: number; limit: number; remaining: number }> {
+  const db = await getDb();
+  if (!db) return { count: 0, limit: DAILY_LIMIT, remaining: DAILY_LIMIT };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const [record] = await db
+    .select()
+    .from(rateLimits)
+    .where(
+      and(
+        eq(rateLimits.userId, userId),
+        eq(rateLimits.date, today)
+      )
+    )
+    .limit(1);
+
+  const count = record?.count || 0;
+  return {
+    count,
+    limit: DAILY_LIMIT,
+    remaining: Math.max(0, DAILY_LIMIT - count),
+  };
 }

@@ -22,7 +22,6 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { isAuthenticated } = useAuth();
   const [articleText, setArticleText] = useState("");
-  const [apiKey, setApiKey] = useState("");
   const [selectedSkin, setSelectedSkin] = useState("kansai_banter");
   const [temperature, setTemperature] = useState(1.3);
   const [topP, setTopP] = useState(0.9);
@@ -62,9 +61,6 @@ export default function Home() {
   // Load settings when available
   useEffect(() => {
     if (settings) {
-      if (settings.encryptedApiKey) {
-        setApiKey(settings.encryptedApiKey);
-      }
       if (settings.defaultSkin) {
         setSelectedSkin(settings.defaultSkin);
       }
@@ -87,13 +83,6 @@ export default function Home() {
     // Validate inputs
     if (!articleText.trim()) {
       toast.error(t('articleTextRequired'));
-      return;
-    }
-
-    // sourceUrl is now optional
-
-    if (!apiKey) {
-      toast.error(t('apiKeyRequired'));
       return;
     }
 
@@ -125,7 +114,6 @@ export default function Home() {
           addGlossary,
           addQuestions,
         },
-        apiKey,
       });
 
       toast.success("変換完了！");
@@ -157,6 +145,9 @@ export default function Home() {
             <span className="font-medium">{t('learnJapaneseSlang')}</span>
           </a>
           <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" onClick={() => setLocation("/guide")}>
+              {t('guide')}
+            </Button>
             <LanguageSwitcher />
             {isAuthenticated && (
               <>
@@ -181,9 +172,14 @@ export default function Home() {
               {t('appTitle')}
             </h1>
           </div>
-          <p className="text-lg text-gray-600">
-            {t('appSubtitle')}
-          </p>
+          <div className="space-y-1">
+            <p className="text-lg text-gray-700 font-medium">
+              言葉を着せ替え、表現を楽しむ
+            </p>
+            <p className="text-base text-gray-500">
+              同じ内容、違う世界。文体マジック
+            </p>
+          </div>
         </div>
 
         {/* Main Card */}
@@ -224,22 +220,6 @@ export default function Home() {
             </div>
 
 
-
-            {/* API Key Input */}
-            <div className="space-y-2">
-              <Label htmlFor="apiKey">{t('geminiApiKey')} *</Label>
-              <Input
-                id="apiKey"
-                type="password"
-                placeholder={t('geminiApiKeyPlaceholder')}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                disabled={isLoading}
-              />
-              <p className="text-xs text-gray-500">
-                {t('geminiApiKeyNote')}
-              </p>
-            </div>
 
             {/* Skin Selection */}
             <div className="space-y-3">

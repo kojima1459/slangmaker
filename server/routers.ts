@@ -19,7 +19,9 @@ import {
   addFavoriteSkin,
   removeFavoriteSkin,
   getFavoriteSkins,
-  isFavoriteSkin
+  isFavoriteSkin,
+  checkRateLimit,
+  getRateLimitStatus
 } from "./db";
 import { nanoid } from "nanoid";
 
@@ -39,7 +41,7 @@ export const appRouter = router({
   // extract endpoint removed - users paste text directly
 
   // Transform article with Gemini
-  transform: publicProcedure
+  transform: protectedProcedure
     .input(z.object({
       url: z.string().optional(),
       title: z.string().optional(),
@@ -60,10 +62,30 @@ export const appRouter = router({
         addCore3: z.boolean().optional(),
         addQuestions: z.boolean().optional(),
       }).optional(),
-      apiKey: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      const result = await transformArticle(input);
+      // Check rate limit
+      const rateLimit = await checkRateLimit(ctx.user.id);
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: '一日の変換回数上限（100回）に達しました。明日またお試しください。',
+        });
+      }
+
+      // Get API key from user settings
+      const settings = await getUserSettings(ctx.user.id);
+      if (!settings || !settings.encryptedApiKey) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Gemini APIキーが設定されていません。設定ページで登録してください。',
+        });
+      }
+
+      const result = await transformArticle({
+        ...input,
+        apiKey: settings.encryptedApiKey,
+      });
 
       // Save to history if user is authenticated
       if (ctx.user) {

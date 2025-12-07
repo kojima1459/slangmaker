@@ -29,6 +29,13 @@
       "when": 1765090102646,
       "tag": "0003_purple_swarm",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1765102004657,
+      "tag": "0004_narrow_black_bolt",
+      "breakpoints": true
     }
   ]
 }
