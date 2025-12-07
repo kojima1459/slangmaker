@@ -1,9 +1,122 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "fe8a962a-9155-4409-afcd-b2bc0c674798",
+  "id": "251ff891-310e-4b22-a5ef-dafb22f1c296",
   "prevId": "fe9d1d7c-c94e-42a5-b19a-945764647666",
   "tables": {
+    "custom_skins": {
+      "name": "custom_skins",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "key": {
+          "name": "key",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "prompt": {
+          "name": "prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "example": {
+          "name": "example",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "isActive": {
+          "name": "isActive",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "custom_skins_userId_users_id_fk": {
+          "name": "custom_skins_userId_users_id_fk",
+          "tableFrom": "custom_skins",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "custom_skins_id": {
+          "name": "custom_skins_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "custom_skins_userId_key_unique": {
+          "name": "custom_skins_userId_key_unique",
+          "columns": [
+            "userId",
+            "key"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
     "favorite_skins": {
       "name": "favorite_skins",
       "columns": {
@@ -27,6 +140,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "orderIndex": {
+          "name": "orderIndex",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "createdAt": {
           "name": "createdAt",
@@ -377,8 +498,22 @@
           "notNull": true,
           "autoincrement": false
         },
+        "extracted": {
+          "name": "extracted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "snippet": {
           "name": "snippet",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "output": {
+          "name": "output",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -481,7 +616,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": 220
+          "default": 4000
         },
         "defaultLengthRatio": {
           "name": "defaultLengthRatio",
@@ -541,7 +676,14 @@
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "user_settings_userId_unique": {
+          "name": "user_settings_userId_unique",
+          "columns": [
+            "userId"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "users": {
