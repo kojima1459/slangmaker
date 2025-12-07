@@ -106,7 +106,7 @@ export default function Home() {
       const result = await transformMutation.mutateAsync({
         url: "",
         title: "記事",
-        site: "NewsSkins",
+        site: "AI言い換えメーカー",
         lang: "ja",
         extracted: articleText,
         skin: selectedSkin,
@@ -751,7 +751,7 @@ export default function Home() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  const text = encodeURIComponent(transformedText.substring(0, 200) + "... #NewsSkins");
+                  const text = encodeURIComponent(transformedText.substring(0, 200) + "... #AI言い換えメーカー");
                   window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
                 }}
               >

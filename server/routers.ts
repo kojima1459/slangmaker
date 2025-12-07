@@ -113,11 +113,13 @@ export const appRouter = router({
           userId: ctx.user.id,
           url: input.url || "",
           title: input.title || "記事",
-          site: input.site || "NewsSkins",
+          site: input.site || "AI言い換えメーカー",
           lang: input.lang || "ja",
           skin: input.skin,
           params: JSON.stringify(input.params),
+          extracted: input.extracted,
           snippet,
+          output: result.output,
           outputHash: undefined,
         });
       }

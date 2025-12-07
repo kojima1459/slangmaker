@@ -88,8 +88,12 @@ export const transformHistory = mysqlTable("transform_history", {
   skin: varchar("skin", { length: 64 }).notNull(),
   /** JSON string of transformation parameters */
   params: text("params").notNull(),
+  /** Original extracted text (input) */
+  extracted: text("extracted"),
   /** Short snippet of output for preview (max 200 chars) */
   snippet: text("snippet"),
+  /** Full output text */
+  output: text("output"),
   /** Hash of output for deduplication (optional) */
   outputHash: varchar("outputHash", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

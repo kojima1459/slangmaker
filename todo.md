@@ -628,3 +628,17 @@
 - [x] 共有ボタンを追加（Xで共有）
 - [x] コピーボタンを追加
 - [x] 履歴の「元記事」ボタンを修正（モーダルで元テキストを表示）
+
+## 変換結果と履歴の問題（追加修正）
+
+### 問題点
+- [x] 変換結果が途切れて全て見れない（「[NEWSSKINS]」で途切れている）
+- [x] 変換履歴の「元記事」ボタンが機能していない
+- [x] 「NewsSkins」を「AI言い換えメーカー」に変更
+
+### 修正内容
+- [x] transform_historyテーブルにextractedとoutputカラムを追加
+- [x] server/routers.tsでextractedとoutputを保存
+- [x] History.tsxに「変換結果を見る」ボタンを追加
+- [x] 履歴の元記事ボタンの動作を確認（extractedを表示）
+- [x] アプリ名を「AI言い換えメーカー」に変更（server/routers.ts、Home.tsx）
