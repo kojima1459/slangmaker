@@ -3,9 +3,11 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 interface ReaderData {
   article: {
@@ -42,9 +44,34 @@ export default function Reader() {
     return null;
   }
 
+  const { isAuthenticated } = useAuth();
+  const createShareMutation = trpc.share.create.useMutation();
+
   const handleCopy = () => {
     navigator.clipboard.writeText(data.result.output);
     toast.success("コピーしました");
+  };
+
+  const handleShare = async () => {
+    if (!isAuthenticated) {
+      toast.error("シェア機能を使用するにはログインが必要です");
+      return;
+    }
+
+    try {
+      const result = await createShareMutation.mutateAsync({
+        content: data.result.output,
+        sourceUrl: data.article.url,
+        skin: data.skin,
+      });
+
+      const shareUrl = `${window.location.origin}${result.url}`;
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("共有URLをコピーしました（24時間有効）");
+    } catch (error) {
+      console.error("Share error:", error);
+      toast.error("共有URLの生成に失敗しました");
+    }
   };
 
   const handleBack = () => {
@@ -111,6 +138,15 @@ export default function Reader() {
                     <Copy className="mr-2 h-4 w-4" />
                     コピー
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShare}
+                    disabled={createShareMutation.isPending}
+                  >
+                    <Share2 className="mr-2 h-4 w-4" />
+                    共有
+                  </Button>
                 </div>
               </div>
             </CardHeader>
@@ -121,17 +157,19 @@ export default function Reader() {
               
               <Separator className="my-6" />
               
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <ExternalLink className="h-4 w-4" />
-                <a
-                  href={data.article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  元記事を開く
-                </a>
-              </div>
+              {data.article.url && data.article.url !== "https://example.com" && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <ExternalLink className="h-4 w-4" />
+                  <a
+                    href={data.article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    元記事を開く
+                  </a>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

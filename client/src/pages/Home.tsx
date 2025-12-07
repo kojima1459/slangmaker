@@ -11,10 +11,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown } from "lucide-react";
+import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown, BookOpen } from "lucide-react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect } from "react";
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
   const [articleText, setArticleText] = useState("");
   const [articleTitle, setArticleTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
@@ -29,6 +32,33 @@ export default function Home() {
   const [addQuestions, setAddQuestions] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
+  const { data: settings } = trpc.settings.get.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
+  // Load settings when available
+  useEffect(() => {
+    if (settings) {
+      if (settings.encryptedApiKey) {
+        setApiKey(settings.encryptedApiKey);
+      }
+      if (settings.defaultSkin) {
+        setSelectedSkin(settings.defaultSkin);
+      }
+      if (settings.defaultTemperature !== undefined && settings.defaultTemperature !== null) {
+        setTemperature(settings.defaultTemperature);
+      }
+      if (settings.defaultTopP !== undefined && settings.defaultTopP !== null) {
+        setTopP(settings.defaultTopP);
+      }
+      if (settings.defaultMaxTokens !== undefined && settings.defaultMaxTokens !== null) {
+        setMaxTokens(settings.defaultMaxTokens);
+      }
+      if (settings.defaultLengthRatio !== undefined && settings.defaultLengthRatio !== null) {
+        setLengthRatio(settings.defaultLengthRatio);
+      }
+    }
+  }, [settings]);
 
   const handleTransform = async () => {
     // Validate inputs
@@ -37,10 +67,7 @@ export default function Home() {
       return;
     }
 
-    if (!sourceUrl.trim()) {
-      toast.error("元記事URLを入力してください");
-      return;
-    }
+    // sourceUrl is now optional
 
     if (!apiKey) {
       toast.error("Gemini APIキーを入力してください");
@@ -51,8 +78,8 @@ export default function Home() {
       // Create article object from user input
       const article = {
         title: articleTitle.trim() || "無題",
-        site: new URL(sourceUrl).hostname,
-        url: sourceUrl,
+        site: sourceUrl.trim() ? new URL(sourceUrl).hostname : "unknown",
+        url: sourceUrl.trim() || "https://example.com",
         contentText: articleText.trim(),
         lang: "ja", // Default to Japanese
       };
@@ -155,7 +182,7 @@ export default function Home() {
 
             {/* Source URL Input */}
             <div className="space-y-2">
-              <Label htmlFor="sourceUrl">元記事URL *</Label>
+              <Label htmlFor="sourceUrl">元記事URL（任意）</Label>
               <Input
                 id="sourceUrl"
                 type="url"
@@ -335,6 +362,10 @@ export default function Home() {
 
         {/* Footer Links */}
         <div className="flex justify-center gap-4 mt-8">
+          <Button variant="ghost" onClick={() => setLocation("/guide")}>
+            <BookOpen className="mr-2 h-4 w-4" />
+            ガイド
+          </Button>
           <Button variant="ghost" onClick={() => setLocation("/history")}>
             <HistoryIcon className="mr-2 h-4 w-4" />
             履歴
