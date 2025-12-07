@@ -477,7 +477,7 @@ export default function Home() {
                                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                                 >
                                   <div className="font-semibold text-sm mb-1">{t(`skin.${key}`)}</div>
-                                  <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
+                                  <div className="text-xs text-gray-600 line-clamp-2">{t(`skin.${key}.desc`)}</div>
                                 </button>
                               </TooltipTrigger>
                               {skin.example && (

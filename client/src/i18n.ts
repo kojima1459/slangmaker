@@ -65,23 +65,6 @@ const resources = {
       saving: '保存中...',
       saveSettings: '設定を保存',
       
-      // スキン名
-      'skin.kansai_banter': '関西ノリ風',
-      'skin.ojisan_mail': 'おじさん構文風',
-      'skin.poetic_emo': '詩的エモ風',
-      'skin.detached_lit': 'デタッチ文学風',
-      'skin.suggestive_safe': '意味深セーフ大人風',
-      'skin.gen_z_slang': '若者言葉風（Z世代）',
-      'skin.rap_style': 'ラップ風',
-      'skin.academic_paper': '学術論文風',
-      'skin.gyaru_slang': 'ギャル語風',
-      'skin.keigo_excessive': '敬語過剰風',
-      'skin.cryptic_code': 'エンジニア風',
-      'skin.philo_lecture': 'ロジカル政治家風',
-      'skin.aphorism': '哲学名言風',
-      'skin.speech_poem': '熱血演説風',
-      'skin.debate_politico': '定量分析政治家風',
-      
       // 説明ページ
       learnJapaneseSlang: '言い回しを楽しもう！',
       multipleStyles: '複数の表現を提案',
@@ -128,6 +111,30 @@ const resources = {
       
       // Rate limit status
       rateLimitStatus: '今日の残り変換回数',
+      
+      // スキン名
+      'skin.kansai_banter': '関西ノリ風',
+      'skin.ojisan_mail': 'おじさん構文風',
+      'skin.poetic_emo': 'ポエムエモ風',
+      'skin.detached_lit': 'デタッチ文学風',
+      'skin.suggestive_safe': '暗示成人風',
+      'skin.gen_z_slang': 'Z世代スラング風',
+      'skin.rap_style': 'ラップ風',
+      'skin.academic_paper': '学術論文風',
+      'skin.gyaru_slang': 'ギャル語風',
+      'skin.keigo_excessive': '過度敬語風',
+      
+      // スキン説明
+      'skin.kansai_banter.desc': 'ツッコミと誇張表現を交えた爆笑関西弁風の文体',
+      'skin.ojisan_mail.desc': '絵文字と改行を多用し、時候の挨拶がズレた痛々しい文体',
+      'skin.poetic_emo.desc': 'A-B-A’の反復構造とシュールな擬人化を用いた過剰なポエム文体',
+      'skin.detached_lit.desc': '淡々とした一人称視点で、シュールな比喩を交えた文学的な文体',
+      'skin.suggestive_safe.desc': '直接的な表現を避け、比喩と回で切り合わせるニュアリとさせる文体',
+      'skin.gen_z_slang.desc': '「マジ」「ヤバい」「エモい」を多用した若者言葉の文体',
+      'skin.rap_style.desc': '韻を踏んでリズム感のあるラップ風の文体',
+      'skin.academic_paper.desc': '「～である」調で引用や考察を含む学術的な文体',
+      'skin.gyaru_slang.desc': '「マジ卒」「やぽたにえん」などギャル語満載の超ハイテンション文体',
+      'skin.keigo_excessive.desc': '「誠に恐れ入りますが」「惶越ながら」など過剰すぎる敬語で逆に笑える文体',
       rateLimitRemaining: '{{remaining}}/{{limit}}回',
       
       // Custom Skins Page
@@ -220,6 +227,18 @@ const resources = {
       'skin.academic_paper': 'Academic Paper',
       'skin.gyaru_slang': 'Gyaru Slang',
       'skin.keigo_excessive': 'Excessive Keigo',
+      
+      // Skin descriptions
+      'skin.kansai_banter.desc': 'Explosive Kansai dialect style with exaggeration and tsukkomi',
+      'skin.ojisan_mail.desc': 'Nostalgic middle-aged man style with emojis and casual greetings',
+      'skin.poetic_emo.desc': 'Poetic emo style with surreal metaphors and personification',
+      'skin.detached_lit.desc': 'Detached literary style with cool first-person perspective and surreal metaphors',
+      'skin.suggestive_safe.desc': 'Suggestive adult style with direct expressions and comparisons',
+      'skin.gen_z_slang.desc': 'Gen Z slang style with youth language like "Maji", "Yabai", "Emoi"',
+      'skin.rap_style.desc': 'Rap style with rhymes and rhythm',
+      'skin.academic_paper.desc': 'Academic paper style with formal language including "~dearu" and citations',
+      'skin.gyaru_slang.desc': 'Gyaru slang style with super high-tension language like "Majikya", "Yabaen"',
+      'skin.keigo_excessive.desc': 'Excessive keigo style with overly polite language like "Makoto ni osore irimasu ga"',
       
       // About page
       learnJapaneseSlang: 'Learn Japanese Slang and Expressions',
@@ -336,6 +355,30 @@ const resources = {
       recommended5000: '推荐：5000字符以内',
       limitExceeded: '超过限制',
       loginRequired: '需要登录',
+      
+      // 皮肤名称
+      'skin.kansai_banter': '关西方言风',
+      'skin.ojisan_mail': '大叔邮件风',
+      'skin.poetic_emo': '诗意情感风',
+      'skin.detached_lit': '疏离文学风',
+      'skin.suggestive_safe': '暗示成人风',
+      'skin.gen_z_slang': 'Z世代俗语风',
+      'skin.rap_style': '说唱风',
+      'skin.academic_paper': '学术论文风',
+      'skin.gyaru_slang': '辣妹语风',
+      'skin.keigo_excessive': '过度敬语风',
+      
+      // 皮肤描述
+      'skin.kansai_banter.desc': '讲述吐槽和诞张表现的爆笑关西弁风格',
+      'skin.ojisan_mail.desc': '使用表情符号和问候的怀旧大叔风格',
+      'skin.poetic_emo.desc': '使用超现实比喻和拟人化的诗意情感风格',
+      'skin.detached_lit.desc': '冷静的第一人称视角和超现实比喻的疏离文学风格',
+      'skin.suggestive_safe.desc': '直接的表现和比喻的暗示成人风格',
+      'skin.gen_z_slang.desc': '使用“真厉害”、“太厨了”、“情绪价值”等年轻人语言的Z世代俗语风格',
+      'skin.rap_style.desc': '具有韵律和节奏感的说唱风格',
+      'skin.academic_paper.desc': '使用“~である”、引用等正式语言的学术论文风格',
+      'skin.gyaru_slang.desc': '使用“真厉害”、“太厨了”等超高张力语言的辣妹语风格',
+      'skin.keigo_excessive.desc': '使用“诚惶惶惧”、“不胜感激”等过度敬语的风格',
       loginToSaveSettings: '请登录以保存设置',
       settingsSaved: '设置已保存',
       settingsSaveFailed: '保存设置失败',
@@ -347,18 +390,6 @@ const resources = {
       defaultSkin: '默认风格',
       saving: '保存中...',
       saveSettings: '保存设置',
-      
-      // 皮肤名称
-      'skin.kansai_banter': '关西方言风',
-      'skin.ojisan_mail': '大叔邮件风',
-      'skin.poetic_emo': '诗意情感风',
-      'skin.detached_lit': '疏离文学风',
-      'skin.suggestive_safe': '暗示成人风',
-      'skin.gen_z_slang': 'Z世代俚语风',
-      'skin.rap_style': '说唱风',
-      'skin.academic_paper': '学術论文风',
-      'skin.gyaru_slang': '辣妹语风',
-      'skin.keigo_excessive': '过度敬语风',
       
       // 说明页面
       learnJapaneseSlang: '学习日语俚语和表达方式',
