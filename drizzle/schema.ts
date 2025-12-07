@@ -2,16 +2,9 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-or
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -25,4 +18,70 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * User settings for NewsSkins
+ * Stores user preferences, default skin, API key reference, etc.
+ */
+export const userSettings = mysqlTable("user_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  /** Encrypted Gemini API key (client-side encryption, stored as reference) */
+  encryptedApiKey: text("encryptedApiKey"),
+  defaultSkin: varchar("defaultSkin", { length: 64 }).default("kansai_banter"),
+  defaultTemperature: int("defaultTemperature").default(130), // 1.3 * 100
+  defaultTopP: int("defaultTopP").default(90), // 0.9 * 100
+  defaultMaxTokens: int("defaultMaxTokens").default(220),
+  defaultLengthRatio: int("defaultLengthRatio").default(100), // 1.0 * 100
+  safetyLevel: varchar("safetyLevel", { length: 32 }).default("moderate"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = typeof userSettings.$inferInsert;
+
+/**
+ * Transformation history
+ * Stores metadata about each transformation (URL, title, skin, params, snippet)
+ * Full output text is NOT stored on server (client-side only via IndexedDB)
+ */
+export const transformHistory = mysqlTable("transform_history", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  title: text("title"),
+  site: varchar("site", { length: 255 }),
+  lang: varchar("lang", { length: 10 }).default("ja"),
+  skin: varchar("skin", { length: 64 }).notNull(),
+  /** JSON string of transformation parameters */
+  params: text("params").notNull(),
+  /** Short snippet of output for preview (max 200 chars) */
+  snippet: text("snippet"),
+  /** Hash of output for deduplication (optional) */
+  outputHash: varchar("outputHash", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TransformHistory = typeof transformHistory.$inferSelect;
+export type InsertTransformHistory = typeof transformHistory.$inferInsert;
+
+/**
+ * Share links (temporary signed URLs for sharing transformed content)
+ * 24h TTL, stores the transformed text for read-only access
+ */
+export const shareLinks = mysqlTable("share_links", {
+  id: varchar("id", { length: 32 }).primaryKey(), // nanoid
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  /** The transformed output text */
+  content: text("content").notNull(),
+  /** Source URL */
+  sourceUrl: text("sourceUrl").notNull(),
+  /** Skin used */
+  skin: varchar("skin", { length: 64 }).notNull(),
+  /** Expiration timestamp (24h from creation) */
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ShareLink = typeof shareLinks.$inferSelect;
+export type InsertShareLink = typeof shareLinks.$inferInsert;

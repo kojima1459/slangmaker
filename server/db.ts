@@ -1,11 +1,19 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { 
+  InsertUser, 
+  users, 
+  userSettings, 
+  InsertUserSettings,
+  transformHistory,
+  InsertTransformHistory,
+  shareLinks,
+  InsertShareLink
+} from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -89,4 +97,75 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// User Settings
+export async function getUserSettings(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertUserSettings(settings: InsertUserSettings) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(userSettings).values(settings).onDuplicateKeyUpdate({
+    set: settings,
+  });
+}
+
+// Transform History
+export async function createTransformHistory(history: InsertTransformHistory) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(transformHistory).values(history);
+  return result;
+}
+
+export async function getUserTransformHistory(userId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select()
+    .from(transformHistory)
+    .where(eq(transformHistory.userId, userId))
+    .orderBy(desc(transformHistory.createdAt))
+    .limit(limit);
+
+  return result;
+}
+
+// Share Links
+export async function createShareLink(link: InsertShareLink) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(shareLinks).values(link);
+}
+
+export async function getShareLink(id: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(shareLinks).where(eq(shareLinks.id, id)).limit(1);
+  
+  if (result.length === 0) return undefined;
+  
+  const link = result[0];
+  // Check if expired
+  if (link && new Date() > new Date(link.expiresAt)) {
+    return undefined;
+  }
+  
+  return link;
+}
+
+export async function deleteExpiredShareLinks() {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.delete(shareLinks).where(eq(shareLinks.expiresAt, new Date()));
+}
