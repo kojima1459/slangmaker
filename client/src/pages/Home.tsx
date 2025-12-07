@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
+import { FavoriteSkins } from "@/components/FavoriteSkins";
 import confetti from "canvas-confetti";
 
 export default function Home() {
@@ -50,6 +51,7 @@ export default function Home() {
   });
   const addFavoriteMutation = trpc.favorites.add.useMutation();
   const removeFavoriteMutation = trpc.favorites.remove.useMutation();
+  const reorderFavoriteMutation = trpc.favorites.reorder.useMutation();
   const utils = trpc.useUtils();
 
   const favoriteSkinKeys = favoritesData?.favorites.map(f => f.skinKey) || [];
@@ -360,6 +362,34 @@ export default function Home() {
                 })}
               </div>
             </div>
+
+            {/* お気に入りスキン（ドラッグ&ドロップで並び替え可能） */}
+            {isAuthenticated && favoriteSkinKeys.length > 0 && (
+              <FavoriteSkins
+                favoriteSkinKeys={favoriteSkinKeys}
+                selectedSkin={selectedSkin}
+                onSelectSkin={setSelectedSkin}
+                onRemoveFavorite={async (skinKey: string) => {
+                  try {
+                    await removeFavoriteMutation.mutateAsync({ skinKey });
+                    toast.success("お気に入りから削除しました");
+                    utils.favorites.list.invalidate();
+                  } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "エラーが発生しました");
+                  }
+                }}
+                onReorder={async (orderedSkinKeys: string[]) => {
+                  try {
+                    await reorderFavoriteMutation.mutateAsync({ orderedSkinKeys });
+                    utils.favorites.list.invalidate();
+                  } catch (error) {
+                    console.error('Failed to reorder favorites:', error);
+                  }
+                }}
+                isLoading={isLoading}
+                customSkinsData={customSkinsData}
+              />
+            )}
 
             {/* Skin Selection with Tabs */}
             <div className="space-y-4">

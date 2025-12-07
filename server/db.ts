@@ -331,9 +331,18 @@ export async function addFavoriteSkin(userId: number, skinKey: string) {
   if (!db) return null;
 
   try {
+    // Get the maximum orderIndex for this user
+    const maxOrderResult = await db
+      .select({ maxOrder: sql<number>`COALESCE(MAX(${favoriteSkins.orderIndex}), -1)` })
+      .from(favoriteSkins)
+      .where(eq(favoriteSkins.userId, userId));
+    
+    const nextOrderIndex = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+
     await db.insert(favoriteSkins).values({
       userId,
       skinKey,
+      orderIndex: nextOrderIndex,
     });
     return { success: true };
   } catch (error) {
@@ -369,11 +378,12 @@ export async function getFavoriteSkins(userId: number) {
   const favorites = await db
     .select({
       skinKey: favoriteSkins.skinKey,
+      orderIndex: favoriteSkins.orderIndex,
       createdAt: favoriteSkins.createdAt,
     })
     .from(favoriteSkins)
     .where(eq(favoriteSkins.userId, userId))
-    .orderBy(desc(favoriteSkins.createdAt));
+    .orderBy(favoriteSkins.orderIndex); // Order by orderIndex for drag-and-drop
 
   return favorites;
 }
@@ -394,6 +404,30 @@ export async function isFavoriteSkin(userId: number, skinKey: string) {
     .limit(1);
 
   return result.length > 0;
+}
+
+export async function reorderFavoriteSkins(userId: number, orderedSkinKeys: string[]) {
+  const db = await getDb();
+  if (!db) return { success: false };
+
+  try {
+    // Update each skin's orderIndex based on the new order
+    for (let i = 0; i < orderedSkinKeys.length; i++) {
+      await db
+        .update(favoriteSkins)
+        .set({ orderIndex: i })
+        .where(
+          and(
+            eq(favoriteSkins.userId, userId),
+            eq(favoriteSkins.skinKey, orderedSkinKeys[i])
+          )
+        );
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('[reorderFavoriteSkins] Error:', error);
+    return { success: false };
+  }
 }
 
 // ============================================================

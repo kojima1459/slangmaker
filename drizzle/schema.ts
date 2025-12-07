@@ -64,6 +64,7 @@ export const favoriteSkins = mysqlTable("favorite_skins", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
   skinKey: varchar("skinKey", { length: 64 }).notNull(),
+  orderIndex: int("orderIndex").notNull().default(0), // Order for drag-and-drop sorting
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   // Unique constraint: one user can only favorite a skin once

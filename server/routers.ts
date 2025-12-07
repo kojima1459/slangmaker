@@ -20,6 +20,7 @@ import {
   removeFavoriteSkin,
   getFavoriteSkins,
   isFavoriteSkin,
+  reorderFavoriteSkins,
   checkRateLimit,
   getRateLimitStatus,
   createCustomSkin,
@@ -300,6 +301,18 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         const isFavorite = await isFavoriteSkin(ctx.user.id, input.skinKey);
         return { isFavorite };
+      }),
+
+    reorder: protectedProcedure
+      .input(z.object({
+        orderedSkinKeys: z.array(z.string()),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = await reorderFavoriteSkins(ctx.user.id, input.orderedSkinKeys);
+        if (!result.success) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "並び替えに失敗しました" });
+        }
+        return { success: true, message: "並び替えを保存しました" };
       }),
   }),
 

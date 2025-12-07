@@ -654,3 +654,13 @@
 - [x] カスタムスキンページの翻訳キーを修正（customSkins → customSkinsDetail）
 - [x] i18n.tsのappTitleを「AI言い換えメーカー」に変更
 - [x] i18n.tsのappDescriptionを「ワンタップで言葉は変身。スタイルも、あなたの印象も、自在にカスタマイズ。言葉を鍛える、個性を放つ。唯一無二の自分スラング表現工房。」に変更
+
+## お気に入りスキンのドラッグ&ドロップ並び替え機能
+
+- [x] データベーススキーマにorder_indexカラムを追加（favorite_skinsテーブル）
+- [x] @dnd-kit/coreと@dnd-kit/sortableをインストール
+- [x] 並び替えAPIを実装（favorites.reorder procedure）
+- [x] Home.tsxにドラッグ&ドロップUIを実装
+- [x] お気に入りスキンがorder_index順に表示されることを確認
+- [x] ドラッグ&ドロップで並び順が保存されることを確認
+- [x] Vitestテストを作成して実行（4/4テスト成功）
