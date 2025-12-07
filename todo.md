@@ -32,3 +32,5 @@
 
 ## Bug Fixes
 - [x] Gemini APIモデル名を修正（gemini-1.5-flash → gemini-1.5-flash-latest）
+- [x] Gemini APIの正しいモデル名を調査（v1beta APIで動作するモデル名）
+- [x] 正しいモデル名でコードを修正（gemini-2.5-flashに変更）
