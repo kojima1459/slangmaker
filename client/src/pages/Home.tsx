@@ -37,6 +37,9 @@ export default function Home() {
   const { data: favoritesData } = trpc.favorites.list.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  const { data: customSkinsData } = trpc.customSkins.list.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
   const addFavoriteMutation = trpc.favorites.add.useMutation();
   const removeFavoriteMutation = trpc.favorites.remove.useMutation();
   const utils = trpc.useUtils();
@@ -181,6 +184,10 @@ export default function Home() {
             <LanguageSwitcher />
             {isAuthenticated && (
               <>
+                <Button variant="outline" size="sm" onClick={() => setLocation("/custom-skins")}>
+                  <Star className="w-4 h-4 mr-2" />
+                  カスタムスキン
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => setLocation("/history")}>
                   <HistoryIcon className="w-4 h-4 mr-2" />
                   {t('history')}
@@ -254,6 +261,76 @@ export default function Home() {
             {/* Skin Selection */}
             <div className="space-y-3">
               <Label>{t('skinStyle')}</Label>
+              {/* Custom Skins */}
+              {customSkinsData && customSkinsData.skins.length > 0 && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">カスタムスキン</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    {customSkinsData.skins.map((skin) => {
+                      const skinKey = `custom_${skin.id}`;
+                      const isFavorite = favoriteSkinKeys.includes(skinKey);
+                      return (
+                        <div key={skinKey} className="relative">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedSkin(skinKey)}
+                                  disabled={isLoading}
+                                  className={`w-full p-4 border-2 rounded-lg text-left transition-all hover:shadow-md ${
+                                    selectedSkin === skinKey
+                                      ? 'border-purple-500 bg-purple-50 shadow-md'
+                                      : 'border-gray-200 hover:border-purple-300'
+                                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                >
+                                  <div className="font-semibold text-sm mb-1">{skin.name}</div>
+                                  <div className="text-xs text-gray-600 line-clamp-2">{skin.description || 'カスタムスキン'}</div>
+                                </button>
+                              </TooltipTrigger>
+                              {skin.example && (
+                                <TooltipContent side="top" className="max-w-xs">
+                                  <p className="text-sm whitespace-pre-wrap">{skin.example}</p>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
+                          {isAuthenticated && (
+                            <button
+                              type="button"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  if (isFavorite) {
+                                    await removeFavoriteMutation.mutateAsync({ skinKey });
+                                    toast.success("お気に入りから削除しました");
+                                  } else {
+                                    await addFavoriteMutation.mutateAsync({ skinKey });
+                                    toast.success("お気に入りに追加しました");
+                                  }
+                                  utils.favorites.list.invalidate();
+                                } catch (error) {
+                                  toast.error(error instanceof Error ? error.message : "エラーが発生しました");
+                                }
+                              }}
+                              disabled={isLoading || addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                              className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors disabled:opacity-50"
+                            >
+                              <Star
+                                className={`h-4 w-4 ${
+                                  isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'
+                                }`}
+                              />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {/* Default Skins */}
+              <p className="text-sm text-gray-600 mb-2">デフォルトスキン</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {Object.entries(SKINS).map(([key, skin]) => {
                   const isFavorite = favoriteSkinKeys.includes(key);

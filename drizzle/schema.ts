@@ -140,3 +140,32 @@ export const feedback = mysqlTable("feedback", {
 
 export type Feedback = typeof feedback.$inferSelect;
 export type InsertFeedback = typeof feedback.$inferInsert;
+
+/**
+ * Custom skins table
+ * Stores user-created custom skins (prompts)
+ */
+export const customSkins = mysqlTable("custom_skins", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  /** Unique key for this custom skin (user-scoped) */
+  key: varchar("key", { length: 64 }).notNull(),
+  /** Display name */
+  name: varchar("name", { length: 100 }).notNull(),
+  /** Description */
+  description: text("description"),
+  /** Custom prompt/rules */
+  prompt: text("prompt").notNull(),
+  /** Example output (optional) */
+  example: text("example"),
+  /** Whether this skin is active */
+  isActive: int("isActive").default(1).notNull(), // 1 = active, 0 = inactive
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  // Unique constraint: one user can only have one skin with a given key
+  uniqueUserKey: unique().on(table.userId, table.key),
+}));
+
+export type CustomSkin = typeof customSkins.$inferSelect;
+export type InsertCustomSkin = typeof customSkins.$inferInsert;

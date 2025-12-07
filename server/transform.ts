@@ -41,20 +41,29 @@ export interface TransformResponse {
 /**
  * Transform article content using Gemini 2.5 Flash
  */
-export async function transformArticle(request: TransformRequest): Promise<TransformResponse> {
+export async function transformArticle(request: TransformRequest, customSkinPrompt?: string): Promise<TransformResponse> {
   const { url, title, extracted, skin, params, extras, apiKey } = request;
 
-  // Get skin definition
-  const skinDef = SKINS[skin];
-  if (!skinDef) {
-    throw new Error(`Unknown skin: ${skin}`);
+  // Get skin definition (either from default skins or use custom prompt)
+  let systemPrompt: string;
+  let skinName: string;
+  
+  if (customSkinPrompt) {
+    // Use custom prompt directly as system instruction
+    systemPrompt = customSkinPrompt;
+    skinName = "Custom Style";
+  } else {
+    // Use default skin definition
+    const skinDef = SKINS[skin];
+    if (!skinDef) {
+      throw new Error(`Unknown skin: ${skin}`);
+    }
+    systemPrompt = buildSystemPrompt(skinDef, params, extras);
+    skinName = skinDef.name;
   }
 
   // Initialize Gemini with new SDK
   const ai = new GoogleGenAI({ apiKey });
-
-  // Build system prompt
-  const systemPrompt = buildSystemPrompt(skinDef, params, extras);
 
   // Build user prompt (URL and title are now optional)
   const userPrompt = `
@@ -62,7 +71,7 @@ ${title ? `Title: ${title}` : ''}
 Content:
 ${extracted}
 
-Please rewrite this article in the "${skinDef.name}" style.
+Please rewrite this article in the "${skinName}" style.
 `.trim();
 
   try {

@@ -14,7 +14,9 @@ import {
   favoriteSkins,
   InsertFavoriteSkin,
   rateLimits,
-  InsertRateLimit
+  InsertRateLimit,
+  customSkins,
+  InsertCustomSkin
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -448,4 +450,79 @@ export async function getRateLimitStatus(userId: number): Promise<{ count: numbe
     limit: DAILY_LIMIT,
     remaining: Math.max(0, DAILY_LIMIT - count),
   };
+}
+
+// ============================================================
+// Custom Skins
+// ============================================================
+
+export async function createCustomSkin(data: InsertCustomSkin) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [result] = await db.insert(customSkins).values(data);
+  return result.insertId;
+}
+
+export async function getCustomSkinsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(customSkins)
+    .where(
+      and(
+        eq(customSkins.userId, userId),
+        eq(customSkins.isActive, 1)
+      )
+    )
+    .orderBy(desc(customSkins.createdAt));
+}
+
+export async function getCustomSkinById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const [skin] = await db
+    .select()
+    .from(customSkins)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    )
+    .limit(1);
+
+  return skin || null;
+}
+
+export async function updateCustomSkin(id: number, userId: number, data: Partial<InsertCustomSkin>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(customSkins)
+    .set(data)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    );
+}
+
+export async function deleteCustomSkin(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .delete(customSkins)
+    .where(
+      and(
+        eq(customSkins.id, id),
+        eq(customSkins.userId, userId)
+      )
+    );
 }
