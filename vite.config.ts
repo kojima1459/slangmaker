@@ -17,8 +17,8 @@ const plugins = [
     registerType: 'autoUpdate',
     includeAssets: ['icon-192.png', 'icon-512.png'],
     manifest: {
-      name: 'NewsSkins - ニュースをスキンで読む',
-      short_name: 'NewsSkins',
+      name: '言い換えメーカー - 記事を様々な文体で楽しむ',
+      short_name: '言い換えメーカー',
       description: '記事を様々な文体で楽しむPWAアプリ',
       theme_color: '#9333ea',
       background_color: '#ffffff',

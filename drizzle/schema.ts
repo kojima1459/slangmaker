@@ -19,7 +19,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * User settings for NewsSkins
+ * User settings for 言い換えメーカー
  * Stores user preferences, default skin, API key reference, etc.
  */
 export const userSettings = mysqlTable("user_settings", {

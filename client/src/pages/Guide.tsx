@@ -28,12 +28,12 @@ export default function Guide() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-600" />
-              NewsSkins とは？
+              言い換えメーカー とは？
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700">
-              NewsSkins は、ニュース記事を様々な「スキン（文体）」で楽しむためのアプリです。
+              言い換えメーカー は、ニュース記事を様々な「スキン（文体）」で楽しむためのアプリです。
               真面目なニュースを関西弁で読んだり、ギャル語で読んだり、SF風に読んだり...
               同じ情報でも、文体が変わるだけで全く違った印象になります。
             </p>
@@ -56,7 +56,7 @@ export default function Guide() {
             <div className="space-y-2">
               <h3 className="font-semibold text-lg">1. 記事本文をコピー&ペースト</h3>
               <p className="text-gray-700">
-                変換したいニュース記事のページを開き、本文をコピーしてNewsSkins に貼り付けます。
+                変換したいニュース記事のページを開き、本文をコピーして言い換えメーカー に貼り付けます。
               </p>
             </div>
             <div className="space-y-2">

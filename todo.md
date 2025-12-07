@@ -93,3 +93,15 @@
 - [x] 改善後の変換結果を確認
 - [x] すべてのスキンで品質が向上したか検証
 - [ ] チェックポイント作成
+
+## タイトル変更とGitHubプッシュ
+
+- [x] タイトルを「NEWSSKINS」から「言い換えメーカー」に変更
+- [x] manifest.jsonのアプリ名を変更
+- [x] vite.config.tsのアプリ名を変更
+- [x] client/index.htmlのタイトルを変更
+- [x] Home.tsx, Guide.tsx, Share.tsxのタイトルを変更
+- [ ] チェックポイント作成
+- [ ] GitHubに新規リポジトリを作成
+- [ ] コードをGitHubにプッシュ
+- [ ] コードをZIPで送付

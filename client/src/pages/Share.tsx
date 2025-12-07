@@ -100,7 +100,7 @@ export default function Share() {
             この共有リンクは24時間有効です
           </p>
           <Button onClick={() => setLocation("/")}>
-            NewsSkins で記事を変換する
+            言い換えメーカー で記事を変換する
           </Button>
         </div>
       </div>
