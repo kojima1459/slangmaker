@@ -30,7 +30,7 @@ export const userSettings = mysqlTable("user_settings", {
   defaultSkin: varchar("defaultSkin", { length: 64 }).default("kansai_banter"),
   defaultTemperature: int("defaultTemperature").default(130), // 1.3 * 100
   defaultTopP: int("defaultTopP").default(90), // 0.9 * 100
-  defaultMaxTokens: int("defaultMaxTokens").default(220),
+  defaultMaxTokens: int("defaultMaxTokens").default(1500), // Max output tokens
   defaultLengthRatio: int("defaultLengthRatio").default(100), // 1.0 * 100
   safetyLevel: varchar("safetyLevel", { length: 32 }).default("moderate"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

@@ -43,6 +43,13 @@
       "when": 1765105908255,
       "tag": "0005_cheerful_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765133347501,
+      "tag": "0006_bizarre_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

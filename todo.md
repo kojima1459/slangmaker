@@ -566,3 +566,19 @@
   - [x] temperature: max=2（既に正しい）
   - [x] topP: max=1（既に正しい）
   - [x] lengthRatio: max=1.6（max=2.0から1.6に修正）
+
+## スライダー値が正しく送信されない問題（修正完了）
+
+### 問題点
+- [x] temperature: 値が100倍されて送信される（例: 1.3 → 130）
+- [x] topP: 値が100倍されて送信される（例: 0.9 → 90）
+- [x] lengthRatio: 値が100倍されて送信される（例: 1.0 → 100）
+- [x] maxOutputTokens: デフォルト値が220で小さすぎる
+
+### 修正内容
+- [x] server/db.tsのgetUserSettings関数で値を100で割って正規化
+- [x] drizzle/schema.tsのdefaultMaxTokensのデフォルト値を220から1500に修正
+- [x] データベーススキーマの変更を適用（pnpm db:push）
+
+### 原因
+データベーススキーマで、小数値を整数型（int）で保存するために100倍して保存していたが、取得時に100で割る処理が抜けていた。

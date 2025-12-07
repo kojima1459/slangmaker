@@ -111,7 +111,17 @@ export async function getUserSettings(userId: number) {
   if (!db) return undefined;
 
   const result = await db.select().from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  if (result.length === 0) return undefined;
+  
+  // Normalize values: database stores values * 100 to avoid floating point issues
+  const settings = result[0];
+  return {
+    ...settings,
+    defaultTemperature: settings.defaultTemperature !== null && settings.defaultTemperature !== undefined ? settings.defaultTemperature / 100 : undefined,
+    defaultTopP: settings.defaultTopP !== null && settings.defaultTopP !== undefined ? settings.defaultTopP / 100 : undefined,
+    defaultMaxTokens: settings.defaultMaxTokens !== null && settings.defaultMaxTokens !== undefined ? settings.defaultMaxTokens : undefined,
+    defaultLengthRatio: settings.defaultLengthRatio !== null && settings.defaultLengthRatio !== undefined ? settings.defaultLengthRatio / 100 : undefined,
+  };
 }
 
 export async function upsertUserSettings(settings: InsertUserSettings) {
