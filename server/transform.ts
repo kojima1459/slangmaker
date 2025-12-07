@@ -67,7 +67,7 @@ Please rewrite this article in the "${skinDef.name}" style.
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       contents: userPrompt,
       config: {
         systemInstruction: systemPrompt,
@@ -78,10 +78,24 @@ Please rewrite this article in the "${skinDef.name}" style.
     });
 
     console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
-    const output = response.text;
+    
+    // Extract text from response
+    let output: string | undefined;
+    if (response.text) {
+      output = response.text;
+    } else if (response.candidates && response.candidates[0]?.content?.parts?.[0]?.text) {
+      output = response.candidates[0].content.parts[0].text;
+    }
+    
     console.log('[Transform] Extracted output:', output);
 
     if (!output) {
+      console.error('[Transform] Response structure:', {
+        hasText: !!response.text,
+        hasCandidates: !!response.candidates,
+        candidatesLength: response.candidates?.length,
+        firstCandidate: response.candidates?.[0],
+      });
       throw new Error('Gemini API returned empty response');
     }
 
