@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Save, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { skinTemplates, type SkinTemplate, getAllCategories, getTemplatesByCategory } from "@shared/skinTemplates";
+import { useTranslation } from "react-i18next";
 
 interface CustomSkinFormData {
   id?: number;
@@ -20,7 +22,9 @@ interface CustomSkinFormData {
 }
 
 export default function CustomSkins() {
+  const { t, i18n } = useTranslation();
   const [, setLocation] = useLocation();
+  const [selectedCategory, setSelectedCategory] = useState<SkinTemplate['category'] | 'all'>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<CustomSkinFormData>({
@@ -62,6 +66,20 @@ export default function CustomSkins() {
       toast.error(error.message || "削除に失敗しました");
     },
   });
+
+  const handleUseTemplate = (template: SkinTemplate) => {
+    const lang = i18n.language as 'ja' | 'en' | 'zh';
+    setEditingId(null);
+    setFormData({
+      key: `template_${template.id}_${Date.now()}`,
+      name: template.name[lang],
+      description: template.description[lang],
+      prompt: template.prompt,
+      example: "",
+    });
+    setIsDialogOpen(true);
+    toast.success(t('customSkins.templateApplied'));
+  };
 
   const handleOpenCreateDialog = () => {
     setEditingId(null);
@@ -147,6 +165,71 @@ export default function CustomSkins() {
             新規作成
           </Button>
         </div>
+
+        {/* Templates Section */}
+        <Card className="mb-8 shadow-lg">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-600" />
+              <CardTitle>{t('customSkins.templates.title')}</CardTitle>
+            </div>
+            <CardDescription>
+              {t('customSkins.templates.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <Button
+                variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory('all')}
+              >
+                {t('customSkins.templates.categories.all')}
+              </Button>
+              {getAllCategories().map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {t(`customSkins.templates.categories.${category}`)}
+                </Button>
+              ))}
+            </div>
+
+            {/* Template Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(selectedCategory === 'all'
+                ? skinTemplates
+                : getTemplatesByCategory(selectedCategory)
+              ).map((template) => {
+                const lang = i18n.language as 'ja' | 'en' | 'zh';
+                return (
+                  <Card
+                    key={template.id}
+                    className="hover:shadow-md transition-shadow cursor-pointer border-2 hover:border-purple-300"
+                    onClick={() => handleUseTemplate(template)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-base">{template.name[lang]}</CardTitle>
+                      <CardDescription className="text-sm">
+                        {template.description[lang]}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button size="sm" className="w-full">
+                        <Plus className="mr-2 h-4 w-4" />
+                        {t('customSkins.templates.useTemplate')}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Skins List */}
         {isLoading ? (

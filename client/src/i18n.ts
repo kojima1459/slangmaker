@@ -104,6 +104,23 @@ const resources = {
       // Rate limit status
       rateLimitStatus: '今日の残り変換回数',
       rateLimitRemaining: '{{remaining}}/{{limit}}回',
+      
+      // Custom Skins
+      customSkins: {
+        templateApplied: 'テンプレートを適用しました',
+        templates: {
+          title: '人気テンプレート',
+          description: '人気のテンプレートから1クリックでカスタムスキンを作成できます',
+          useTemplate: 'このテンプレートを使う',
+          categories: {
+            all: 'すべて',
+            dialect: '方言',
+            character: 'キャラクター',
+            genre: 'ジャンル',
+            social: 'SNS',
+          },
+        },
+      },
     },
   },
   en: {
@@ -201,6 +218,23 @@ const resources = {
       // Rate limit status
       rateLimitStatus: 'Remaining transformations today',
       rateLimitRemaining: '{{remaining}}/{{limit}} times',
+      
+      // Custom Skins
+      customSkins: {
+        templateApplied: 'Template applied',
+        templates: {
+          title: 'Popular Templates',
+          description: 'Create custom skins with one click from popular templates',
+          useTemplate: 'Use this template',
+          categories: {
+            all: 'All',
+            dialect: 'Dialects',
+            character: 'Characters',
+            genre: 'Genres',
+            social: 'Social Media',
+          },
+        },
+      },
     },
   },
   zh: {
@@ -298,6 +332,23 @@ const resources = {
       // Rate limit status
       rateLimitStatus: '今天剩余转换次数',
       rateLimitRemaining: '{{remaining}}/{{limit}}次',
+      
+      // Custom Skins
+      customSkins: {
+        templateApplied: '已应用模板',
+        templates: {
+          title: '热门模板',
+          description: '从热门模板一键创建自定义风格',
+          useTemplate: '使用此模板',
+          categories: {
+            all: '全部',
+            dialect: '方言',
+            character: '角色',
+            genre: '类型',
+            social: '社交媒体',
+          },
+        },
+      },
     },
   },
 };
