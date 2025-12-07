@@ -500,3 +500,16 @@
 - [x] i18nに詳細設定の全項目の翻訳を追加
 - [x] 使い方説明を復元（appDescription、creator、contact、donationの翻訳を追加）
 - [ ] 多言語翻訳の動作確認
+
+## 多言語翻訳の完全化
+
+### 問題点
+- [ ] スキン名が英語のまま（Kansai Dialect、Detached Literary等）
+- [ ] 中国語でエラーメッセージ「key 'customSkins (zh)' returned an object instead of string.」が表示
+- [ ] 英語・中国語の翻訳が不完全
+
+### 修正内容
+- [x] 英語翻訳を完全化（全キーを追加）
+- [x] 中国語翻訳を完全化（全キーを追加）
+- [x] スキン名・説明の英語・中国語翻訳を追加（skinTemplates.tsで実装済み）
+- [x] 詳細設定の英語・中国語翻訳を追加

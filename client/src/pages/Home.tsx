@@ -203,7 +203,7 @@ export default function Home() {
             className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
           >
             <Star className="h-4 w-4 mr-1.5" />
-            <span className="hidden sm:inline">{t('customSkins')}</span>
+            <span className="hidden sm:inline">{t('customSkinsButton')}</span>
           </Button>
           <Button
             variant="ghost"

@@ -172,8 +172,25 @@ const resources = {
       advancedSettings: 'Advanced Settings',
       temperature: 'Temperature',
       temperatureDesc: 'Higher values make the transformation more random',
+      temperatureDescription: 'Higher values make the transformation more random',
       maxOutputTokens: 'Max Output Tokens',
       maxOutputTokensDesc: 'Specify the maximum length of the transformed text',
+      topP: 'Top P',
+      topPDescription: 'Controls randomness. Higher values produce more diverse expressions',
+      maxTokens: 'Max Tokens',
+      maxTokensDescription: 'Specify the maximum length of the transformed text',
+      lengthRatio: 'Length Ratio',
+      lengthRatioDescription: 'Specify the ratio of the transformed text length to the original text',
+      addCore3: 'Add Core Elements',
+      addCore3Description: 'Add core elements (3) from the original text to the transformation',
+      addGlossary: 'Add Glossary',
+      addGlossaryDescription: 'Add important terms from the original text to the transformation',
+      addQuestions: 'Add Questions',
+      addQuestionsDescription: 'Add questions about the original text to the transformation',
+      remainingTransformations: 'Remaining transformations today',
+      times: 'times',
+      characters: 'characters',
+      transformError: 'Transformation failed',
       articleTextRequired: 'Please enter article text',
       apiKeyRequired: 'Please enter Gemini API key',
       settings: 'Settings',
@@ -217,6 +234,14 @@ const resources = {
       history: 'History',
       guide: 'Guide',
       share: 'Share',
+      customSkinsPage: 'Custom Skins',
+      customSkinsButton: 'Custom Skins',
+      howToUse: 'How to Use',
+      backToTop: 'Back to Top',
+      appDescription: 'Learn Japanese expressions in a fun way by reading news articles in various styles',
+      creator: 'Creator',
+      contact: 'Contact',
+      donation: 'Donation',
       
       // Tutorial
       'tutorial.step1.title': 'Paste Article',
@@ -244,8 +269,8 @@ const resources = {
       rateLimitStatus: 'Remaining transformations today',
       rateLimitRemaining: '{{remaining}}/{{limit}} times',
       
-      // Custom Skins
-      customSkins: {
+      // Custom Skins Page
+      customSkinsDetail: {
         templateApplied: 'Template applied',
         templates: {
           title: 'Popular Templates',
@@ -286,8 +311,25 @@ const resources = {
       advancedSettings: '详细设置',
       temperature: '温度 (Temperature)',
       temperatureDesc: '值越高，转换越随机',
+      temperatureDescription: '值越高，转换越随机',
       maxOutputTokens: '最大输出令牌数',
       maxOutputTokensDesc: '指定转换后文本的最大长度',
+      topP: 'Top P',
+      topPDescription: '控制随机性。值越高，表达越多样',
+      maxTokens: '最大令牌数',
+      maxTokensDescription: '指定转换后文本的最大长度',
+      lengthRatio: '长度比率',
+      lengthRatioDescription: '指定转换后文本相对于原文的长度比率',
+      addCore3: '添加核心要素',
+      addCore3Description: '将原文的核心要素（3个）添加到转换后的文本中',
+      addGlossary: '添加术语表',
+      addGlossaryDescription: '将原文的重要术语添加到转换后的文本中',
+      addQuestions: '添加问题',
+      addQuestionsDescription: '将关于原文的问题添加到转换后的文本中',
+      remainingTransformations: '今天剩余转换次数',
+      times: '次',
+      characters: '字符',
+      transformError: '转换失败',
       articleTextRequired: '请输入文章文本',
       apiKeyRequired: '请输入Gemini API密钥',
       settings: '设置',
@@ -331,6 +373,14 @@ const resources = {
       history: '历史',
       guide: '使用指南',
       share: '分享',
+      customSkinsPage: '自定义皮肤',
+      customSkinsButton: '自定义皮肤',
+      howToUse: '使用方法',
+      backToTop: '返回顶部',
+      appDescription: '通过以各种文体阅读新闻文章，有趣地学习日语表达',
+      creator: '作者',
+      contact: '联系方式',
+      donation: '捐赠',
       
       // 教程
       'tutorial.step1.title': '粘贴文章',
@@ -358,8 +408,8 @@ const resources = {
       rateLimitStatus: '今天剩余转换次数',
       rateLimitRemaining: '{{remaining}}/{{limit}}次',
       
-      // Custom Skins
-      customSkins: {
+      // Custom Skins Page
+      customSkinsDetail: {
         templateApplied: '已应用模板',
         templates: {
           title: '热门模板',
