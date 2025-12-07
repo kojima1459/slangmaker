@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, unique, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -39,6 +39,23 @@ export const userSettings = mysqlTable("user_settings", {
 
 export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = typeof userSettings.$inferInsert;
+
+/**
+ * Favorite skins
+ * Stores user's favorite skins for quick access
+ */
+export const favoriteSkins = mysqlTable("favorite_skins", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  skinKey: varchar("skinKey", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  // Unique constraint: one user can only favorite a skin once
+  uniqueUserSkin: unique().on(table.userId, table.skinKey),
+}));
+
+export type FavoriteSkin = typeof favoriteSkins.$inferSelect;
+export type InsertFavoriteSkin = typeof favoriteSkins.$inferInsert;
 
 /**
  * Transformation history

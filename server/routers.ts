@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 // extractArticle is no longer needed - users paste text directly
 import { transformArticle } from "./transform";
@@ -14,7 +15,11 @@ import {
   getShareLink,
   submitFeedback,
   getFeedbackStats,
-  getFeedbackList
+  getFeedbackList,
+  addFavoriteSkin,
+  removeFavoriteSkin,
+  getFavoriteSkins,
+  isFavoriteSkin
 } from "./db";
 import { nanoid } from "nanoid";
 
@@ -205,6 +210,48 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const result = await getFeedbackList(input || {});
         return result;
+      }),
+  }),
+
+  // Favorite skins endpoints
+  favorites: router({
+    list: protectedProcedure
+      .query(async ({ ctx }) => {
+        const favorites = await getFavoriteSkins(ctx.user.id);
+        return { favorites };
+      }),
+
+    add: protectedProcedure
+      .input(z.object({
+        skinKey: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const result = await addFavoriteSkin(ctx.user.id, input.skinKey);
+        if (!result) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "データベースエラー" });
+        }
+        if (!result.success) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "すでにお気に入りに追加されています" });
+        }
+        return { success: true, message: "お気に入りに追加しました" };
+      }),
+
+    remove: protectedProcedure
+      .input(z.object({
+        skinKey: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await removeFavoriteSkin(ctx.user.id, input.skinKey);
+        return { success: true, message: "お気に入りから削除しました" };
+      }),
+
+    check: protectedProcedure
+      .input(z.object({
+        skinKey: z.string(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const isFavorite = await isFavoriteSkin(ctx.user.id, input.skinKey);
+        return { isFavorite };
       }),
   }),
 });

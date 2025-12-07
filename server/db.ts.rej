@@ -1,0 +1,14 @@
+--- server/db.ts
++++ server/db.ts
+@@ -313,7 +313,10 @@ export async function addFavoriteSkin(userId: number, skinKey: string) {
+     return { success: true };
+   } catch (error) {
+     // Unique constraint violation (already favorited)
+-    if ((error as any).errno === 1062 || (error as any).code === 'ER_DUP_ENTRY') {
++    // Drizzle wraps the error, so we need to check both the error itself and its cause
++    const err = error as any;
++    const cause = err.cause || err;
++    if (cause.errno === 1062 || cause.code === 'ER_DUP_ENTRY' || err.errno === 1062 || err.code === 'ER_DUP_ENTRY') {
+       return { success: false, error: 'Already favorited' };
+     }
+     throw error;

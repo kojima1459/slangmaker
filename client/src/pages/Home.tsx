@@ -11,7 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown, BookOpen } from "lucide-react";
+import { Loader2, Sparkles, History as HistoryIcon, Settings as SettingsIcon, ChevronDown, BookOpen, Star } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useEffect } from "react";
 
@@ -30,6 +30,14 @@ export default function Home() {
   const [addQuestions, setAddQuestions] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
+  const { data: favoritesData } = trpc.favorites.list.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+  const addFavoriteMutation = trpc.favorites.add.useMutation();
+  const removeFavoriteMutation = trpc.favorites.remove.useMutation();
+  const utils = trpc.useUtils();
+
+  const favoriteSkinKeys = favoritesData?.favorites.map(f => f.skinKey) || [];
   const { data: settings } = trpc.settings.get.useQuery(undefined, {
     enabled: isAuthenticated,
   });
@@ -155,10 +163,22 @@ export default function Home() {
                 value={articleText}
                 onChange={(e) => setArticleText(e.target.value)}
                 disabled={isLoading}
+                maxLength={10000}
               />
-              <p className="text-xs text-gray-500">
-                変換したい記事の本文をコピー&ペーストしてください
-              </p>
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-gray-500">
+                  変換したい記事の本文をコピー&ペーストしてください
+                </p>
+                <p className={`text-xs ${
+                  articleText.length > 10000 ? 'text-red-600 font-bold' :
+                  articleText.length > 5000 ? 'text-orange-600 font-semibold' :
+                  'text-gray-500'
+                }`}>
+                  {articleText.length} / 10000文字
+                  {articleText.length > 5000 && articleText.length <= 10000 && ' (推奨: 5000文字以内)'}
+                  {articleText.length > 10000 && ' (上限超過)'}
+                </p>
+              </div>
             </div>
 
 
@@ -180,23 +200,58 @@ export default function Home() {
             </div>
 
             {/* Skin Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="skin">スキン（文体）</Label>
-              <Select value={selectedSkin} onValueChange={setSelectedSkin} disabled={isLoading}>
-                <SelectTrigger id="skin">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(SKINS).map(([key, skin]) => (
-                    <SelectItem key={key} value={key}>
-                      {skin.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-gray-600">
-                {SKINS[selectedSkin as keyof typeof SKINS]?.description}
-              </p>
+            <div className="space-y-3">
+              <Label>スキン（文体）</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(SKINS).map(([key, skin]) => {
+                  const isFavorite = favoriteSkinKeys.includes(key);
+                  return (
+                    <div key={key} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSkin(key)}
+                        disabled={isLoading}
+                        className={`w-full p-4 border-2 rounded-lg text-left transition-all hover:shadow-md ${
+                          selectedSkin === key
+                            ? 'border-purple-500 bg-purple-50 shadow-md'
+                            : 'border-gray-200 hover:border-purple-300'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <div className="font-semibold text-sm mb-1">{skin.name}</div>
+                        <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
+                      </button>
+                      {isAuthenticated && (
+                        <button
+                          type="button"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              if (isFavorite) {
+                                await removeFavoriteMutation.mutateAsync({ skinKey: key });
+                                toast.success("お気に入りから削除しました");
+                              } else {
+                                await addFavoriteMutation.mutateAsync({ skinKey: key });
+                                toast.success("お気に入りに追加しました");
+                              }
+                              utils.favorites.list.invalidate();
+                            } catch (error) {
+                              toast.error(error instanceof Error ? error.message : "エラーが発生しました");
+                            }
+                          }}
+                          disabled={isLoading || addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                          className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors disabled:opacity-50"
+                        >
+                          <Star
+                            className={`h-4 w-4 ${
+                              isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'
+                            }`}
+                          />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Advanced Settings */}

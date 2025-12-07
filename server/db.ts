@@ -10,7 +10,9 @@ import {
   shareLinks,
   InsertShareLink,
   feedback,
-  InsertFeedback
+  InsertFeedback,
+  favoriteSkins,
+  InsertFavoriteSkin
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -293,4 +295,78 @@ export async function getFeedbackList(params: {
     feedbacks,
     total: Number(totalResult[0]?.count || 0),
   };
+}
+
+// ============================================================
+// Favorite Skins
+// ============================================================
+
+export async function addFavoriteSkin(userId: number, skinKey: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    await db.insert(favoriteSkins).values({
+      userId,
+      skinKey,
+    });
+    return { success: true };
+  } catch (error) {
+    // Unique constraint violation (already favorited)
+    // Unique constraint violation (already favorited)
+    // Drizzle wraps the error, so we need to check both the error itself and its cause
+    const err = error as any;
+    const cause = err.cause || err;
+    if (cause.errno === 1062 || cause.code === 'ER_DUP_ENTRY' || err.errno === 1062 || err.code === 'ER_DUP_ENTRY') {
+      return { success: false, error: 'Already favorited' };
+    }
+    throw error;
+  }
+}
+
+export async function removeFavoriteSkin(userId: number, skinKey: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  await db.delete(favoriteSkins).where(
+    and(
+      eq(favoriteSkins.userId, userId),
+      eq(favoriteSkins.skinKey, skinKey)
+    )
+  );
+  return { success: true };
+}
+
+export async function getFavoriteSkins(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const favorites = await db
+    .select({
+      skinKey: favoriteSkins.skinKey,
+      createdAt: favoriteSkins.createdAt,
+    })
+    .from(favoriteSkins)
+    .where(eq(favoriteSkins.userId, userId))
+    .orderBy(desc(favoriteSkins.createdAt));
+
+  return favorites;
+}
+
+export async function isFavoriteSkin(userId: number, skinKey: string) {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db
+    .select({ id: favoriteSkins.id })
+    .from(favoriteSkins)
+    .where(
+      and(
+        eq(favoriteSkins.userId, userId),
+        eq(favoriteSkins.skinKey, skinKey)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0;
 }
