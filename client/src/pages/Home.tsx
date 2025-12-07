@@ -604,7 +604,7 @@ export default function Home() {
                   <Slider
                     id="lengthRatio"
                     min={0.5}
-                    max={2.0}
+                    max={1.6}
                     step={0.1}
                     value={[lengthRatio]}
                     onValueChange={(value) => setLengthRatio(value[0])}
