@@ -89,6 +89,16 @@ const resources = {
       'tutorial.next': '次へ',
       'tutorial.start': '始める',
       'tutorial.skip': 'スキップ',
+      
+      // Error messages
+      errorTimeout: '変換がタイムアウトしました。もう一度お試しください。',
+      errorRateLimit: '一日の変換回数上限（100回）に達しました。明日またお試しください。',
+      errorGeneric: '変換に失敗しました。もう一度お試しください。',
+      retryButton: 'もう一度試す',
+      
+      // Rate limit status
+      rateLimitStatus: '今日の残り変換回数',
+      rateLimitRemaining: '{{remaining}}/{{limit}}回',
     },
   },
   en: {
@@ -176,6 +186,16 @@ const resources = {
       'tutorial.next': 'Next',
       'tutorial.start': 'Start',
       'tutorial.skip': 'Skip',
+      
+      // Error messages
+      errorTimeout: 'Transformation timed out. Please try again.',
+      errorRateLimit: 'Daily transformation limit (100 times) reached. Please try again tomorrow.',
+      errorGeneric: 'Transformation failed. Please try again.',
+      retryButton: 'Try Again',
+      
+      // Rate limit status
+      rateLimitStatus: 'Remaining transformations today',
+      rateLimitRemaining: '{{remaining}}/{{limit}} times',
     },
   },
   zh: {
@@ -263,6 +283,16 @@ const resources = {
       'tutorial.next': '下一步',
       'tutorial.start': '开始',
       'tutorial.skip': '跳过',
+      
+      // Error messages
+      errorTimeout: '转换超时。请重试。',
+      errorRateLimit: '已达到每日转换次数上限（100次）。请明天再试。',
+      errorGeneric: '转换失败。请重试。',
+      retryButton: '重试',
+      
+      // Rate limit status
+      rateLimitStatus: '今天剩余转换次数',
+      rateLimitRemaining: '{{remaining}}/{{limit}}次',
     },
   },
 };

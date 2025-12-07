@@ -44,6 +44,10 @@ export default function Home() {
   const { data: settings } = trpc.settings.get.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  const { data: rateLimitStatus } = trpc.rateLimit.status.useQuery(undefined, {
+    enabled: isAuthenticated,
+    refetchInterval: 60000, // Refetch every minute
+  });
 
   // Check if first visit
   useEffect(() => {
@@ -118,6 +122,11 @@ export default function Home() {
 
       toast.success("変換完了！");
       
+      // Refetch rate limit status
+      if (isAuthenticated) {
+        utils.rateLimit.status.invalidate();
+      }
+      
       // Store result in sessionStorage and navigate
       sessionStorage.setItem('readerData', JSON.stringify({
         article,
@@ -127,7 +136,27 @@ export default function Home() {
       setLocation("/reader");
     } catch (error) {
       console.error("Transform error:", error);
-      toast.error(error instanceof Error ? error.message : "変換に失敗しました");
+      
+      // Determine error type and show appropriate message
+      let errorMessage = t('errorGeneric');
+      if (error instanceof Error) {
+        if (error.message.includes('timed out') || error.message.includes('timeout')) {
+          errorMessage = t('errorTimeout');
+        } else if (error.message.includes('一日の変換回数上限') || error.message.includes('rate limit')) {
+          errorMessage = t('errorRateLimit');
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      // Show error toast with retry button
+      toast.error(errorMessage, {
+        action: {
+          label: t('retryButton'),
+          onClick: () => handleTransform(),
+        },
+        duration: 10000, // Show for 10 seconds
+      });
     }
   };
 
@@ -382,10 +411,17 @@ export default function Home() {
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Rate Limit Status */}
+            {isAuthenticated && rateLimitStatus && (
+              <div className="text-center text-sm text-gray-600">
+                {t('rateLimitStatus')}: <span className="font-semibold text-purple-600">{t('rateLimitRemaining', { remaining: rateLimitStatus.remaining, limit: rateLimitStatus.limit })}</span>
+              </div>
+            )}
+
             {/* Transform Button */}
             <Button
               onClick={handleTransform}
-              disabled={isLoading}
+              disabled={isLoading || (isAuthenticated && rateLimitStatus?.remaining === 0)}
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               size="lg"
             >

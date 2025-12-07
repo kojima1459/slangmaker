@@ -276,6 +276,15 @@ export const appRouter = router({
         return { isFavorite };
       }),
   }),
+
+  // Rate limit status
+  rateLimit: router({
+    status: protectedProcedure
+      .query(async ({ ctx }) => {
+        const status = await getRateLimitStatus(ctx.user.id);
+        return status;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
