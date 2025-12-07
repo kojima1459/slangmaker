@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { SKINS } from "../shared/skins";
 
 export interface TransformParams {
@@ -17,10 +17,10 @@ export interface TransformExtras {
 }
 
 export interface TransformRequest {
-  url: string;
-  title: string;
-  site: string;
-  lang: string;
+  url?: string; // Optional now
+  title?: string; // Optional now
+  site?: string;
+  lang?: string;
   extracted: string; // Text content
   skin: string;
   params: TransformParams;
@@ -39,15 +39,10 @@ export interface TransformResponse {
 }
 
 /**
- * Transform article content using Gemini 1.5 Flash
+ * Transform article content using Gemini 2.5 Flash
  */
 export async function transformArticle(request: TransformRequest): Promise<TransformResponse> {
   const { url, title, extracted, skin, params, extras, apiKey } = request;
-
-  // Validate URL is present
-  if (!url) {
-    throw new Error("SOURCE_URL_REQUIRED");
-  }
 
   // Get skin definition
   const skinDef = SKINS[skin];
@@ -55,54 +50,49 @@ export async function transformArticle(request: TransformRequest): Promise<Trans
     throw new Error(`Unknown skin: ${skin}`);
   }
 
-  // Initialize Gemini
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  // Initialize Gemini with new SDK
+  const ai = new GoogleGenAI({ apiKey });
 
   // Build system prompt
   const systemPrompt = buildSystemPrompt(skinDef, params, extras);
 
-  // Build user prompt
+  // Build user prompt (URL and title are now optional)
   const userPrompt = `
-Title: ${title}
+${title ? `Title: ${title}` : ''}
 Content:
 ${extracted}
-
-Source URL: ${url}
 
 Please rewrite this article in the "${skinDef.name}" style.
 `.trim();
 
   try {
-    const result = await model.generateContent({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: systemPrompt },
-            { text: userPrompt },
-          ],
-        },
-      ],
-      generationConfig: {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemPrompt,
         temperature: params.temperature,
         topP: params.topP,
         maxOutputTokens: params.maxOutputTokens,
       },
     });
 
-    const response = result.response;
     console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
-    let output = response.text();
+    const output = response.text;
     console.log('[Transform] Extracted output:', output);
 
-    // Ensure Source URL is appended
-    if (!output.includes("Source:")) {
-      output += `\n\nSource: ${url}`;
+    if (!output) {
+      throw new Error('Gemini API returned empty response');
+    }
+
+    // Add NEWSSKINS credit at the end
+    let finalOutput = output;
+    if (!finalOutput.includes("[NEWSSKINS]")) {
+      finalOutput += `\n\n[NEWSSKINS]`;
     }
 
     return {
-      output,
+      output: finalOutput,
       meta: {
         skin,
         tokensIn: response.usageMetadata?.promptTokenCount,
@@ -127,8 +117,7 @@ function buildSystemPrompt(
 You are a news style-rewriter engine.
 
 Task: Rewrite the given article content into the selected "Skin" (style preset) while
-preserving the original meaning and facts. Always append the source URL as:
-"\\n\\nSource: <URL>".
+preserving the original meaning and facts.
 
 Constraints:
 - Do not imitate real person's identity. Use the provided style rules instead.
@@ -154,10 +143,9 @@ Humor level: ${humor} (0–1). Insight level: ${insightLevel} (0–1).
 
 System:
 - Think step-by-step internally to map facts→style. Do NOT reveal analysis.
-- If source URL is missing, return an error message instead of content.
 - If unsafe content is requested, soften per policy or refuse with short reason.
 
 Output:
-- Final text only; ending with "Source: <URL>".
+- Final text only.
 `.trim();
 }

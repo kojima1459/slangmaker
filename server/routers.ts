@@ -33,10 +33,10 @@ export const appRouter = router({
   // Transform article with Gemini
   transform: publicProcedure
     .input(z.object({
-      url: z.string().url(),
-      title: z.string(),
-      site: z.string(),
-      lang: z.string(),
+      url: z.string().optional(),
+      title: z.string().optional(),
+      site: z.string().optional(),
+      lang: z.string().optional(),
       extracted: z.string(),
       skin: z.string(),
       params: z.object({
@@ -62,10 +62,10 @@ export const appRouter = router({
         const snippet = result.output.substring(0, 200);
         await createTransformHistory({
           userId: ctx.user.id,
-          url: input.url,
-          title: input.title,
-          site: input.site,
-          lang: input.lang,
+          url: input.url || "",
+          title: input.title || "記事",
+          site: input.site || "NewsSkins",
+          lang: input.lang || "ja",
           skin: input.skin,
           params: JSON.stringify(input.params),
           snippet,

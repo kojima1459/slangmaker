@@ -19,8 +19,6 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { isAuthenticated } = useAuth();
   const [articleText, setArticleText] = useState("");
-  const [articleTitle, setArticleTitle] = useState("");
-  const [sourceUrl, setSourceUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [selectedSkin, setSelectedSkin] = useState("kansai_banter");
   const [temperature, setTemperature] = useState(1.3);
@@ -77,9 +75,9 @@ export default function Home() {
     try {
       // Create article object from user input
       const article = {
-        title: articleTitle.trim() || "無題",
-        site: sourceUrl.trim() ? new URL(sourceUrl).hostname : "unknown",
-        url: sourceUrl.trim() || "https://example.com",
+        title: "記事",
+        site: "NewsSkins",
+        url: "",
         contentText: articleText.trim(),
         lang: "ja", // Default to Japanese
       };
@@ -87,10 +85,6 @@ export default function Home() {
       // Transform with selected skin
       toast.info("変換中...");
       const result = await transformMutation.mutateAsync({
-        url: article.url,
-        title: article.title,
-        site: article.site,
-        lang: article.lang,
         extracted: article.contentText,
         skin: selectedSkin,
         params: {
@@ -167,34 +161,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Article Title Input (Optional) */}
-            <div className="space-y-2">
-              <Label htmlFor="articleTitle">記事タイトル（任意）</Label>
-              <Input
-                id="articleTitle"
-                type="text"
-                placeholder="例: インフルエンザ患者数 前週の2倍以上"
-                value={articleTitle}
-                onChange={(e) => setArticleTitle(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
 
-            {/* Source URL Input */}
-            <div className="space-y-2">
-              <Label htmlFor="sourceUrl">元記事URL（任意）</Label>
-              <Input
-                id="sourceUrl"
-                type="url"
-                placeholder="https://www3.nhk.or.jp/news/..."
-                value={sourceUrl}
-                onChange={(e) => setSourceUrl(e.target.value)}
-                disabled={isLoading}
-              />
-              <p className="text-xs text-gray-500">
-                元記事へのリンクを表示するために必要です
-              </p>
-            </div>
 
             {/* API Key Input */}
             <div className="space-y-2">

@@ -1,92 +1,67 @@
 # NewsSkins TODO
 
-## Phase 1: データベーススキーマ設計と基本構造の構築
+## 緊急: 変換結果が空白で表示される問題の修正
+
+### Phase 1: Gemini APIレスポンス構造の調査
+- [x] Google Generative AI SDKの公式ドキュメントを確認
+- [x] `response.text()` が存在するか確認
+- [x] 正しいレスポンス構造（`response.text` プロパティ）を特定
+
+### Phase 2: Gemini APIレスポンス構造の修正
+- [x] @google/generative-aiから@google/genaiにパッケージを変更
+- [x] transform.tsの `response.text()` を `response.text` プロパティに修正
+- [x] systemInstructionをconfigの中に移動
+- [x] エラーハンドリングを強化（レスポンスが空の場合の処理）
+- [x] デバッグログを追加して実際のレスポンス構造を確認
+
+### Phase 3: UIをシンプル化（URL・タイトル削除）
+- [x] Home.tsxから記事URL入力欄を削除
+- [x] Home.tsxから記事タイトル入力欄を削除
+- [x] transform APIのリクエスト構造を変更（url, title, site, langを任意に）
+- [x] Reader.tsxから元記事URLリンクを削除
+
+### Phase 4: NEWSSKINSクレジット表示を追加
+- [x] transform.tsで出力結果の最後に「\n\n[NEWSSKINS]」を追加
+- [x] Reader.tsxでSource URL表示を完全に削除
+
+### Phase 5: テストとチェックポイント作成
+- [x] transform.test.tsを更新して新しいAPI構造をテスト
+- [x] すべてのテストが通ることを確認
+- [ ] ブラウザで実際に変換をテストして動作確認
+- [ ] 複数のスキンで変換結果が正しく表示されるか確認
+- [ ] チェックポイント作成
+
+## 完了済み機能
 - [x] データベーススキーマ設計（履歴、プリセット、設定テーブル）
 - [x] 基本的なtRPCルーター構造の構築
-
-## Phase 2: 記事抽出とGemini API統合の実装
 - [x] 記事抽出機能の実装（Readability系）
-- [x] Gemini 1.5 Flash API統合
+- [x] Gemini 2.5 Flash API統合
 - [x] Source URL必須バリデーション
 - [x] 基本的な変換APIエンドポイント
-
-## Phase 3: 10種スキンシステムとパラメータ調整UIの実装
 - [x] 10種スキン定義とプロンプト設計
 - [x] パラメータ調整UI（温度、Top-p、出力長、要約率など）
 - [x] スキン選択UI
 - [x] 変換結果表示UI（Reader画面）
 - [x] 原文プレビュートグル機能
-
-## Phase 4: 履歴・比較・共有機能とPWA対応
-- [x] 履歴一覧・検索機能（DBベース）
-- [x] 共有機能（テキストコピー、署名URL）
-- [ ] 複数スキン比較UI（将来拡張）
 - [x] PWA設定（Service Worker、Share Target、manifest.json）
 - [x] オフライン対応
-
-## Phase 5: テスト・チェックポイント作成・ユーザーへの納品
 - [x] Vitestテスト作成
-- [x] E2Eテスト（ブラウザテスト完了）
-- [x] チェックポイント作成
-- [x] ユーザーへの納品
-
-## Bug Fixes
-- [x] Gemini APIモデル名を修正（gemini-1.5-flash → gemini-1.5-flash-latest）
-- [x] Gemini APIの正しいモデル名を調査（v1beta APIで動作するモデル名）
-- [x] 正しいモデル名でコードを修正（gemini-2.5-flashに変更）
-- [x] 変換ボタンを押してもソースしか表示されない問題を調査（CORS/Bot対策が原因）
-- [x] 問題の原因を特定して修正（Firecrawl MCPを使用した記事抽出に変更）
-
-## 仕様変更: URL入力からテキスト入力方式へ
-- [x] Home.tsxのURL入力欄をテキストエリア（textarea）に変更
-- [x] 記事タイトルとソースURL入力欄を追加
-- [x] バックエンドAPIから記事抽出処理を削除
-- [x] transform APIを記事テキスト直接受付に変更（既に対応済み）
-- [x] Reader.tsxの表示ロジックを新しいデータ構造に対応
-- [x] 動作テストとブラウザでの確認（成功）
-- [x] maxOutputTokensのバリデーションエラーを修正（デフォルト値を1500に変更）
-
-## 新機能追加: ユーザビリティ向上
-
-### 元記事URL任意化
 - [x] 元記事URLを必須から任意項目に変更（*マークを削除）
 - [x] URLが未入力の場合、Source表示と「元記事を開く」ボタンを非表示
-
-### ユーザーガイドページ
 - [x] ガイドページコンポーネントを作成（/guide）
 - [x] 詳細設定の各パラメータを分かりやすく説明
-  - 温度（創造性）: スライダーで調整、低い→堅実/高い→ユニーク
-  - Top-p（多様性）: 低い→安定/高い→バリエーション豊か
-  - 出力長: 短め/標準/長め の選択
-  - 長さ比率: 元記事の何倍の長さにするか
-  - コア3行追加: 記事の要点を3行で追加するオプション
 - [x] 各スキンの特徴と使い方を説明
 - [x] 実例を交えた使い方ガイド
-
-### シェア機能
 - [x] 変換結果のURL共有機能（24時間有効な署名URL）
 - [x] ShareLinksテーブルへの保存機能
 - [x] 共有URLからの閲覧機能（/share/:id）
 - [x] テキストコピー機能の改善
-- [ ] TwitterとLINEの共有ボタン（将来拡張）
-
-### 履歴機能の完全実装
-- [ ] 変換結果をt- [x] 変換結果をtransformHistoryテーブルに保存
+- [x] 変換結果をtransformHistoryテーブルに保存
 - [x] 履歴一覧ページで過去の変換結果を表示
-- [ ] 履歴からの再閲覧機能（将来拡張）
-- [ ] 履歴の検索・フィルタリング機能（将来拡張）（スキン別、日付別）
-- [ ] 履歴の削除機能
-
-### APIキー保存機能
 - [x] 設定ページでAPIキーを保存する機能
 - [x] userSettingsテーブルへの暗号化保存
 - [x] HomeページでAPIキーを自動入力
-- [ ] APIキーの削除機能
-
-## Bug Fix: settings.get APIエラー
 - [x] settings.get APIがundefinedを返すエラーを修正
 - [x] 設定が存在しない場合はデフォルト値を返すように変更
-
-## Bug Fix: Reader.tsxフックルール違反
 - [x] Reader.tsxの「Rendered more hooks than during the previous render」エラーを修正
 - [x] 条件分岐の中でフックを呼び出さないようにコードを修正

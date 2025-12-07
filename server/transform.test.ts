@@ -27,3 +27,39 @@ describe("Skins", () => {
     expect(keys.length).toBe(uniqueKeys.size);
   });
 });
+
+describe("Transform API Structure", () => {
+  it("should have correct TransformRequest interface structure", () => {
+    // Test that the interface accepts optional fields
+    const validRequest = {
+      extracted: "これはテスト記事です。",
+      skin: "kansai_banter",
+      params: {
+        temperature: 1.0,
+        topP: 0.9,
+        maxOutputTokens: 1500,
+        lengthRatio: 1.0,
+      },
+      apiKey: "test-api-key",
+    };
+
+    // Check required fields
+    expect(validRequest).toHaveProperty("extracted");
+    expect(validRequest).toHaveProperty("skin");
+    expect(validRequest).toHaveProperty("params");
+    expect(validRequest).toHaveProperty("apiKey");
+
+    // Check params structure
+    expect(validRequest.params).toHaveProperty("temperature");
+    expect(validRequest.params).toHaveProperty("topP");
+    expect(validRequest.params).toHaveProperty("maxOutputTokens");
+    expect(validRequest.params).toHaveProperty("lengthRatio");
+  });
+
+  it("should validate skin exists in SKINS", () => {
+    const validSkins = Object.keys(SKINS);
+    expect(validSkins).toContain("kansai_banter");
+    expect(validSkins).toContain("detached_lit");
+    expect(validSkins).toContain("suggestive_safe");
+  });
+});

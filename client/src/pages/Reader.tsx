@@ -155,22 +155,6 @@ export default function Reader() {
               <div className="prose prose-lg max-w-none">
                 <Streamdown>{data.result.output}</Streamdown>
               </div>
-              
-              <Separator className="my-6" />
-              
-              {data.article.url && data.article.url !== "https://example.com" && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <ExternalLink className="h-4 w-4" />
-                  <a
-                    href={data.article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    元記事を開く
-                  </a>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
