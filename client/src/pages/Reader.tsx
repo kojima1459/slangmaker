@@ -29,6 +29,10 @@ export default function Reader() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<ReaderData | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
+  
+  // Hooks must be called at the top level, before any early returns
+  const { isAuthenticated } = useAuth();
+  const createShareMutation = trpc.share.create.useMutation();
 
   useEffect(() => {
     const stored = sessionStorage.getItem('readerData');
@@ -43,9 +47,6 @@ export default function Reader() {
   if (!data) {
     return null;
   }
-
-  const { isAuthenticated } = useAuth();
-  const createShareMutation = trpc.share.create.useMutation();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(data.result.output);

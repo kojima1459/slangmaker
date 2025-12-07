@@ -86,3 +86,7 @@
 ## Bug Fix: settings.get APIエラー
 - [x] settings.get APIがundefinedを返すエラーを修正
 - [x] 設定が存在しない場合はデフォルト値を返すように変更
+
+## Bug Fix: Reader.tsxフックルール違反
+- [x] Reader.tsxの「Rendered more hooks than during the previous render」エラーを修正
+- [x] 条件分岐の中でフックを呼び出さないようにコードを修正
