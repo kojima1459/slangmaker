@@ -333,3 +333,93 @@
 ### Phase 5: チェックポイント作成
 - [ ] すべての機能が正常に動作することを確認
 - [ ] チェックポイント作成
+
+## ユーザープロフィール機能とSNS共有機能の拡張
+
+### Phase 1: ユーザープロフィール統計APIを実装
+- [x] ユーザーの変換履歴統計を取得するAPI実装（user.stats）
+- [x] 最も使用したスキンTOP3を取得
+- [x] 総変換回数を取得
+- [x] お気に入りスキン数を取得
+
+### Phase 2: プロフィールページUIを作成
+- [ ] Profile.tsxページを作成
+- [ ] 変換履歴統計を表示
+- [ ] 最も使用したスキンTOP3を表示
+- [ ] お気に入りスキン一覧を表示
+- [ ] App.tsxに/profileルートを追加
+
+### Phase 3: SNS共有機能を拡張
+- [x] LINE共有ボタンを追加（既存）
+- [x] Facebook共有ボタンを追加
+- [x] LinkedIn共有ボタンを追加
+- [x] 各SNSの共有URLを実装
+
+### Phase 4: 共有テキストからNEWSSKINを削除しサイトURLを追加
+- [x] 共有テキストから「NEWSSKIN」を削除
+- [ ] サイトの短縮URL設定を追加（環境変数）
+- [x] 共有テキストにサイトURLを差し込む
+
+### Phase 5: テストと動作確認
+- [ ] Vitestテストを作成
+- [ ] ブラウザで動作確認
+
+### Phase 6: チェックポイント作成
+- [ ] GitHubにプッシュ
+- [ ] チェックポイント作成
+
+## 月間制限表示の削除
+
+- [ ] Home.tsxから「今月残り99/100」の表示を削除
+
+## SNS共有機能の拡張
+
+### Phase 1: SNS共有機能を拡張
+- [x] LINE共有ボタンを追加（既存）
+- [x] Facebook共有ボタンを追加
+- [x] LinkedIn共有ボタンを追加
+- [x] 各SNSの共有URLを実装
+
+### Phase 2: 共有テキストからNEWSSKINを削除しサイトURLを追加
+- [x] 共有テキストから「NEWSSKIN」を削除
+- [x] サイトの短縮URL設定を追加（環境変数VITE_SITE_URL）
+- [x] 共有テキストにサイトURLを差し込む
+
+### Phase 3: テストと動作確認
+- [ ] ブラウザで動作確認
+
+### Phase 4: チェックポイント作成
+- [ ] GitHubにプッシュ
+- [ ] チェックポイント作成
+
+## パラメータバリデーションエラーの修正
+
+- [ ] server/routers.tsのtemperature最大値を修正
+- [ ] server/routers.tsのtopP最大値を修正
+- [ ] server/routers.tsのlengthRatio最大値を修正
+
+## パラメータバリデーションエラーの修正
+
+- [ ] server/routers.tsのtemperature最大値を修正
+- [ ] server/routers.tsのtopP最大値を修正
+- [ ] server/routers.tsのlengthRatio最大値を修正
+
+## 翻訳機能の修正
+
+- [x] スキン名の翻訳が切り替わらない問題を調査
+- [x] スキン説明の翻訳が切り替わらない問題を調査
+- [x] 翻訳キーとskins.tsの連携を修正
+- [x] i18n.tsに不足している5個のスキン翻訳を追加
+- [x] Home.tsxでスキン名と説明をt()関数で表示
+
+## 設定画面削除完了
+
+- [x] 設定画面（Settings.tsx）を削除
+- [x] App.tsxから設定ルートを削除
+- [x] Home.tsxから設定リンクを削除
+
+
+## lengthRatioバリデーションエラー修正完了
+
+- [x] Home.tsxのlengthRatioスライダーの最大値を1.6に変更
+

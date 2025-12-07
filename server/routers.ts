@@ -21,7 +21,8 @@ import {
   addFavoriteSkin,
   removeFavoriteSkin,
   getFavoriteSkins,
-  isFavoriteSkin
+  isFavoriteSkin,
+  getUserStats
 } from "./db";
 import { nanoid } from "nanoid";
 
@@ -343,6 +344,18 @@ DON'Tリスト: ${skin.dontList.join(", ")}
       .query(async ({ ctx, input }) => {
         const isFavorite = await isFavoriteSkin(ctx.user.id, input.skinKey);
         return { isFavorite };
+      }),
+  }),
+
+  // User profile endpoints
+  user: router({
+    stats: protectedProcedure
+      .query(async ({ ctx }) => {
+        const stats = await getUserStats(ctx.user.id);
+        if (!stats) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "データベースエラー" });
+        }
+        return stats;
       }),
   }),
 });
