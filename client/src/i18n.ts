@@ -59,6 +59,11 @@ const resources = {
       'skin.academic_paper': '学術論文風',
       'skin.gyaru_slang': 'ギャル語風',
       'skin.keigo_excessive': '敬語過剰風',
+      'skin.cryptic_code': 'エンジニア風',
+      'skin.philo_lecture': 'ロジカル政治家風',
+      'skin.aphorism': '哲学名言風',
+      'skin.speech_poem': '熱血演説風',
+      'skin.debate_politico': '定量分析政治家風',
       
       // 説明ページ
       learnJapaneseSlang: '言い回しを楽しもう！',

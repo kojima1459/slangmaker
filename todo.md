@@ -376,4 +376,14 @@
 - [x] server/transform.tsでカスタムスキンのプロンプトを処理
 
 ### Phase 3: テストと完成
+- [x] 動作確認とチェックポイント作成 (version: 1a4d70b5)
+
+## 英語表記スキン名の日本語化
+
+### Phase 1: i18n修正
+- [x] skin.cryptic_code → エンジニア風
+- [x] skin.philo_lecture → ロジカル政治家風
+- [x] skin.aphorism → 哲学名言風
+- [x] skin.speech_poem → 熱血演説風
+- [x] skin.debate_politico → 定量分析政治家風
 - [ ] 動作確認とチェックポイント作成
