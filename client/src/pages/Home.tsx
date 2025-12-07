@@ -86,14 +86,14 @@ export default function Home() {
   const handleTransform = async () => {
     // Validate inputs
     if (!articleText.trim()) {
-      toast.error("記事テキストを入力してください");
+      toast.error(t('articleTextRequired'));
       return;
     }
 
     // sourceUrl is now optional
 
     if (!apiKey) {
-      toast.error("Gemini APIキーを入力してください");
+      toast.error(t('apiKeyRequired'));
       return;
     }
 
@@ -166,7 +166,7 @@ export default function Home() {
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setLocation("/settings")}>
                   <SettingsIcon className="w-4 h-4 mr-2" />
-                  Settings
+                  {t('settings')}
                 </Button>
               </>
             )}
@@ -189,19 +189,19 @@ export default function Home() {
         {/* Main Card */}
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle>記事を変換</CardTitle>
+            <CardTitle>{t('transformArticle')}</CardTitle>
             <CardDescription>
-              記事本文を貼り付けて、お好みのスキン（文体）で読み直しましょう
+              {t('pasteArticle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Article Text Input */}
             <div className="space-y-2">
-              <Label htmlFor="articleText">記事本文 *</Label>
+              <Label htmlFor="articleText">{t('articleText')} *</Label>
               <textarea
                 id="articleText"
                 className="w-full min-h-[200px] p-3 border rounded-md resize-y focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="記事の本文をここに貼り付けてください..."
+                placeholder={t('articlePlaceholder')}
                 value={articleText}
                 onChange={(e) => setArticleText(e.target.value)}
                 disabled={isLoading}
@@ -209,16 +209,16 @@ export default function Home() {
               />
               <div className="flex justify-between items-center">
                 <p className="text-xs text-gray-500">
-                  変換したい記事の本文をコピー&ペーストしてください
+                  {t('characterWarning')}
                 </p>
                 <p className={`text-xs ${
                   articleText.length > 10000 ? 'text-red-600 font-bold' :
                   articleText.length > 5000 ? 'text-orange-600 font-semibold' :
                   'text-gray-500'
                 }`}>
-                  {articleText.length} / 10000文字
-                  {articleText.length > 5000 && articleText.length <= 10000 && ' (推奨: 5000文字以内)'}
-                  {articleText.length > 10000 && ' (上限超過)'}
+                  {t('characterCount', { count: articleText.length })}
+                  {articleText.length > 5000 && articleText.length <= 10000 && ` (${t('recommended5000')})`}
+                  {articleText.length > 10000 && ` (${t('limitExceeded')})`}
                 </p>
               </div>
             </div>
@@ -227,23 +227,23 @@ export default function Home() {
 
             {/* API Key Input */}
             <div className="space-y-2">
-              <Label htmlFor="apiKey">Gemini API Key *</Label>
+              <Label htmlFor="apiKey">{t('geminiApiKey')} *</Label>
               <Input
                 id="apiKey"
                 type="password"
-                placeholder="AIza..."
+                placeholder={t('geminiApiKeyPlaceholder')}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 disabled={isLoading}
               />
               <p className="text-xs text-gray-500">
-                APIキーはローカルに保存され、サーバーには送信されません
+                {t('geminiApiKeyNote')}
               </p>
             </div>
 
             {/* Skin Selection */}
             <div className="space-y-3">
-              <Label>スキン（文体）</Label>
+              <Label>{t('skinStyle')}</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {Object.entries(SKINS).map(([key, skin]) => {
                   const isFavorite = favoriteSkinKeys.includes(key);
@@ -259,7 +259,7 @@ export default function Home() {
                             : 'border-gray-200 hover:border-purple-300'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
-                        <div className="font-semibold text-sm mb-1">{skin.name}</div>
+                        <div className="font-semibold text-sm mb-1">{t(`skin.${key}`)}</div>
                         <div className="text-xs text-gray-600 line-clamp-2">{skin.description}</div>
                       </button>
                       {isAuthenticated && (
@@ -300,7 +300,7 @@ export default function Home() {
             <Collapsible>
               <CollapsibleTrigger asChild>
                 <Button variant="ghost" className="w-full justify-between">
-                  <span>詳細設定</span>
+                  <span>{t('advancedSettings')}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </CollapsibleTrigger>
@@ -308,7 +308,7 @@ export default function Home() {
                 {/* Temperature */}
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label>温度 (Temperature)</Label>
+                    <Label>{t('temperature')}</Label>
                     <span className="text-sm text-gray-600">{temperature.toFixed(1)}</span>
                   </div>
                   <Slider
@@ -340,7 +340,7 @@ export default function Home() {
                 {/* Max Tokens */}
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label>最大出力トークン</Label>
+                    <Label>{t('maxOutputTokens')}</Label>
                     <span className="text-sm text-gray-600">{maxTokens}</span>
                   </div>
                   <Slider
@@ -412,12 +412,12 @@ export default function Home() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  処理中...
+                  {t('transforming')}
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-4 w-4" />
-                  変換する
+                  {t('transform')}
                 </>
               )}
             </Button>
@@ -428,15 +428,15 @@ export default function Home() {
         <div className="flex justify-center gap-4 mt-8">
           <Button variant="ghost" onClick={() => setLocation("/guide")}>
             <BookOpen className="mr-2 h-4 w-4" />
-            ガイド
+            {t('guide')}
           </Button>
           <Button variant="ghost" onClick={() => setLocation("/history")}>
             <HistoryIcon className="mr-2 h-4 w-4" />
-            履歴
+            {t('history')}
           </Button>
           <Button variant="ghost" onClick={() => setLocation("/settings")}>
             <SettingsIcon className="mr-2 h-4 w-4" />
-            設定
+            {t('settings')}
           </Button>
         </div>
 
