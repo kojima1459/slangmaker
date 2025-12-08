@@ -9,6 +9,9 @@ const resources = {
       // ヘッダー
       appTitle: 'AIスラングメーカー',
       appSubtitle: '言葉を着せ替え、表現を楽しむ\n同じ内容、違う世界。文体マジック',
+      tagline1: 'テキストを変換',
+      tagline2: 'テキストを貼り付けて、お好みのスキン（文体）で読み直しましょう',
+      transformButton: '変換する',
       login: 'ログイン',
       
       // ホームページ
@@ -200,6 +203,9 @@ const resources = {
       // Header
       appTitle: 'AI Slang Maker',
       appSubtitle: 'Read news in different styles - Enjoy articles in various writing styles',
+      tagline1: 'Transform Text',
+      tagline2: 'Paste text and rewrite it in your favorite skin (writing style)',
+      transformButton: 'Transform',
       login: 'Login',
       
       // Home page
@@ -390,6 +396,9 @@ const resources = {
       // 标题
       appTitle: 'AI俗语制造器',
       appSubtitle: '用不同风格阅读新闻 - 以各种文体享受文章',
+      tagline1: '转换文本',
+      tagline2: '粘贴文本，用您喜欢的皮肤（文体）重写',
+      transformButton: '转换',
       login: '登录',
       
       // 主页
