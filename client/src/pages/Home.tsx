@@ -172,22 +172,22 @@ export default function Home() {
       {/* Main Content */}
       <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-4 mb-6">
             <div className="relative">
-              <Sparkles className="w-12 h-12 text-purple-600 animate-pulse" />
-              <div className="absolute inset-0 w-12 h-12 bg-purple-400 blur-xl opacity-50 animate-pulse"></div>
+              <Sparkles className="w-16 h-16 text-purple-600 animate-pulse" />
+              <div className="absolute inset-0 w-16 h-16 bg-purple-400 blur-xl opacity-50 animate-pulse"></div>
             </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent leading-tight">
               {t('appTitle')}
             </h1>
           </div>
-          <div className="space-y-2">
-            <p className="text-2xl font-semibold text-gray-800">
-              {t('tagline1') || "3秒で文体マジック✨"}
+          <div className="space-y-3 max-w-3xl mx-auto">
+            <p className="text-3xl md:text-4xl font-bold text-gray-900 leading-snug">
+              {t('tagline1')}
             </p>
-            <p className="text-lg text-gray-600">
-              {t('tagline2') || "言葉を着せ替え、表現を楽しむ"}
+            <p className="text-xl md:text-2xl text-gray-600 font-medium">
+              {t('tagline2')}
             </p>
           </div>
         </div>
@@ -284,7 +284,7 @@ export default function Home() {
                                   type="button"
                                   onClick={() => setSelectedSkin(key)}
                                   disabled={isLoading}
-                                  className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                                  className={`w-full p-5 border-2 rounded-2xl text-left transition-all duration-200 hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 ${
                                     selectedSkin === key
                                       ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
                                       : 'border-gray-200 hover:border-purple-300'
@@ -335,7 +335,7 @@ export default function Home() {
                               type="button"
                               onClick={() => setSelectedSkin(key)}
                               disabled={isLoading}
-                              className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                              className={`w-full p-5 border-2 rounded-2xl text-left transition-all duration-200 hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 ${
                                 selectedSkin === key
                                   ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
                                   : 'border-gray-200 hover:border-purple-300'
@@ -465,7 +465,7 @@ export default function Home() {
             <Button
               onClick={handleTransform}
               disabled={isLoading || !articleText.trim() || !apiKey.trim()}
-              className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full h-20 text-2xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none rounded-2xl"
             >
               {isLoading ? (
                 <>
