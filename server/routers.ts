@@ -53,7 +53,7 @@ export const appRouter = router({
       title: z.string().optional(),
       site: z.string().optional(),
       lang: z.string().optional(),
-      extracted: z.string(),
+      extracted: z.string().optional(),
       skin: z.string(),
       params: z.object({
         temperature: z.number().min(0).max(2),
@@ -62,7 +62,7 @@ export const appRouter = router({
         lengthRatio: z.number().min(0.5).max(1.5),
         humor: z.number().min(0).max(1).optional(),
         insightLevel: z.number().min(0).max(1).optional(),
-      }),
+      }).optional(),
       extras: z.object({
         addGlossary: z.boolean().optional(),
         addCore3: z.boolean().optional(),

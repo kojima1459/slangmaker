@@ -765,3 +765,9 @@
 - [x] OGP画像を/client/public/ogp-image.pngに配置
 - [x] index.htmlのOGPタグを更新
 - [x] 動作確認とチェックポイント作成
+
+## Transform APIバリデーションエラー修正
+
+- [x] server/routers.tsのtransform APIスキーマを確認
+- [x] extractedとparamsフィールドをオプションに変更
+- [x] 動作確認とチェックポイント作成
