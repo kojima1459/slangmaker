@@ -43,6 +43,13 @@
       "when": 1765175901948,
       "tag": "0005_sturdy_the_hand",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765178001443,
+      "tag": "0006_colossal_spectrum",
+      "breakpoints": true
     }
   ]
 }

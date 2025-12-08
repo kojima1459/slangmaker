@@ -105,10 +105,10 @@ Please rewrite this article in the "${skinName}" style.
       throw new Error('LLM API returned empty response');
     }
 
-    // Add NEWSSKINS credit at the end
+    // Add credit at the end
     let finalOutput = output;
-    if (!finalOutput.includes("[NEWSSKINS]")) {
-      finalOutput += `\n\n[NEWSSKINS]`;
+    if (!finalOutput.includes("[スラングメーカー]")) {
+      finalOutput += `\n\n[スラングメーカー]`;
     }
 
     return {

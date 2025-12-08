@@ -113,7 +113,7 @@ export const shareLinks = mysqlTable("share_links", {
   /** The transformed output text */
   content: text("content").notNull(),
   /** Source URL */
-  sourceUrl: text("sourceUrl").notNull(),
+  sourceUrl: text("sourceUrl"),
   /** Skin used */
   skin: varchar("skin", { length: 64 }).notNull(),
   /** Expiration timestamp (24h from creation) */

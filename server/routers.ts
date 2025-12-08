@@ -179,7 +179,10 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         content: z.string(),
-        sourceUrl: z.string().url(),
+        sourceUrl: z.preprocess(
+          (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+          z.string().optional()
+        ),
         skin: z.string(),
       }))
       .mutation(async ({ input, ctx }) => {
