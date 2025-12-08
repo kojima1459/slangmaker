@@ -1,5 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
 import { SKINS } from "../shared/skins";
+import { invokeLLM } from "./_core/llm";
 
 export interface TransformParams {
   temperature: number; // 0.0 - 2.0
@@ -21,9 +21,9 @@ export interface TransformRequest {
   title?: string; // Optional now
   site?: string;
   lang?: string;
-  extracted?: string; // Text content (optional)
+  extracted: string; // Text content
   skin: string;
-  params?: TransformParams; // Optional with defaults
+  params: TransformParams;
   extras?: TransformExtras;
   apiKey: string;
 }
@@ -39,10 +39,10 @@ export interface TransformResponse {
 }
 
 /**
- * Transform article content using Gemini 2.5 Flash
+ * Transform article content using Manus Built-in LLM API
  */
 export async function transformArticle(request: TransformRequest, customSkinPrompt?: string): Promise<TransformResponse> {
-  const { url, title, extracted, skin, params, extras, apiKey } = request;
+  const { url, title, extracted, skin, params, extras } = request;
 
   // Get skin definition (either from default skins or use custom prompt)
   let systemPrompt: string;
@@ -58,12 +58,11 @@ export async function transformArticle(request: TransformRequest, customSkinProm
     if (!skinDef) {
       throw new Error(`Unknown skin: ${skin}`);
     }
-    systemPrompt = buildSystemPrompt(skinDef, params || {}, extras);
+    systemPrompt = buildSystemPrompt(skinDef, params, extras);
     skinName = skinDef.name;
   }
 
-  // Initialize Gemini with new SDK
-  const ai = new GoogleGenAI({ apiKey });
+  // Use Manus Built-in LLM API (no need to initialize with API key)
 
   // Build user prompt (URL and title are now optional)
   const userPrompt = `
@@ -80,39 +79,30 @@ Please rewrite this article in the "${skinName}" style.
       setTimeout(() => reject(new Error('API request timed out after 30 seconds')), 30000);
     });
 
-    const apiPromise = ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: userPrompt,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: params?.temperature || 0.7,
-        topP: params?.topP || 0.9,
-        maxOutputTokens: params?.maxOutputTokens || 4000,
-      },
+    const apiPromise = invokeLLM({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      max_tokens: params.maxOutputTokens,
     });
 
     const response = await Promise.race([apiPromise, timeoutPromise]);
 
-    console.log('[Transform] Gemini response:', JSON.stringify(response, null, 2));
+    console.log('[Transform] LLM response:', JSON.stringify(response, null, 2));
     
     // Extract text from response
     let output: string | undefined;
-    if (response.text) {
-      output = response.text;
-    } else if (response.candidates && response.candidates[0]?.content?.parts?.[0]?.text) {
-      output = response.candidates[0].content.parts[0].text;
+    if (response.choices && response.choices[0]?.message?.content) {
+      const content = response.choices[0].message.content;
+      output = typeof content === 'string' ? content : undefined;
     }
     
     console.log('[Transform] Extracted output:', output);
 
     if (!output) {
-      console.error('[Transform] Response structure:', {
-        hasText: !!response.text,
-        hasCandidates: !!response.candidates,
-        candidatesLength: response.candidates?.length,
-        firstCandidate: response.candidates?.[0],
-      });
-      throw new Error('Gemini API returned empty response');
+      console.error('[Transform] Response structure:', response);
+      throw new Error('LLM API returned empty response');
     }
 
     // Add NEWSSKINS credit at the end
@@ -125,8 +115,8 @@ Please rewrite this article in the "${skinName}" style.
       output: finalOutput,
       meta: {
         skin,
-        tokensIn: response.usageMetadata?.promptTokenCount,
-        tokensOut: response.usageMetadata?.candidatesTokenCount,
+        tokensIn: response.usage?.prompt_tokens,
+        tokensOut: response.usage?.completion_tokens,
         safety: "clean",
       },
     };

@@ -6,15 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, Heart } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
-import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
 
 export default function Home() {
@@ -28,7 +26,6 @@ export default function Home() {
   const [lengthRatio, setLengthRatio] = useState(1.0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [favoriteSkins, setFavoriteSkins] = useState<string[]>([]);
 
   const transformMutation = trpc.transform.useMutation();
   const { t } = useTranslation();
@@ -40,25 +37,6 @@ export default function Home() {
       setApiKey(savedApiKey);
     }
   }, []);
-
-  // Load favorite skins from localStorage
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('favoriteSkins');
-    if (savedFavorites) {
-      setFavoriteSkins(JSON.parse(savedFavorites));
-    }
-  }, []);
-
-  // Toggle favorite skin
-  const toggleFavorite = (skinKey: string) => {
-    setFavoriteSkins(prev => {
-      const newFavorites = prev.includes(skinKey)
-        ? prev.filter(key => key !== skinKey)
-        : [...prev, skinKey];
-      localStorage.setItem('favoriteSkins', JSON.stringify(newFavorites));
-      return newFavorites;
-    });
-  };
 
   // Check if first visit
   useEffect(() => {
@@ -89,7 +67,10 @@ export default function Home() {
       return;
     }
 
-    // API key check removed - server will use environment variable if user key is not set
+    if (!apiKey.trim()) {
+      toast.error(t('apiKeyRequired') || "APIキーを入力してください");
+      return;
+    }
 
     if (articleText.length > 10000) {
       toast.error(t('characterLimitExceeded') || "文字数が上限を超えています");
@@ -117,25 +98,14 @@ export default function Home() {
         origin: { y: 0.6 }
       });
 
-      // Save data to sessionStorage for Reader page
-      sessionStorage.setItem('readerData', JSON.stringify({
-        result: {
-          output: result.output,
-          meta: {
-            skin: selectedSkin,
-          },
-        },
-        skin: selectedSkin,
-        article: {
-          title: '',
-          site: '',
-          url: '',
-          contentText: articleText,
-        },
-      }));
-
-      // Navigate to reader page
-      setLocation("/reader");
+      // Navigate to reader page with result
+      setLocation("/reader", {
+        state: {
+          result: result.output,
+          skin: selectedSkin,
+          originalText: articleText,
+        }
+      });
 
       toast.success(t('transformSuccess') || "変換が完了しました！");
     } catch (error: any) {
@@ -181,22 +151,22 @@ export default function Home() {
       {/* Main Content */}
       <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-4 mb-6">
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
-              <Sparkles className="w-16 h-16 text-purple-600 animate-pulse" />
-              <div className="absolute inset-0 w-16 h-16 bg-purple-400 blur-xl opacity-50 animate-pulse"></div>
+              <Sparkles className="w-12 h-12 text-purple-600 animate-pulse" />
+              <div className="absolute inset-0 w-12 h-12 bg-purple-400 blur-xl opacity-50 animate-pulse"></div>
             </div>
-            <h1 className="text-6xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent leading-tight">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">
               {t('appTitle')}
             </h1>
           </div>
-          <div className="space-y-3 max-w-3xl mx-auto">
-            <p className="text-3xl md:text-4xl font-bold text-gray-900 leading-snug">
-              {t('tagline1')}
+          <div className="space-y-2">
+            <p className="text-2xl font-semibold text-gray-800">
+              {t('tagline1') || "3秒で文体マジック✨"}
             </p>
-            <p className="text-xl md:text-2xl text-gray-600 font-medium">
-              {t('tagline2')}
+            <p className="text-lg text-gray-600">
+              {t('tagline2') || "言葉を着せ替え、表現を楽しむ"}
             </p>
           </div>
         </div>
@@ -210,37 +180,13 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pt-6">
-            {/* API Key Input */}
-            <div className="space-y-3 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="apiKey" className="text-lg font-semibold text-blue-900">
-                  {t('geminiApiKey') || "Gemini APIキー"} *
-                </Label>
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
-                >
-                  {t('getApiKey') || "APIキーを取得"}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  id="apiKey"
-                  type="password"
-                  placeholder="AIza..."
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={handleSaveApiKey} variant="outline">
-                  {t('save') || "保存"}
-                </Button>
-              </div>
+            {/* API Key Info - Using Manus Built-in LLM API */}
+            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                ✨ <strong>Manus Built-in LLM APIを使用しています</strong>
+              </p>
               <p className="text-xs text-blue-700">
-                {t('apiKeyNote') || "APIキーはブラウザに保存され、サーバーには送信されません"}
+                APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます。
               </p>
             </div>
 
@@ -275,111 +221,25 @@ export default function Home() {
             {/* Skin Selection */}
             <div className="space-y-4">
               <Label className="text-lg font-semibold">{t('skinStyle') || "スタイル選択"}</Label>
-              
-              {/* Favorite Skins Section */}
-              {favoriteSkins.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-purple-700">{t('favoriteSkins') || "お気に入り"}</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {favoriteSkins.map((key) => {
-                      const skin = SKINS[key as keyof typeof SKINS];
-                      if (!skin) return null;
-                      return (
-                        <div key={key} className="relative">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedSkin(key)}
-                                  disabled={isLoading}
-                                  className={`w-full p-5 border-2 rounded-2xl text-left transition-all duration-200 hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 ${
-                                    selectedSkin === key
-                                      ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
-                                      : 'border-gray-200 hover:border-purple-300'
-                                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                                >
-                                  <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                                  <div className="text-xs text-gray-600 line-clamp-2">
-                                    {t(`skin.${key}.desc`) || skin.description}
-                                  </div>
-                                </button>
-                              </TooltipTrigger>
-                              {skin.example && (
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <p className="text-sm font-medium mb-1">{t('preview') || 'プレビュー'}</p>
-                                  <p className="text-xs">{skin.example}</p>
-                                </TooltipContent>
-                              )}
-                            </Tooltip>
-                          </TooltipProvider>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(key);
-                            }}
-                            className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
-                          >
-                            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              
-              {/* All Skins */}
-              <div className="space-y-2">
-                {favoriteSkins.length > 0 && (
-                  <p className="text-sm font-medium text-gray-700">{t('allSkins') || "すべてのスキン"}</p>
-                )}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {Object.entries(SKINS).map(([key, skin]) => (
-                    <div key={key} className="relative">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedSkin(key)}
-                              disabled={isLoading}
-                              className={`w-full p-5 border-2 rounded-2xl text-left transition-all duration-200 hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 ${
-                                selectedSkin === key
-                                  ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
-                                  : 'border-gray-200 hover:border-purple-300'
-                              } disabled:opacity-50 disabled:cursor-not-allowed`}
-                            >
-                              <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                              <div className="text-xs text-gray-600 line-clamp-2">
-                                {t(`skin.${key}.desc`) || skin.description}
-                              </div>
-                            </button>
-                          </TooltipTrigger>
-                          {skin.example && (
-                            <TooltipContent side="top" className="max-w-xs">
-                              <p className="text-sm font-medium mb-1">{t('preview') || 'プレビュー'}</p>
-                              <p className="text-xs">{skin.example}</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(key);
-                        }}
-                        className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
-                      >
-                        <Heart className={`h-4 w-4 ${
-                          favoriteSkins.includes(key)
-                            ? 'fill-red-500 text-red-500'
-                            : 'text-gray-400'
-                        }`} />
-                      </button>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(SKINS).map(([key, skin]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setSelectedSkin(key)}
+                    disabled={isLoading}
+                    className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                      selectedSkin === key
+                        ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
+                        : 'border-gray-200 hover:border-purple-300'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
+                    <div className="text-xs text-gray-600 line-clamp-2">
+                      {t(`skin.${key}.desc`) || skin.description}
                     </div>
-                  ))}
-                </div>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -473,8 +333,8 @@ export default function Home() {
             {/* Transform Button */}
             <Button
               onClick={handleTransform}
-              disabled={isLoading || !articleText.trim()}
-              className="w-full h-20 text-2xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none rounded-2xl"
+              disabled={isLoading || !articleText.trim() || !apiKey.trim()}
+              className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <>
@@ -491,12 +351,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-      
-      {/* Footer */}
-      <Footer />
-      
-      {/* Tutorial Modal */}
-      {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
     </div>
   );
 }

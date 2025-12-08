@@ -64,7 +64,7 @@ export const favoriteSkins = mysqlTable("favorite_skins", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
   skinKey: varchar("skinKey", { length: 64 }).notNull(),
-  orderIndex: int("orderIndex").notNull().default(0), // Order for drag-and-drop sorting
+  // orderIndex: int("orderIndex").notNull().default(0), // Order for drag-and-drop sorting
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 }, (table) => ({
   // Unique constraint: one user can only favorite a skin once
@@ -90,7 +90,7 @@ export const transformHistory = mysqlTable("transform_history", {
   /** JSON string of transformation parameters */
   params: text("params").notNull(),
   /** Original extracted text (input) */
-  extracted: text("extracted"),
+  // extracted: text("extracted"),
   /** Short snippet of output for preview (max 200 chars) */
   snippet: text("snippet"),
   /** Full output text */

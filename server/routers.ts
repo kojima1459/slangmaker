@@ -2,7 +2,6 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
-import { ENV } from "./_core/env";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 // extractArticle is no longer needed - users paste text directly
@@ -54,7 +53,7 @@ export const appRouter = router({
       title: z.string().optional(),
       site: z.string().optional(),
       lang: z.string().optional(),
-      extracted: z.string().optional(),
+      extracted: z.string(),
       skin: z.string(),
       params: z.object({
         temperature: z.number().min(0).max(2),
@@ -63,7 +62,7 @@ export const appRouter = router({
         lengthRatio: z.number().min(0.5).max(1.5),
         humor: z.number().min(0).max(1).optional(),
         insightLevel: z.number().min(0).max(1).optional(),
-      }).optional(),
+      }),
       extras: z.object({
         addGlossary: z.boolean().optional(),
         addCore3: z.boolean().optional(),
@@ -78,20 +77,6 @@ export const appRouter = router({
           code: 'TOO_MANY_REQUESTS',
           message: '一日の変換回数上限（100回）に達しました。明日またお試しください。',
         });
-      }
-
-      // Get API key: environment variable > user settings > default test key
-      let apiKey = ENV.geminiApiKey; // Use environment variable first
-      
-      if (!apiKey) {
-        // Fall back to user settings if no environment variable
-        const settings = await getUserSettings(ctx.user.id);
-        if (settings && settings.encryptedApiKey) {
-          apiKey = settings.encryptedApiKey;
-        } else {
-          // Use default test key if no environment variable or user settings
-          apiKey = 'AIzaSyCOajXsqWpbJqjtIbVZHsEHkBdHH6m7UIE';
-        }
       }
 
       // Check if it's a custom skin
@@ -110,15 +95,7 @@ export const appRouter = router({
 
       const result = await transformArticle({
         ...input,
-        apiKey,
-        params: input.params || {
-          temperature: 0.7,
-          topP: 0.9,
-          maxOutputTokens: 4000,
-          lengthRatio: 1.0,
-          humor: 0.6,
-          insightLevel: 0.7,
-        },
+        apiKey: '', // Not needed - using Manus Built-in LLM API
       }, customSkinPrompt);
 
       // Save to history if user is authenticated
@@ -132,7 +109,7 @@ export const appRouter = router({
           lang: input.lang || "ja",
           skin: input.skin,
           params: JSON.stringify(input.params),
-          extracted: input.extracted,
+          // extracted: input.extracted,
           snippet,
           output: result.output,
           outputHash: undefined,
