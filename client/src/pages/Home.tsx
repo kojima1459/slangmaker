@@ -93,14 +93,26 @@ export default function Home() {
         origin: { y: 0.6 }
       });
 
-      // Navigate to reader page with result
-      setLocation("/reader", {
-        state: {
-          result: result.output,
-          skin: selectedSkin,
-          originalText: articleText,
-        }
-      });
+      // Save result to sessionStorage for Reader page
+      const readerData = {
+        result: {
+          output: result.output,
+          meta: {
+            skin: selectedSkin,
+          }
+        },
+        article: {
+          title: "変換結果",
+          site: "AISlang Maker",
+          url: "",
+          contentText: articleText,
+        },
+        skin: selectedSkin,
+      };
+      sessionStorage.setItem('readerData', JSON.stringify(readerData));
+
+      // Navigate to reader page
+      setLocation("/reader");
 
       toast.success(t('transformSuccess') || "変換が完了しました！");
     } catch (error: any) {
