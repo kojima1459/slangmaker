@@ -67,11 +67,6 @@ export default function Home() {
       return;
     }
 
-    if (!apiKey.trim()) {
-      toast.error(t('apiKeyRequired') || "APIキーを入力してください");
-      return;
-    }
-
     if (articleText.length > 10000) {
       toast.error(t('characterLimitExceeded') || "文字数が上限を超えています");
       return;
@@ -333,7 +328,7 @@ export default function Home() {
             {/* Transform Button */}
             <Button
               onClick={handleTransform}
-              disabled={isLoading || !articleText.trim() || !apiKey.trim()}
+              disabled={isLoading || !articleText.trim()}
               className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
