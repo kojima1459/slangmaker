@@ -19,7 +19,7 @@ const resources = {
       
       // フッター
       footer: {
-        description: 'AI技術を活用して職務経歴書を求人情報に最適化するWebアプリケーション',
+        description: 'ワンタップで言葉は変身、スタイルも印象も自在にカスタマイズ。言葉を美しくし個性を放て、唯一無二の自分表現工房',
         links: 'リンク',
         home: 'ホーム',
         guide: '使い方',
@@ -259,7 +259,7 @@ const resources = {
       
       // Footer
       footer: {
-        description: 'A web application that uses AI technology to optimize resumes for job information',
+        description: 'Transform your words with one tap, customize style and impression freely. Beautify your language, unleash your personality, your unique expression workshop',
         links: 'Links',
         home: 'Home',
         guide: 'Guide',
@@ -498,7 +498,7 @@ const resources = {
       
       // 页脚
       footer: {
-        description: '利用AI技术将简历优化为招聘信息的Web应用程序',
+        description: '一键转换语言，风格与印象自由定制。美化语言，释放个性，独一无二的表达工坊',
         links: '链接',
         home: '主页',
         guide: '使用指南',
