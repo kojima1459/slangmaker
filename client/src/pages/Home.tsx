@@ -6,13 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, Heart } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
+import { Footer } from "@/components/Footer";
 import confetti from "canvas-confetti";
 
 export default function Home() {
@@ -26,6 +28,7 @@ export default function Home() {
   const [lengthRatio, setLengthRatio] = useState(1.0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [favoriteSkins, setFavoriteSkins] = useState<string[]>([]);
 
   const transformMutation = trpc.transform.useMutation();
   const { t } = useTranslation();
@@ -37,6 +40,25 @@ export default function Home() {
       setApiKey(savedApiKey);
     }
   }, []);
+
+  // Load favorite skins from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favoriteSkins');
+    if (savedFavorites) {
+      setFavoriteSkins(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Toggle favorite skin
+  const toggleFavorite = (skinKey: string) => {
+    setFavoriteSkins(prev => {
+      const newFavorites = prev.includes(skinKey)
+        ? prev.filter(key => key !== skinKey)
+        : [...prev, skinKey];
+      localStorage.setItem('favoriteSkins', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  };
 
   // Check if first visit
   useEffect(() => {
@@ -244,25 +266,111 @@ export default function Home() {
             {/* Skin Selection */}
             <div className="space-y-4">
               <Label className="text-lg font-semibold">{t('skinStyle') || "スタイル選択"}</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {Object.entries(SKINS).map(([key, skin]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setSelectedSkin(key)}
-                    disabled={isLoading}
-                    className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
-                      selectedSkin === key
-                        ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
-                        : 'border-gray-200 hover:border-purple-300'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                    <div className="text-xs text-gray-600 line-clamp-2">
-                      {t(`skin.${key}_desc`) || skin.description}
+              
+              {/* Favorite Skins Section */}
+              {favoriteSkins.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-purple-700">{t('favoriteSkins') || "お気に入り"}</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {favoriteSkins.map((key) => {
+                      const skin = SKINS[key as keyof typeof SKINS];
+                      if (!skin) return null;
+                      return (
+                        <div key={key} className="relative">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedSkin(key)}
+                                  disabled={isLoading}
+                                  className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                                    selectedSkin === key
+                                      ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
+                                      : 'border-gray-200 hover:border-purple-300'
+                                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                >
+                                  <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
+                                  <div className="text-xs text-gray-600 line-clamp-2">
+                                    {t(`skin.${key}_desc`) || skin.description}
+                                  </div>
+                                </button>
+                              </TooltipTrigger>
+                              {skin.example && (
+                                <TooltipContent side="top" className="max-w-xs">
+                                  <p className="text-sm font-medium mb-1">{t('preview') || 'プレビュー'}</p>
+                                  <p className="text-xs">{skin.example}</p>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(key);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
+                          >
+                            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              
+              {/* All Skins */}
+              <div className="space-y-2">
+                {favoriteSkins.length > 0 && (
+                  <p className="text-sm font-medium text-gray-700">{t('allSkins') || "すべてのスキン"}</p>
+                )}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {Object.entries(SKINS).map(([key, skin]) => (
+                    <div key={key} className="relative">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSkin(key)}
+                              disabled={isLoading}
+                              className={`w-full p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                                selectedSkin === key
+                                  ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
+                                  : 'border-gray-200 hover:border-purple-300'
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
+                              <div className="text-xs text-gray-600 line-clamp-2">
+                                {t(`skin.${key}_desc`) || skin.description}
+                              </div>
+                            </button>
+                          </TooltipTrigger>
+                          {skin.example && (
+                            <TooltipContent side="top" className="max-w-xs">
+                              <p className="text-sm font-medium mb-1">{t('preview') || 'プレビュー'}</p>
+                              <p className="text-xs">{skin.example}</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(key);
+                        }}
+                        className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
+                      >
+                        <Heart className={`h-4 w-4 ${
+                          favoriteSkins.includes(key)
+                            ? 'fill-red-500 text-red-500'
+                            : 'text-gray-400'
+                        }`} />
+                      </button>
                     </div>
-                  </button>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -374,6 +482,12 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Footer */}
+      <Footer />
+      
+      {/* Tutorial Modal */}
+      {showTutorial && <Tutorial onClose={handleCloseTutorial} />}
     </div>
   );
 }

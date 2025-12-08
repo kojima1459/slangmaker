@@ -12,7 +12,27 @@ const resources = {
       tagline1: 'テキストを変換',
       tagline2: 'テキストを貼り付けて、お好みのスキン（文体）で読み直しましょう',
       transformButton: '変換する',
+      favoriteSkins: 'お気に入り',
+      allSkins: 'すべてのスキン',
+      preview: 'プレビュー',
       login: 'ログイン',
+      
+      // フッター
+      footer: {
+        description: 'AI技術を活用して職務経歴書を求人情報に最適化するWebアプリケーション',
+        links: 'リンク',
+        home: 'ホーム',
+        guide: '使い方',
+        legal: '法的情報',
+        privacy: 'プライバシーポリシー',
+        terms: '利用規約',
+        creatorInfo: '製作者・寄付情報',
+        creator: '製作者',
+        contact: '問い合わせ',
+        donation: '寄付先',
+        donationNote: '寄付いただけると励みになる為、より良いアプリ開発の為にご寄付を★',
+        madeWith: '作成：',
+      },
       
       // ホームページ
       transformArticle: 'テキストを変換',
@@ -196,9 +216,35 @@ const resources = {
           },
         },
       },
+      },
+      tutorial: {
+        step1: {
+          title: 'Paste Text',
+          description: 'Copy the text you want to transform and paste it into the text area',
+        },
+        step2: {
+          title: 'Select a Skin',
+          description: 'Choose your favorite skin (writing style). Choose from 13 types including Kansai banter and uncle-style text',
+        },
+        step3: {
+          title: 'Enter API Key',
+          description: 'Enter your Gemini API key. The API key is stored locally and is not sent to the server',
+        },
+        step4: {
+          title: 'Click Transform Button',
+          description: 'Click the "Transform" button and AI will rewrite the text in the selected skin',
+        },
+        step5: {
+          title: 'Enjoy the Result',
+          description: 'Read the transformed text and share it on Twitter or LINE',
+        },
+        prev: 'Previous',
+        next: 'Next',
+        start: 'Start',
+        skip: 'Skip',
+      },
     },
-  },
-  en: {
+    en: {
     translation: {
       // Header
       appTitle: 'AI Slang Maker',
@@ -206,7 +252,27 @@ const resources = {
       tagline1: 'Transform Text',
       tagline2: 'Paste text and rewrite it in your favorite skin (writing style)',
       transformButton: 'Transform',
+      favoriteSkins: 'Favorites',
+      allSkins: 'All Skins',
+      preview: 'Preview',
       login: 'Login',
+      
+      // Footer
+      footer: {
+        description: 'A web application that uses AI technology to optimize resumes for job information',
+        links: 'Links',
+        home: 'Home',
+        guide: 'Guide',
+        legal: 'Legal',
+        privacy: 'Privacy Policy',
+        terms: 'Terms of Service',
+        creatorInfo: 'Creator & Donation',
+        creator: 'Creator',
+        contact: 'Contact',
+        donation: 'Donation',
+        donationNote: 'Your donation encourages us to develop better apps ★',
+        madeWith: 'Made with',
+      },
       
       // Home page
       transformArticle: 'Transform Article',
@@ -389,9 +455,35 @@ const resources = {
           },
         },
       },
+      },
+      tutorial: {
+        step1: {
+          title: '粘贴文本',
+          description: '复制您想要转换的文本，然后粘贴到文本区域',
+        },
+        step2: {
+          title: '选择皮肤',
+          description: '选择您喜欢的皮肤（文体）。13种风格任您选择，包括关西风格、大叔风格等',
+        },
+        step3: {
+          title: '输入API密钥',
+          description: '输入您的Gemini API密钥。API密钥存储在本地，不会发送到服务器',
+        },
+        step4: {
+          title: '点击转换按钮',
+          description: '点击“转换”按钮，AI将以您选择的皮肤重写文本',
+        },
+        step5: {
+          title: '享受结果',
+          description: '阅读转换后的文本，并在Twitter或LINE上分享',
+        },
+        prev: '上一步',
+        next: '下一步',
+        start: '开始',
+        skip: '跳过',
+      },
     },
-  },
-  zh: {
+    zh: {
     translation: {
       // 标题
       appTitle: 'AI俗语制造器',
@@ -399,7 +491,27 @@ const resources = {
       tagline1: '转换文本',
       tagline2: '粘贴文本，用您喜欢的皮肤（文体）重写',
       transformButton: '转换',
+      favoriteSkins: '收藏',
+      allSkins: '所有皮肤',
+      preview: '预览',
       login: '登录',
+      
+      // 页脚
+      footer: {
+        description: '利用AI技术将简历优化为招聘信息的Web应用程序',
+        links: '链接',
+        home: '主页',
+        guide: '使用指南',
+        legal: '法律信息',
+        privacy: '隐私政策',
+        terms: '服务条款',
+        creatorInfo: '作者・捐赠',
+        creator: '作者',
+        contact: '联系方式',
+        donation: '捐赠',
+        donationNote: '您的捐赠鼓励我们开发更好的应用程序★',
+        madeWith: '制作于',
+      },
       
       // 主页
       transformArticle: '转换文章',
@@ -500,16 +612,17 @@ const resources = {
       
       // 页脚
       history: '历史',
-      guide: '使用指南',
-      share: '分享',
-      customSkinsPage: '自定义皮肤',
-      customSkinsButton: '自定义皮肤',
-      howToUse: '使用方法',
-      backToTop: '返回顶部',
-      appDescription: '通过以各种文体阅读新闻文章，有趣地学习日语表达',
-      creator: '作者',
-      contact: '联系方式',
-      donation: '捐赠',
+      guide: {
+        share: '分享',
+        customSkinsPage: '自定义皮肤',
+        customSkinsButton: '自定义皮肤',
+        howToUse: '使用方法',
+        backToTop: '返回顶部',
+        appDescription: '通过以各种文体阅读新闻文章，有趣地学习日语表达',
+        creator: '作者',
+        contact: '联系方式',
+        donation: '捐赠',
+      },
       
       // 教程
       'tutorial.step1.title': '粘贴文章',
