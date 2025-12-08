@@ -771,3 +771,19 @@
 - [x] server/routers.tsのtransform APIスキーマを確認
 - [x] extractedとparamsフィールドをオプションに変更
 - [x] 動作確認とチェックポイント作成
+
+## Transform API params分割代入エラー修正
+
+- [x] server/routers.tsのparams分割代入部分を確認
+- [x] paramsがundefinedの場合のデフォルト値を設定
+- [ ] 動作確認とチェックポイント作成
+
+## Transform API params分割代入エラー修正
+
+- [x] server/routers.tsのparams分割代入部分を確認
+- [x] paramsがundefinedの場合のデフォルト値を設定
+- [x] server/transform.tsのTransformRequest型でextractedとparamsをオプションに変更
+- [x] Home.tsxのtextをextractedに変更、paramsオブジェクトを正しく送信
+- [x] Home.tsxのスキン説明の翻訳キーを修正（skin.${key}_desc → skin.${key}.desc）
+- [x] ブラウザでUI表示を確認（スキン説明が正しく表示されることを確認）
+- [ ] チェックポイント作成

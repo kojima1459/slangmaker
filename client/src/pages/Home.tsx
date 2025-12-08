@@ -103,13 +103,14 @@ export default function Home() {
 
     try {
       const result = await transformMutation.mutateAsync({
-        text: articleText,
+        extracted: articleText,
         skin: selectedSkin,
-        temperature,
-        topP,
-        maxTokens,
-        lengthRatio,
-        apiKey: apiKey.trim(),
+        params: {
+          temperature,
+          topP,
+          maxOutputTokens: maxTokens,
+          lengthRatio,
+        },
       });
 
       // Show confetti animation
@@ -292,7 +293,7 @@ export default function Home() {
                                 >
                                   <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
                                   <div className="text-xs text-gray-600 line-clamp-2">
-                                    {t(`skin.${key}_desc`) || skin.description}
+                                    {t(`skin.${key}.desc`) || skin.description}
                                   </div>
                                 </button>
                               </TooltipTrigger>
@@ -343,7 +344,7 @@ export default function Home() {
                             >
                               <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
                               <div className="text-xs text-gray-600 line-clamp-2">
-                                {t(`skin.${key}_desc`) || skin.description}
+                                {t(`skin.${key}.desc`) || skin.description}
                               </div>
                             </button>
                           </TooltipTrigger>

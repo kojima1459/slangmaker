@@ -21,9 +21,9 @@ export interface TransformRequest {
   title?: string; // Optional now
   site?: string;
   lang?: string;
-  extracted: string; // Text content
+  extracted?: string; // Text content (optional)
   skin: string;
-  params: TransformParams;
+  params?: TransformParams; // Optional with defaults
   extras?: TransformExtras;
   apiKey: string;
 }

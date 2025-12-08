@@ -105,6 +105,14 @@ export const appRouter = router({
       const result = await transformArticle({
         ...input,
         apiKey: settings.encryptedApiKey,
+        params: input.params || {
+          temperature: 0.7,
+          topP: 0.9,
+          maxOutputTokens: 4000,
+          lengthRatio: 1.0,
+          humor: 0.6,
+          insightLevel: 0.7,
+        },
       }, customSkinPrompt);
 
       // Save to history if user is authenticated
