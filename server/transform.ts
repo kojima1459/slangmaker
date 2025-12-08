@@ -58,7 +58,7 @@ export async function transformArticle(request: TransformRequest, customSkinProm
     if (!skinDef) {
       throw new Error(`Unknown skin: ${skin}`);
     }
-    systemPrompt = buildSystemPrompt(skinDef, params, extras);
+    systemPrompt = buildSystemPrompt(skinDef, params || {}, extras);
     skinName = skinDef.name;
   }
 
@@ -85,9 +85,9 @@ Please rewrite this article in the "${skinName}" style.
       contents: userPrompt,
       config: {
         systemInstruction: systemPrompt,
-        temperature: params.temperature,
-        topP: params.topP,
-        maxOutputTokens: params.maxOutputTokens,
+        temperature: params?.temperature || 0.7,
+        topP: params?.topP || 0.9,
+        maxOutputTokens: params?.maxOutputTokens || 4000,
       },
     });
 

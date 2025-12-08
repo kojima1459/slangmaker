@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { ENV } from "./_core/env";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 // extractArticle is no longer needed - users paste text directly
@@ -79,13 +80,18 @@ export const appRouter = router({
         });
       }
 
-      // Get API key from user settings
-      const settings = await getUserSettings(ctx.user.id);
-      if (!settings || !settings.encryptedApiKey) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Gemini APIキーが設定されていません。設定ページで登録してください。',
-        });
+      // Get API key: environment variable > user settings > default test key
+      let apiKey = ENV.geminiApiKey; // Use environment variable first
+      
+      if (!apiKey) {
+        // Fall back to user settings if no environment variable
+        const settings = await getUserSettings(ctx.user.id);
+        if (settings && settings.encryptedApiKey) {
+          apiKey = settings.encryptedApiKey;
+        } else {
+          // Use default test key if no environment variable or user settings
+          apiKey = 'AIzaSyCOajXsqWpbJqjtIbVZHsEHkBdHH6m7UIE';
+        }
       }
 
       // Check if it's a custom skin
@@ -104,7 +110,7 @@ export const appRouter = router({
 
       const result = await transformArticle({
         ...input,
-        apiKey: settings.encryptedApiKey,
+        apiKey,
         params: input.params || {
           temperature: 0.7,
           topP: 0.9,

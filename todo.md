@@ -786,4 +786,35 @@
 - [x] Home.tsxのtextをextractedに変更、paramsオブジェクトを正しく送信
 - [x] Home.tsxのスキン説明の翻訳キーを修正（skin.${key}_desc → skin.${key}.desc）
 - [x] ブラウザでUI表示を確認（スキン説明が正しく表示されることを確認）
+- [x] チェックポイント作成 (version: 1ed3785b)
+
+## 環境変数GEMINI_API_KEYを使用するように修正
+
+- [ ] 環境変数GEMINI_API_KEYが設定されているか確認
+- [ ] server/_core/env.tsにGEMINI_API_KEYを追加
+- [ ] Home.tsxでAPIキー入力欄を環境変数優先に変更（環境変数がある場合は入力欄を非表示）
+- [ ] server/routers.tsで環境変数のAPIキーを優先的に使用
+- [ ] 動作確認とチェックポイント作成
+
+## 本番環境insertBeforeエラー修正
+
+- [ ] 開発サーバーを再起動して新しいGEMINI_API_KEYを反映
+- [ ] 開発環境で変換機能をテスト（新しいAPIキーで動作確認）
+- [ ] 本番環境の変換ボタンクリック時のNotFoundError: insertBeforeエラーの原因を特定
+- [ ] エラー修正（DOM操作のタイミング問題、条件付きレンダリング、useEffectの依存配列など）
+- [ ] 本番環境で変換機能をテスト
 - [ ] チェックポイント作成
+
+
+## 本番環境insertBeforeエラー修正
+
+### 問題点
+- Home.tsxで`setLocation("/reader", { state: {...} })`を使用していた
+- Reader.tsxで`sessionStorage`からデータを読み込もうとしていた
+- データ不一致によるinsertBeforeエラーが発生
+
+### 修正内容
+- [x] Home.tsxで変換成功後にsessionStorageにデータを保存
+- [x] Reader.tsxのデータ読み込みを修正
+- [x] 開発環境で動作確認（変換成功）
+- [x] チェックポイント作成予定

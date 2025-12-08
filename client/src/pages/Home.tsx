@@ -89,10 +89,7 @@ export default function Home() {
       return;
     }
 
-    if (!apiKey.trim()) {
-      toast.error(t('apiKeyRequired') || "APIキーを入力してください");
-      return;
-    }
+    // API key check removed - server will use environment variable if user key is not set
 
     if (articleText.length > 10000) {
       toast.error(t('characterLimitExceeded') || "文字数が上限を超えています");
@@ -120,14 +117,25 @@ export default function Home() {
         origin: { y: 0.6 }
       });
 
-      // Navigate to reader page with result
-      setLocation("/reader", {
-        state: {
-          result: result.output,
-          skin: selectedSkin,
-          originalText: articleText,
-        }
-      });
+      // Save data to sessionStorage for Reader page
+      sessionStorage.setItem('readerData', JSON.stringify({
+        result: {
+          output: result.output,
+          meta: {
+            skin: selectedSkin,
+          },
+        },
+        skin: selectedSkin,
+        article: {
+          title: '',
+          site: '',
+          url: '',
+          contentText: articleText,
+        },
+      }));
+
+      // Navigate to reader page
+      setLocation("/reader");
 
       toast.success(t('transformSuccess') || "変換が完了しました！");
     } catch (error: any) {
@@ -465,7 +473,7 @@ export default function Home() {
             {/* Transform Button */}
             <Button
               onClick={handleTransform}
-              disabled={isLoading || !articleText.trim() || !apiKey.trim()}
+              disabled={isLoading || !articleText.trim()}
               className="w-full h-20 text-2xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none rounded-2xl"
             >
               {isLoading ? (
