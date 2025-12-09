@@ -44,7 +44,6 @@ export default function Reader() {
   
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
-  const createShareMutation = trpc.share.create.useMutation();
 
   useEffect(() => {
     const stored = sessionStorage.getItem('readerData');
@@ -65,27 +64,7 @@ export default function Reader() {
     toast.success("コピーしました");
   };
 
-  const handleShare = async () => {
-    if (!isAuthenticated) {
-      toast.error("シェア機能を使用するにはログインが必要です");
-      return;
-    }
-
-    try {
-      const result = await createShareMutation.mutateAsync({
-        content: data.result.output,
-        sourceUrl: data.article.url && data.article.url.trim() !== '' ? data.article.url : undefined,
-        skin: data.skin,
-      });
-
-      const shareUrl = `${window.location.origin}${result.url}`;
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success("共有URLをコピーしました（24時間有効）");
-    } catch (error) {
-      console.error("Share error:", error);
-      toast.error("共有URLの生成に失敗しました");
-    }
-  };
+  // handleShare function removed - short URL feature has been removed
 
   const handleTwitterShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';

@@ -39,7 +39,6 @@ export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
-  const createShareMutation = trpc.share.create.useMutation();
   const { t } = useTranslation();
   
   const handleCustomSkinSaved = (skin: CustomSkin) => {
@@ -248,38 +247,7 @@ export default function Home() {
 
         // Navigate to reader page
         setLocation("/reader");
-
         toast.success(t('transformSuccess') || "変換が完了しました！");
-
-        // Auto-generate short URL and copy to clipboard
-        try {
-          const shareResult = await createShareMutation.mutateAsync({
-            content: result.output,
-            sourceUrl: undefined,
-            skin: selectedSkin,
-          });
-
-          const shareUrl = `${window.location.origin}${shareResult.url}`;
-          
-          // Check clipboard permission before writing
-          try {
-            await navigator.clipboard.writeText(shareUrl);
-            toast.success("短縮URLをクリップボードにコピーしました！", {
-              description: "変換結果を簡単にシェアできます",
-              duration: 5000,
-            });
-          } catch (clipboardError) {
-            // Clipboard permission denied - show URL in toast instead
-            console.warn("Clipboard permission denied:", clipboardError);
-            toast.info("短縮URLを生成しました", {
-              description: shareUrl,
-              duration: 8000,
-            });
-          }
-        } catch (shareError) {
-          console.error("Auto-share error:", shareError);
-          // Don't show error toast, as the main transformation succeeded
-        }
       }
     } catch (error: any) {
       console.error("Transform error:", error);
