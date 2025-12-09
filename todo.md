@@ -1198,3 +1198,14 @@
 - [x] Home.tsxのヒーローセクションにバッジを追加
 - [x] レスポンシブ対応（スマホ・PC両方で見やすく）
 - [ ] チェックポイント作成
+
+## Phase 25: SNSシェア時に#BuiltwithManusタグを自動追加
+
+### タスク
+- [x] Reader.tsxのX（Twitter）シェア機能に#BuiltwithManusタグを追加
+- [x] LINEシェア機能に#BuiltwithManusタグを追加
+- [x] FacebookシェアURLに#BuiltwithManusを含める
+- [x] LinkedInシェア機能に#BuiltwithManusを含める
+- [x] Instagramシェア時のガイドに#BuiltwithManusを記載
+- [ ] テスト検証
+- [ ] チェックポイント作成

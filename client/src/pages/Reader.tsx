@@ -89,27 +89,27 @@ export default function Reader() {
 
   const handleTwitterShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 120)}...\n\n${siteUrl}`;
+    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 100)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(tweetUrl, '_blank', 'width=550,height=420');
   };
 
   const handleLineShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...\n\n${siteUrl}`;
+    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 180)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
     const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
 
   const handleFacebookShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(`AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...`)}`;
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(`AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 180)}...\n\n#BuiltwithManus`)}`;
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };
 
   const handleLinkedInShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...`;
+    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 180)}...\n\n#BuiltwithManus`;
     const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}&summary=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };
@@ -117,7 +117,7 @@ export default function Reader() {
   const handleInstagramShare = () => {
     // Instagram does not support direct web sharing with text
     // Show a toast message to guide users to use the image generation feature
-    toast.info('Instagramへのシェアは「画像化」ボタンから画像を生成してご利用ください');
+    toast.info('Instagramへのシェアは「画像化」ボタンから画像を生成し、#BuiltwithManusタグを追加してご利用ください');
   };
 
   const handleBack = () => {
