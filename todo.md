@@ -1040,3 +1040,14 @@
 - [x] Home.tsxのシェア機能URLを修正
 - [x] ImageGenerator.tsxのフッターURLを修正
 - [ ] チェックポイント作成
+
+## Phase 13: スキン名エラー修正（2025-12-09）
+
+### 問題点
+- [ ] `genz_slang`というスキンが存在しないためエラーが発生
+- [ ] Home.tsxのサンプルボタンで使用されている
+
+### 修正内容
+- [x] shared/skins.tsを確認して存在するスキン名を特定（gen_z_slangが正しい名前）
+- [x] Home.tsxの`genz_slang`を`gen_z_slang`に修正
+- [ ] チェックポイント作成

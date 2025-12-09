@@ -426,7 +426,7 @@ export default function Home() {
                   className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-pink-50 hover:border-pink-300 transition-all"
                   onClick={() => {
                     setArticleText("政府は新しい環境政策を発表しました。、2030年までに二酸化炭素排出量の46%削減を目指し、再生可能エネルギーの利用を拡大します。この政策には賛否両論があり、産業界からは懸念の声が上がっていますが、環境団体は歓迎しています。");
-                    setSelectedSkin("genz_slang");
+                    setSelectedSkin("gen_z_slang");
                     toast.success("政治ニュース × Z世代スラングを設定しました！");
                   }}
                 >
