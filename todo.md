@@ -1209,3 +1209,122 @@
 - [x] Instagramシェア時のガイドに#BuiltwithManusを記載
 - [ ] テスト検証
 - [ ] チェックポイント作成
+
+## 優先度S・A項目の実装（CODE_REVIEW.md対応）
+
+### 優先度S項目（即座に実装）
+
+- [ ] LLMプロンプトインジェクション対策
+  - [ ] server/_core/llm-safety.ts 作成
+  - [ ] server/llm-safety.test.ts 作成
+  - [ ] server/routers.ts 修正（sanitizeForLLM使用）
+  - [ ] テスト実行・検証
+
+- [ ] 未認証ユーザーへのレート制限
+  - [ ] rate-limiter-flexible パッケージインストール
+  - [ ] server/_core/rate-limiter.ts 作成
+  - [ ] server/rate-limiter.test.ts 作成
+  - [ ] server/routers.ts 修正（レート制限チェック）
+  - [ ] テスト実行・検証
+
+- [ ] CSRF対策
+  - [ ] server/_core/csrf.ts 作成
+  - [ ] server/csrf.test.ts 作成
+  - [ ] server/_core/index.ts 修正（ミドルウェア追加）
+  - [ ] client/src/lib/trpc.ts 修正（CSRFトークン送信）
+  - [ ] client/index.html 修正（メタタグ追加）
+  - [ ] client/src/main.tsx 修正（トークン初期化）
+  - [ ] テスト実行・検証
+
+- [ ] 責務分離の改善
+  - [ ] server/services/TransformService.ts 作成
+  - [ ] server/services/TransformService.test.ts 作成
+  - [ ] server/routers.ts 修正（TransformService使用）
+  - [ ] テスト実行・検証
+
+### 優先度A項目（1-2週間以内）
+
+- [ ] DBエラーハンドリング改善
+  - [ ] server/db.ts 修正（指数バックオフ再接続）
+  - [ ] テスト実行・検証
+
+- [ ] LLM API同時実行数制限
+  - [ ] p-limit パッケージインストール
+  - [ ] server/_core/llm.ts 修正（同時実行数5に制限）
+  - [ ] テスト実行・検証
+
+- [ ] ロギング強化
+  - [ ] pino パッケージインストール
+  - [ ] server/_core/logger.ts 作成
+  - [ ] 全ファイルでlogger使用
+  - [ ] テスト実行・検証
+
+### E2Eテスト作成
+
+- [ ] Playwrightインストール
+  - [ ] @playwright/test パッケージインストール
+  - [ ] playwright.config.ts 作成
+
+- [ ] テストスイート1：成功パス（7件）
+  - [ ] 基本的なテキスト変換フロー
+  - [ ] 複数スキンでの変換
+  - [ ] 詳細設定でのパラメータ変更
+  - [ ] SNS共有機能
+  - [ ] 画像化機能
+  - [ ] コピー機能
+  - [ ] 言語切り替え
+
+- [ ] テストスイート2：エラーハンドリング（5件）
+  - [ ] 空テキスト入力
+  - [ ] 文字数超過
+  - [ ] スキン未選択
+  - [ ] APIタイムアウト
+  - [ ] APIエラー
+
+### テスト実行・検証
+
+- [ ] ユニットテスト実行（pnpm run test）
+- [ ] E2Eテスト実行（pnpm run test:e2e）
+- [ ] カバレッジ確認（90%以上）
+- [ ] ビルド検証（pnpm run build）
+
+### パフォーマンス測定
+
+- [ ] ベースライン測定
+  - [ ] 平均レスポンスタイム
+  - [ ] メモリ使用量
+  - [ ] CPU使用率
+
+- [ ] 負荷テスト
+  - [ ] 同時ユーザー数100
+  - [ ] リクエスト数1000/分
+
+### 最終確認
+
+- [ ] 全テストが通ることを確認
+- [ ] セキュリティ脆弱性が修正されたことを確認
+- [ ] パフォーマンス指標が目標値を達成
+- [ ] ドキュメント更新
+- [ ] チェックポイント保存
+
+## 優先度S・A項目の実装（CODE_REVIEW.mdより）
+
+### 優先度S項目（セキュリティ脆弱性4件）
+- [x] S-1: LLMプロンプトインジェクション対策（13テスト成功）
+- [x] S-2: レート制限（IPベース・ユーザーベース）（9テスト成功）
+- [x] S-3: CSRF対策（16テスト成功）
+- [x] S-4: 責務分離の改善（TransformService）（11テスト成功）
+
+### 優先度A項目（3件）
+- [x] A-1: DBエラーハンドリング改善（指数バックオフ再接続）（9テスト成功）
+- [x] A-2: LLM API同時実行数制限（p-limit）（8テスト成功）
+- [x] A-3: ロギング強化（pino）（12テスト成功）
+
+**合計: 78テスト成功**
+
+### 次のステップ
+- [ ] E2Eテスト作成（Playwright）
+- [ ] 全テスト実行と検証
+- [ ] パフォーマンス測定とレポート作成
+- [ ] チェックポイント保存
+- [ ] 結果報告
