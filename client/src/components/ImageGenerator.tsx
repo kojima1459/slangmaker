@@ -146,7 +146,7 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
         {/* フッター */}
         <div className="text-center">
           <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
-            iikae-maker.manus.space で今すぐ試す
+            slang-maker.manus.space で今すぐ試す
           </p>
         </div>
       </div>

@@ -1028,3 +1028,15 @@
 - [x] スキン名表示を「AIスラングメーカーで変換しました！」に統一
 - [ ] ブラウザでXシェア機能をテスト
 - [ ] チェックポイント作成
+
+## Phase 12: シェア機能URL修正（2025-12-09）
+
+### 問題点
+- [ ] シェア機能のURLが間違っている（https://iikae-maker.manus.space）
+- [ ] 正しいURLはhttps://slang-maker.manus.space
+
+### 修正内容
+- [x] Reader.tsxのシェア機能URLを修正
+- [x] Home.tsxのシェア機能URLを修正
+- [x] ImageGenerator.tsxのフッターURLを修正
+- [ ] チェックポイント作成
