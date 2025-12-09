@@ -1,4 +1,4 @@
-import { protectedProcedure } from "../_core/trpc";
+import { publicProcedure, protectedProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { transformArticle } from "../transform";
@@ -13,7 +13,7 @@ import { SNIPPET_LENGTH } from "@shared/constants";
  * Transform router
  * Handles article transformation with various skins
  */
-export const transformProcedure = protectedProcedure
+export const transformProcedure = publicProcedure
   .input(z.object({
     url: z.string().optional(),
     title: z.string().optional(),
@@ -37,13 +37,15 @@ export const transformProcedure = protectedProcedure
     }).optional(),
   }))
   .mutation(async ({ input, ctx }) => {
-    // Check rate limit
-    const rateLimit = await checkRateLimit(ctx.user.id);
-    if (!rateLimit.allowed) {
-      throw new TRPCError({
-        code: 'TOO_MANY_REQUESTS',
-        message: rateLimit.message || 'レート制限に達しました。',
-      });
+    // Check rate limit (skip if not logged in)
+    if (ctx.user) {
+      const rateLimit = await checkRateLimit(ctx.user.id);
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: rateLimit.message || 'レート制限に達しました。',
+        });
+      }
     }
 
     // Check if it's a custom skin
@@ -62,7 +64,7 @@ export const transformProcedure = protectedProcedure
     // Handle database-based custom skin (skin === 'custom_1', 'custom_2', etc.)
     else if (input.skin.startsWith('custom_')) {
       const customSkinId = parseInt(input.skin.replace('custom_', ''));
-      const customSkin = await getCustomSkinById(customSkinId, ctx.user.id);
+      const customSkin = await getCustomSkinById(customSkinId, ctx.user?.id || 0);
       if (!customSkin) {
         throw new TRPCError({
           code: 'NOT_FOUND',

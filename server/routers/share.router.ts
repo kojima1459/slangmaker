@@ -12,7 +12,7 @@ export const shareRouter = router({
   /**
    * Create a new share link
    */
-  create: protectedProcedure
+  create: publicProcedure
     .input(z.object({
       content: z.string(),
       sourceUrl: z.preprocess(
@@ -27,7 +27,7 @@ export const shareRouter = router({
 
       await createShareLink({
         id,
-        userId: ctx.user.id,
+        userId: ctx.user?.id || 0, // Use 0 for anonymous users
         content: input.content,
         sourceUrl: input.sourceUrl,
         skin: input.skin,

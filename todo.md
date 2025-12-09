@@ -1067,3 +1067,18 @@
 - [x] Home.tsxのフッターを「Made with MasahideKojima and Manus!」に変更
 - [x] ImageGenerator.tsxのフッターを「Made with MasahideKojima and Manus!」に変更
 - [ ] チェックポイント作成
+
+## Phase 17: 認証チェック修正（2025-12-09）
+
+### 問題
+- ログインなしで誰でも使えるはずなのに、サインアップを求められる
+
+### 修正内容
+- [x] App.tsxの認証チェックを確認（認証チェックなし）
+- [x] トップページ（Home.tsx）をログイン不要に設定（既にログイン不要）
+- [x] 変換機能（transform.router.ts）をログイン不要に設定（publicProcedureに変更）
+- [x] ctx.user使用箇所を修正（ログインなしでも動作するように）
+- [x] 他のルーターも確認（share.router.tsをpublicProcedureに変更）
+- [x] stats.router.tsは既にpublicProcedureを使用
+- [ ] ブラウザで動作確認
+- [ ] チェックポイント作成
