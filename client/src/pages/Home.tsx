@@ -28,6 +28,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
+  const createShareMutation = trpc.share.create.useMutation();
   const { t } = useTranslation();
 
   // Load API key from localStorage
@@ -115,6 +116,25 @@ export default function Home() {
       setLocation("/reader");
 
       toast.success(t('transformSuccess') || "変換が完了しました！");
+
+      // Auto-generate short URL and copy to clipboard
+      try {
+        const shareResult = await createShareMutation.mutateAsync({
+          content: result.output,
+          sourceUrl: undefined,
+          skin: selectedSkin,
+        });
+
+        const shareUrl = `${window.location.origin}${shareResult.url}`;
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("短縮URLをクリップボードにコピーしました！", {
+          description: "変換結果を簡単にシェアできます",
+          duration: 5000,
+        });
+      } catch (shareError) {
+        console.error("Auto-share error:", shareError);
+        // Don't show error toast, as the main transformation succeeded
+      }
     } catch (error: any) {
       console.error("Transform error:", error);
       
@@ -195,6 +215,51 @@ export default function Home() {
               <p className="text-xs text-blue-700">
                 APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます。
               </p>
+            </div>
+
+            {/* Sample Buttons */}
+            <div className="space-y-3">
+              <Label className="text-base font-semibold">
+                {t('quickSamples') || "ワンクリックサンプル"}
+              </Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-purple-50 hover:border-purple-300 transition-all"
+                  onClick={() => {
+                    setArticleText("日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。個人消費が堅調に推移し、企業の設備投資も増加しています。政府はこのトレンドが続くと予測していますが、国際情勢の不確実性がリスク要因となっています。");
+                    setSelectedSkin("kansai_banter");
+                    toast.success("経済ニュース × 関西弁を設定しました！");
+                  }}
+                >
+                  <span className="font-semibold text-purple-700">💰 経済ニュース × 関西弁</span>
+                  <span className="text-xs text-gray-600">「日本の経済は...」を関西弁で読む</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-pink-50 hover:border-pink-300 transition-all"
+                  onClick={() => {
+                    setArticleText("政府は新しい環境政策を発表しました。、2030年までに二酸化炭素排出量の46%削減を目指し、再生可能エネルギーの利用を拡大します。この政策には賛否両論があり、産業界からは懸念の声が上がっていますが、環境団体は歓迎しています。");
+                    setSelectedSkin("genz_slang");
+                    toast.success("政治ニュース × Z世代スラングを設定しました！");
+                  }}
+                >
+                  <span className="font-semibold text-pink-700">🏛️ 政治ニュース × Z世代</span>
+                  <span className="text-xs text-gray-600">「政府は新しい...」をZ世代スラングで</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-orange-50 hover:border-orange-300 transition-all"
+                  onClick={() => {
+                    setArticleText("今日、東京都内で大規模な交通渋滞が発生しました。朝の通勤ラッシュ時に電車の信号トラブルが発生し、約100万人の通勤・通学者に影響が出ました。鉄道会社は代替輸送を手配しましたが、多くの人が遅刻を余儀なくされました。");
+                    setSelectedSkin("rap_style");
+                    toast.success("社会ニュース × ラップ風を設定しました！");
+                  }}
+                >
+                  <span className="font-semibold text-orange-700">🎵 社会ニュース × ラップ</span>
+                  <span className="text-xs text-gray-600">「今日、東京都内で...」をラップ風で</span>
+                </Button>
+              </div>
             </div>
 
             {/* Article Text Input */}
