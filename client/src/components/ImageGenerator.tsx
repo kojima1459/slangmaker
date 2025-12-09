@@ -64,12 +64,14 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
           quality: 1.0,
           pixelRatio: 2, // 高解像度
           cacheBust: true, // キャッシュバスティング
+          skipFonts: true, // CORSエラー回避（外部フォントをスキップ）
         });
       } else {
         dataUrl = await htmlToImage.toJpeg(contentRef.current, {
           quality: 0.95,
           pixelRatio: 2,
           cacheBust: true,
+          skipFonts: true, // CORSエラー回避（外部フォントをスキップ）
         });
       }
       console.log('Image generated successfully, dataUrl length:', dataUrl.length);
