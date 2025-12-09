@@ -21,8 +21,8 @@ export function Tutorial({ onClose }: TutorialProps) {
 
   const steps: TutorialStep[] = [
     {
-      title: t('tutorial.step1.title', '記事を貼り付け'),
-      description: t('tutorial.step1.description', 'ニュース記事の本文をコピーして、テキストエリアに貼り付けます'),
+      title: t('tutorial.step1.title', 'テキストを貼り付け'),
+      description: t('tutorial.step1.description', '変換したいテキストをコピーして、テキストエリアに貼り付けます'),
       icon: '📋',
       animation: 'paste',
     },
@@ -33,8 +33,8 @@ export function Tutorial({ onClose }: TutorialProps) {
       animation: 'select',
     },
     {
-      title: t('tutorial.step3.title', '変換開始'),
-      description: t('tutorial.step3.description', 'APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます'),
+      title: t('tutorial.step3.title', '変換ボタンをクリック'),
+      description: t('tutorial.step3.description', '「変換する」ボタンをクリックします。APIキーの設定は不要です'),
       icon: '⚡',
       animation: 'key',
     },

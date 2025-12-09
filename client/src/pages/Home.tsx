@@ -305,17 +305,18 @@ export default function Home() {
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
-        <div className="container max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="container max-w-5xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            {/* Left: Navigation */}
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocation("/guide")}
                 className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
               >
-                <BookOpen className="h-4 w-4 mr-1.5" />
-                <span>{t('howToUse')}</span>
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">{t('howToUse')}</span>
               </Button>
               <Button
                 variant="ghost"
@@ -323,8 +324,8 @@ export default function Home() {
                 onClick={() => setLocation("/faq")}
                 className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
               >
-                <HelpCircle className="h-4 w-4 mr-1.5" />
-                <span>FAQ</span>
+                <HelpCircle className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">FAQ</span>
               </Button>
               <Button
                 variant="ghost"
@@ -332,11 +333,12 @@ export default function Home() {
                 onClick={() => setLocation("/history")}
                 className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
               >
-                <History className="h-4 w-4 mr-1.5" />
-                <span>履歴</span>
+                <History className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">履歴</span>
               </Button>
             </div>
-            <div className="flex items-center gap-3">
+            {/* Right: Share & Language */}
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -347,8 +349,8 @@ export default function Home() {
                 }}
                 className="text-gray-700 hover:text-blue-500 hover:bg-blue-50 transition-colors"
               >
-                <Share2 className="h-4 w-4 mr-1.5" />
-                <span>X</span>
+                <Share2 className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">X</span>
               </Button>
               <Button
                 variant="ghost"
@@ -360,8 +362,8 @@ export default function Home() {
                 }}
                 className="text-gray-700 hover:text-green-500 hover:bg-green-50 transition-colors"
               >
-                <Share2 className="h-4 w-4 mr-1.5" />
-                <span>LINE</span>
+                <Share2 className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">LINE</span>
               </Button>
               <LanguageSwitcher />
             </div>

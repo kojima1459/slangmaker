@@ -109,7 +109,8 @@ export default function Reader() {
 
   const handleLinkedInShare = () => {
     const siteUrl = 'https://slang-maker.manus.space';
-    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`;
+    const text = `AIスラングメーカーで変換しました！\n\n${data.result.output.substring(0, 200)}...`;
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}&summary=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };
 
