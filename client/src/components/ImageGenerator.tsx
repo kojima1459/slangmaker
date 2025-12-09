@@ -33,11 +33,12 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
   const contentRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('x');
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const { t } = useTranslation();
 
   const currentSize = SNS_SIZES[selectedSize];
 
-  const downloadImage = async (format: 'png' | 'jpeg') => {
+  const generateImage = async (format: 'png' | 'jpeg') => {
     if (!contentRef.current) {
       console.error('contentRef.current is null');
       toast.error('画像生成に失敗しました', {
@@ -73,48 +74,12 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
       }
       console.log('Image generated successfully, dataUrl length:', dataUrl.length);
 
-      // スマホ対応：Web Share APIを使用してカメラロールに保存
-      console.log('Creating download/share...');
-      
-      // dataURLをBlobに変換
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      const file = new File([blob], `slang-maker-${Date.now()}.${format}`, { type: `image/${format}` });
+      // 生成した画像を表示用に保存
+      setGeneratedImageUrl(dataUrl);
+      console.log('Image generated and displayed successfully');
 
-      // Web Share APIが利用可能かチェック（スマホの場合）
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'AIスラングメーカー',
-            text: `${skinName}で変換しました！`,
-          });
-          toast.success('画像を共有しました', {
-            description: 'カメラロールに保存するか、SNSで共有できます',
-          });
-          return;
-        } catch (shareError) {
-          // ユーザーがキャンセルした場合はエラーを表示しない
-          if ((shareError as Error).name !== 'AbortError') {
-            console.log('Share API failed, falling back to download:', shareError);
-          } else {
-            setIsGenerating(false);
-            return;
-          }
-        }
-      }
-
-      // フォールバック：通常のダウンロード（PCの場合）
-      const link = document.createElement('a');
-      link.download = `slang-maker-${Date.now()}.${format}`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      console.log('Download triggered successfully');
-
-      toast.success(t('imageGenerator.downloadSuccess') || '画像をダウンロードしました', {
-        description: t('imageGenerator.downloadSuccessDesc') || 'SNSで共有してみましょう！',
+      toast.success('画像を生成しました', {
+        description: 'スマホの方は画像を長押しして保存してください',
       });
     } catch (error) {
       console.error('画像生成エラー:', error);
@@ -266,33 +231,62 @@ SNS別最適サイズ
         </div>
       </div>
 
-      {/* ダウンロードボタン */}
-      <div className="flex gap-3 justify-center">
-        <Button
-          onClick={() => downloadImage('png')}
-          disabled={isGenerating}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-        >
-          {isGenerating ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="mr-2 h-4 w-4" />
-          )}
-          {t('imageGenerator.downloadPNG') || 'PNG形式でダウンロード'}
-        </Button>
-        <Button
-          onClick={() => downloadImage('jpeg')}
-          disabled={isGenerating}
-          variant="outline"
-        >
-          {isGenerating ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="mr-2 h-4 w-4" />
-          )}
-          {t('imageGenerator.downloadJPEG') || 'JPEG形式でダウンロード'}
-        </Button>
-      </div>
+      {/* 生成された画像の表示 */}
+      {generatedImageUrl && (
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 p-6 rounded-lg border-2 border-purple-300 dark:border-purple-600">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-2xl">📱</span>
+              <p className="text-lg font-semibold text-purple-800 dark:text-purple-100 animate-pulse">
+                画像を長押しして保存できます
+              </p>
+            </div>
+            <p className="text-sm text-center text-gray-600 dark:text-gray-300 mb-4">
+              スマホの方：画像を長押し→「画像を保存」でカメラロールに保存<br />
+              PCの方：画像を右クリック→「名前を付けて画像を保存」
+            </p>
+            <img
+              src={generatedImageUrl}
+              alt="生成された画像"
+              className="w-full rounded-lg shadow-lg border-2 border-white dark:border-gray-700"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 画像生成ボタン */}
+      {!generatedImageUrl && (
+        <div className="flex gap-3 justify-center">
+          <Button
+            onClick={() => generateImage('png')}
+            disabled={isGenerating}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          >
+            {isGenerating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            画像を生成
+          </Button>
+        </div>
+      )}
+
+      {/* 再生成ボタン */}
+      {generatedImageUrl && (
+        <div className="flex gap-3 justify-center">
+          <Button
+            onClick={() => {
+              setGeneratedImageUrl(null);
+              toast.info('サイズを変更して再生成できます');
+            }}
+            variant="outline"
+          >
+            別のサイズで再生成
+          </Button>
+        </div>
+      )}
 
       {/* 注意事項 */}
       <p className="text-sm text-center text-gray-500 dark:text-gray-400">
