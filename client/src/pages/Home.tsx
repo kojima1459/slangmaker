@@ -377,6 +377,20 @@ export default function Home() {
       <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
+          {/* Manus Campaign Badge */}
+          <div className="mb-6 flex justify-center">
+            <a
+              href="https://manus.im/ja/campaign/free-tokens"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-pulse"
+            >
+              <Zap className="w-4 h-4" />
+              <span className="text-sm font-bold">Manus 1兆トークンキャンペーン応募中</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+          
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
               <Sparkles className="w-12 h-12 text-purple-600 animate-pulse" />
