@@ -720,3 +720,64 @@
 ### 問題点
 - [ ] 共有ボタンクリック時にsourceUrlの検証エラーが発生（Invalid URL）
 - [ ] Home.tsxでsessionStorageに保存する際、urlフィールドが空文字列になっている
+
+### 修正内容
+- [x] ヘッダーを左寄せに変更（justify-start）
+- [x] 詳細設定の翻訳を追加（temperature, topP, maxTokens, summaryRatio）
+
+## ソーシャルメディアボタンのレイアウト修正
+
+### 問題点
+- [x] ソーシャルメディアボタンが画面からはみ出している（PC・スマホ両方）
+- [x] 「共有」ボタンと「変換結果」ラベルが不要
+
+### 修正内容
+- [x] 「共有」ボタンを削除
+- [x] 「変換結果」ラベルを削除
+- [x] ボタンを左詰めに配置（flex-wrap対応）
+- [x] スマホでも正しく表示されるように調整
+- [x] 「[NEWSSKINS]」→「[スラングメーカー]」に変更
+
+## コード品質改善とリファクタ
+
+### Phase 1: ルーター分割
+- [x] server/routers.tsを機能ごとに9ファイルに分割
+  - [x] auth.router.ts（認証関連）
+  - [x] transform.router.ts（変換機能）
+  - [x] settings.router.ts（ユーザー設定）
+  - [x] history.router.ts（変換履歴）
+  - [x] share.router.ts（共有機能）
+  - [x] feedback.router.ts（フィードバック）
+  - [x] favorites.router.ts（お気に入りスキン）
+  - [x] customSkins.router.ts（カスタムスキン）
+  - [x] rateLimit.router.ts（レート制限）
+  - [x] index.ts（メインルーター）
+
+### Phase 2: LLM API改善
+- [x] リトライロジック実装（Exponential Backoff + Jitter）
+- [x] タイムアウト機能追加（30秒）
+- [x] 詳細なログ出力
+
+### Phase 3: セキュリティ強化
+- [x] XSS対策（DOMPurify - 既に実装済み）
+- [x] レート制限強化（分単位 + 日単位）
+- [x] インメモリキャッシュ（Sliding Window方式）
+
+### Phase 4: マジックナンバーの定数化
+- [x] shared/constants.tsを作成
+- [x] 全ファイルで定数を使用
+
+### Phase 5: 不要コード削除
+- [x] ComponentShowcase.tsxを削除
+- [x] CORS設定の確認
+
+### Phase 6: E2Eテスト・CI・リスク分析
+- [x] E2Eテストコード生成（Playwright）
+- [x] GitHub Actions CI設定（既に存在）
+- [x] ライブラリ脆弱性調査（4件検出）
+- [x] ボトルネック予測（4箇所特定）
+- [x] 5年運用リスク分析（総予算1億8,758万円）
+- [x] 監視設計とアーキテクチャ改善ロードマップ作成
+
+## 最終チェックポイント作成
+- [ ] 最終チェックポイント作成

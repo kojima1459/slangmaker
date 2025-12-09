@@ -1,4 +1,10 @@
 import { ENV } from "./env";
+import { 
+  LLM_MAX_RETRIES, 
+  LLM_TIMEOUT_MS, 
+  LLM_BACKOFF_BASE_DELAY_MS, 
+  LLM_BACKOFF_MAX_DELAY_MS 
+} from "@shared/constants";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -265,7 +271,69 @@ const normalizeResponseFormat = ({
   };
 };
 
-export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
+/**
+ * Sleep for a given number of milliseconds
+ */
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Check if an error is retryable (5xx, 429, network errors)
+ */
+const isRetryableError = (error: any, statusCode?: number): boolean => {
+  // Network errors (fetch failures)
+  if (error.name === 'TypeError' || error.message.includes('fetch failed')) {
+    return true;
+  }
+
+  // Rate limit (429)
+  if (statusCode === 429) {
+    return true;
+  }
+
+  // Server errors (5xx)
+  if (statusCode && statusCode >= 500 && statusCode < 600) {
+    return true;
+  }
+
+  return false;
+};
+
+/**
+ * Calculate exponential backoff delay
+ * @param attempt - Current attempt number (0-indexed)
+ * @param baseDelay - Base delay in milliseconds (default: 1000ms)
+ * @param maxDelay - Maximum delay in milliseconds (default: 30000ms)
+ * @returns Delay in milliseconds with jitter
+ */
+const calculateBackoffDelay = (
+  attempt: number, 
+  baseDelay = LLM_BACKOFF_BASE_DELAY_MS, 
+  maxDelay = LLM_BACKOFF_MAX_DELAY_MS
+): number => {
+  // Exponential backoff: baseDelay * 2^attempt
+  const exponentialDelay = baseDelay * Math.pow(2, attempt);
+  
+  // Cap at maxDelay
+  const cappedDelay = Math.min(exponentialDelay, maxDelay);
+  
+  // Add jitter (±25%)
+  const jitter = cappedDelay * 0.25 * (Math.random() * 2 - 1);
+  
+  return Math.floor(cappedDelay + jitter);
+};
+
+/**
+ * Invoke LLM with automatic retry logic
+ * @param params - LLM invocation parameters
+ * @param maxRetries - Maximum number of retries (default: 3)
+ * @param timeout - Request timeout in milliseconds (default: 30000ms)
+ * @returns LLM response
+ */
+export async function invokeLLM(
+  params: InvokeParams, 
+  maxRetries = LLM_MAX_RETRIES,
+  timeout = LLM_TIMEOUT_MS
+): Promise<InvokeResult> {
   assertApiKey();
 
   const {
@@ -312,21 +380,84 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  let lastError: Error | null = null;
+  let lastStatusCode: number | undefined;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(resolveApiUrl(), {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${ENV.forgeApiKey}`,
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      lastStatusCode = response.status;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        const error = new Error(
+          `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+        );
+        
+        // Check if error is retryable
+        if (isRetryableError(error, response.status) && attempt < maxRetries) {
+          lastError = error;
+          const delay = calculateBackoffDelay(attempt);
+          console.warn(
+            `[LLM] Attempt ${attempt + 1}/${maxRetries + 1} failed with status ${response.status}. ` +
+            `Retrying in ${delay}ms...`
+          );
+          await sleep(delay);
+          continue;
+        }
+        
+        throw error;
+      }
+
+      return (await response.json()) as InvokeResult;
+      
+    } catch (error: any) {
+      lastError = error;
+      
+      // Handle timeout
+      if (error.name === 'AbortError') {
+        console.warn(`[LLM] Attempt ${attempt + 1}/${maxRetries + 1} timed out after ${timeout}ms`);
+        
+        if (attempt < maxRetries) {
+          const delay = calculateBackoffDelay(attempt);
+          console.warn(`[LLM] Retrying in ${delay}ms...`);
+          await sleep(delay);
+          continue;
+        }
+        
+        throw new Error(`LLM request timed out after ${timeout}ms (${maxRetries + 1} attempts)`);
+      }
+      
+      // Check if error is retryable
+      if (isRetryableError(error, lastStatusCode) && attempt < maxRetries) {
+        const delay = calculateBackoffDelay(attempt);
+        console.warn(
+          `[LLM] Attempt ${attempt + 1}/${maxRetries + 1} failed: ${error.message}. ` +
+          `Retrying in ${delay}ms...`
+        );
+        await sleep(delay);
+        continue;
+      }
+      
+      // Non-retryable error or max retries reached
+      throw error;
+    }
   }
 
-  return (await response.json()) as InvokeResult;
+  // Should never reach here, but just in case
+  throw lastError || new Error('LLM invocation failed after all retries');
 }

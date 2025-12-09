@@ -19,6 +19,7 @@ import {
   InsertCustomSkin
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { DAILY_LIMIT, MINUTE_LIMIT, MINUTE_WINDOW_MS, SNIPPET_LENGTH, DEFAULT_HISTORY_LIMIT, MAX_HISTORY_LIMIT } from '@shared/constants';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -414,9 +415,79 @@ export async function reorderFavoriteSkins(userId: number, orderedSkinKeys: stri
 // Rate Limiting
 // ============================================================
 
-const DAILY_LIMIT = 100;
+// Rate limit constants are imported from @shared/constants
 
-export async function checkRateLimit(userId: number): Promise<{ allowed: boolean; remaining: number }> {
+// In-memory cache for minute-based rate limiting
+// Structure: Map<userId, Array<timestamp>>
+const minuteRateLimitCache = new Map<number, number[]>();
+
+/**
+ * Clean up old entries from the minute rate limit cache
+ */
+function cleanupMinuteCache() {
+  const now = Date.now();
+  const cutoff = now - MINUTE_WINDOW_MS;
+  
+  for (const [userId, timestamps] of Array.from(minuteRateLimitCache.entries())) {
+    const validTimestamps = timestamps.filter((ts: number) => ts > cutoff);
+    if (validTimestamps.length === 0) {
+      minuteRateLimitCache.delete(userId);
+    } else {
+      minuteRateLimitCache.set(userId, validTimestamps);
+    }
+  }
+}
+
+// Clean up cache every minute
+setInterval(cleanupMinuteCache, MINUTE_WINDOW_MS);
+
+/**
+ * Check minute-based rate limit (in-memory)
+ * @param userId - User ID
+ * @returns Whether the request is allowed and remaining requests
+ */
+function checkMinuteRateLimit(userId: number): { allowed: boolean; remaining: number; message?: string } {
+  const now = Date.now();
+  const cutoff = now - MINUTE_WINDOW_MS;
+  
+  // Get user's recent requests
+  const timestamps = minuteRateLimitCache.get(userId) || [];
+  
+  // Filter out old timestamps
+  const recentTimestamps = timestamps.filter(ts => ts > cutoff);
+  
+  // Check if limit exceeded
+  if (recentTimestamps.length >= MINUTE_LIMIT) {
+    return { 
+      allowed: false, 
+      remaining: 0,
+      message: `1分間のリクエスト上限（${MINUTE_LIMIT}回）に達しました。少し待ってから再試行してください。`
+    };
+  }
+  
+  // Add current timestamp
+  recentTimestamps.push(now);
+  minuteRateLimitCache.set(userId, recentTimestamps);
+  
+  return { 
+    allowed: true, 
+    remaining: MINUTE_LIMIT - recentTimestamps.length 
+  };
+}
+
+/**
+ * Check rate limit (both daily and minute-based)
+ * @param userId - User ID
+ * @returns Whether the request is allowed, remaining requests, and optional message
+ */
+export async function checkRateLimit(userId: number): Promise<{ allowed: boolean; remaining: number; message?: string }> {
+  // First check minute-based rate limit (fast, in-memory)
+  const minuteCheck = checkMinuteRateLimit(userId);
+  if (!minuteCheck.allowed) {
+    return minuteCheck;
+  }
+  
+  // Then check daily rate limit (slower, database)
   const db = await getDb();
   if (!db) return { allowed: true, remaining: DAILY_LIMIT }; // Allow if DB is unavailable
 
@@ -446,7 +517,11 @@ export async function checkRateLimit(userId: number): Promise<{ allowed: boolean
     }
 
     if (record.count >= DAILY_LIMIT) {
-      return { allowed: false, remaining: 0 };
+      return { 
+        allowed: false, 
+        remaining: 0,
+        message: `一日の変換回数上限（${DAILY_LIMIT}回）に達しました。明日またお試しください。`
+      };
     }
 
     // Increment count
