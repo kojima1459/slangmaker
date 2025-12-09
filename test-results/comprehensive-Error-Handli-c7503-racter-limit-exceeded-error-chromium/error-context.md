@@ -1,0 +1,189 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - button "How to Use" [ref=e8] [cursor=pointer]:
+          - img
+          - generic [ref=e9]: How to Use
+        - button "FAQ" [ref=e10] [cursor=pointer]:
+          - img
+          - generic [ref=e11]: FAQ
+        - button "履歴" [ref=e12] [cursor=pointer]:
+          - img
+          - generic [ref=e13]: 履歴
+      - generic [ref=e14]:
+        - button "X" [ref=e15] [cursor=pointer]:
+          - img
+          - generic [ref=e16]: X
+        - button "LINE" [ref=e17] [cursor=pointer]:
+          - img
+          - generic [ref=e18]: LINE
+        - button "🇯🇵 日本語" [ref=e19] [cursor=pointer]:
+          - img
+          - generic [ref=e20]: 🇯🇵 日本語
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - link "Manus 1兆トークンキャンペーン応募中" [ref=e24] [cursor=pointer]:
+          - /url: https://manus.im/ja/campaign/free-tokens
+          - img [ref=e25]
+          - generic [ref=e27]: Manus 1兆トークンキャンペーン応募中
+          - img [ref=e28]
+        - generic [ref=e32]:
+          - img [ref=e34]
+          - heading "AI Slang Maker" [level=1] [ref=e37]
+        - generic [ref=e38]:
+          - paragraph [ref=e39]: テキストを変換
+          - paragraph [ref=e40]: テキストを貼り付けて、お好みのスキン（文体）で読み直しましょう
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Transform Article
+          - generic [ref=e44]: Paste article text and read it in your favorite style
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - paragraph [ref=e47]:
+              - text: ✨
+              - strong [ref=e48]: Manus Built-in LLM APIを使用しています
+            - paragraph [ref=e49]: APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます。
+          - generic [ref=e50]:
+            - generic [ref=e51]: quickSamples
+            - generic [ref=e52]:
+              - button "💰 経済ニュース × 関西弁 「日本の経済は...」を関西弁で読む" [ref=e53] [cursor=pointer]:
+                - generic [ref=e54]: 💰 経済ニュース × 関西弁
+                - generic [ref=e55]: 「日本の経済は...」を関西弁で読む
+              - button "🏛️ 政治ニュース × Z世代 「政府は新しい...」をZ世代スラングで" [ref=e56] [cursor=pointer]:
+                - generic [ref=e57]: 🏛️ 政治ニュース × Z世代
+                - generic [ref=e58]: 「政府は新しい...」をZ世代スラングで
+              - button "🎵 社会ニュース × ラップ 「今日、東京都内で...」をラップ風で" [ref=e59] [cursor=pointer]:
+                - generic [ref=e60]: 🎵 社会ニュース × ラップ
+                - generic [ref=e61]: 「今日、東京都内で...」をラップ風で
+          - generic [ref=e62]:
+            - generic [ref=e63]: Article Text *
+            - textbox "Article Text *" [active] [ref=e64]:
+              - /placeholder: Paste the article text here...
+              - text: 日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。これは予想を上回る結果となり、市場関係者からは歓迎の声が上がっています。
+            - generic [ref=e65]:
+              - paragraph [ref=e66]: Please copy & paste the article text you want to transform
+              - paragraph [ref=e67]: 7100 / 10000characters
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - img [ref=e70]
+              - generic [ref=e72]:
+                - paragraph [ref=e73]: スキン比較モード
+                - paragraph [ref=e74]: 同じテキストを2つのスキンで同時変換
+            - button "OFF" [ref=e75] [cursor=pointer]
+          - generic [ref=e76]:
+            - button "カスタムスキンを作成" [ref=e77] [cursor=pointer]:
+              - img
+              - text: カスタムスキンを作成
+            - paragraph [ref=e78]: 独自のプロンプトで、あなただけのスキンを作成できます
+          - generic [ref=e79]:
+            - generic [ref=e80]: Style (Skin)
+            - generic [ref=e81]:
+              - button "Kansai Dialect Explosive Kansai dialect style with exaggeration and tsukkomi" [ref=e82] [cursor=pointer]:
+                - generic [ref=e83]: Kansai Dialect
+                - generic [ref=e84]: Explosive Kansai dialect style with exaggeration and tsukkomi
+              - button "Detached Literary Detached literary style with cool first-person perspective and surreal metaphors" [ref=e85] [cursor=pointer]:
+                - generic [ref=e86]: Detached Literary
+                - generic [ref=e87]: Detached literary style with cool first-person perspective and surreal metaphors
+              - button "Suggestive Adult Suggestive adult style with direct expressions and comparisons" [ref=e88] [cursor=pointer]:
+                - generic [ref=e89]: Suggestive Adult
+                - generic [ref=e90]: Suggestive adult style with direct expressions and comparisons
+              - button "Middle-aged Man Style Nostalgic middle-aged man style with emojis and casual greetings" [ref=e91] [cursor=pointer]:
+                - generic [ref=e92]: Middle-aged Man Style
+                - generic [ref=e93]: Nostalgic middle-aged man style with emojis and casual greetings
+              - button "Poetic Emo Poetic emo style with surreal metaphors and personification" [ref=e94] [cursor=pointer]:
+                - generic [ref=e95]: Poetic Emo
+                - generic [ref=e96]: Poetic emo style with surreal metaphors and personification
+              - button "Philosophical Aphorism Style Aphoristic style using paradoxes and contrasts within 3 sentences" [ref=e97] [cursor=pointer]:
+                - generic [ref=e98]: Philosophical Aphorism Style
+                - generic [ref=e99]: Aphoristic style using paradoxes and contrasts within 3 sentences
+              - button "Engineer Style Mysterious style using pseudo-code and cryptic tags" [ref=e100] [cursor=pointer]:
+                - generic [ref=e101]: Engineer Style
+                - generic [ref=e102]: Mysterious style using pseudo-code and cryptic tags
+              - button "Logical Politician Style Argumentative style starting with definitions and discussing premises, corollaries, and boundary conditions" [ref=e103] [cursor=pointer]:
+                - generic [ref=e104]: Logical Politician Style
+                - generic [ref=e105]: Argumentative style starting with definitions and discussing premises, corollaries, and boundary conditions
+              - button "Quantitative Analyst Politician Style Style separating facts and arguments, discussing countermeasures and risks quantitatively" [ref=e106] [cursor=pointer]:
+                - generic [ref=e107]: Quantitative Analyst Politician Style
+                - generic [ref=e108]: Style separating facts and arguments, discussing countermeasures and risks quantitatively
+              - button "Passionate Speech Style Speech style using tautology and everyday metaphors, ending with \"to move forward\"" [ref=e109] [cursor=pointer]:
+                - generic [ref=e110]: Passionate Speech Style
+                - generic [ref=e111]: Speech style using tautology and everyday metaphors, ending with "to move forward"
+              - button "Gen Z Slang Gen Z slang style with youth language like \"Maji\", \"Yabai\", \"Emoi\"" [ref=e112] [cursor=pointer]:
+                - generic [ref=e113]: Gen Z Slang
+                - generic [ref=e114]: Gen Z slang style with youth language like "Maji", "Yabai", "Emoi"
+              - button "Rap Style Rap style with rhymes and rhythm" [ref=e115] [cursor=pointer]:
+                - generic [ref=e116]: Rap Style
+                - generic [ref=e117]: Rap style with rhymes and rhythm
+              - button "Academic Paper Academic paper style with formal language including \"~dearu\" and citations" [ref=e118] [cursor=pointer]:
+                - generic [ref=e119]: Academic Paper
+                - generic [ref=e120]: Academic paper style with formal language including "~dearu" and citations
+              - button "Gyaru Slang Gyaru slang style with super high-tension language like \"Majikya\", \"Yabaen\"" [ref=e121] [cursor=pointer]:
+                - generic [ref=e122]: Gyaru Slang
+                - generic [ref=e123]: Gyaru slang style with super high-tension language like "Majikya", "Yabaen"
+              - button "Excessive Keigo Excessive keigo style with overly polite language like \"Makoto ni osore irimasu ga\"" [ref=e124] [cursor=pointer]:
+                - generic [ref=e125]: Excessive Keigo
+                - generic [ref=e126]: Excessive keigo style with overly polite language like "Makoto ni osore irimasu ga"
+          - button "Advanced Settings" [ref=e128] [cursor=pointer]:
+            - img
+            - text: Advanced Settings
+          - button "変換する" [ref=e129] [cursor=pointer]:
+            - img
+            - text: 変換する
+      - generic [ref=e130]:
+        - generic [ref=e132]:
+          - img [ref=e133]
+          - text: コミュニティ統計
+        - generic [ref=e137]:
+          - generic [ref=e139]:
+            - img [ref=e141]
+            - generic [ref=e143]:
+              - paragraph [ref=e144]: 総変換数
+              - paragraph [ref=e145]: "49"
+          - generic [ref=e147]:
+            - img [ref=e149]
+            - generic [ref=e151]:
+              - paragraph [ref=e152]: 24時間以内
+              - paragraph [ref=e153]: "17"
+          - generic [ref=e155]:
+            - img [ref=e157]
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: 人気スキン
+              - generic [ref=e164]:
+                - generic [ref=e165]: 1. 関西ノリ風
+                - generic [ref=e166]: "28"
+              - generic [ref=e167]:
+                - generic [ref=e168]: 2. 詩的エモ風
+                - generic [ref=e169]: "4"
+              - generic [ref=e170]:
+                - generic [ref=e171]: 3. ギャル語風
+                - generic [ref=e172]: "3"
+    - contentinfo [ref=e173]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - heading "Creator & Donation Info" [level=3] [ref=e177]
+            - generic [ref=e178]:
+              - paragraph [ref=e179]:
+                - generic [ref=e180]: "Creator:"
+                - link "@kojima920" [ref=e181] [cursor=pointer]:
+                  - /url: https://twitter.com/kojima920
+              - paragraph [ref=e182]:
+                - generic [ref=e183]: "Contact:"
+                - link "mk19830920@gmail.com" [ref=e184] [cursor=pointer]:
+                  - /url: mailto:mk19830920@gmail.com
+              - paragraph [ref=e185]:
+                - generic [ref=e186]: "Donation:"
+                - text: "PayPayID: kojima1459"
+              - paragraph [ref=e187]: ★Your donation encourages us to develop better apps★
+          - generic [ref=e188]:
+            - heading "About This Site" [level=3] [ref=e189]
+            - paragraph [ref=e190]: AI Slang Maker is a free tool that can convert text into 13 different styles. You can also learn Japanese slang and expressions.
+        - generic [ref=e192]:
+          - paragraph [ref=e193]: © 2025 AI Slang Maker. All rights reserved.
+          - paragraph [ref=e194]: Made with MasahideKojima and Manus!
+```

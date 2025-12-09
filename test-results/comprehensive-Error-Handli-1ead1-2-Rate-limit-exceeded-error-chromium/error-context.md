@@ -1,0 +1,47 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - button "戻る" [ref=e6] [cursor=pointer]:
+        - img
+        - text: 戻る
+      - generic [ref=e7]:
+        - heading "変換結果" [level=1] [ref=e8]
+        - paragraph [ref=e9]: "AISlang Maker • スキン: kansai_banter"
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: "AISlang Maker • スキン: kansai_banter"
+        - generic [ref=e14]:
+          - button "原文と比較" [ref=e15] [cursor=pointer]:
+            - img
+            - text: 原文と比較
+          - button "コピー" [ref=e16] [cursor=pointer]:
+            - img
+            - text: コピー
+          - button "X" [ref=e17] [cursor=pointer]:
+            - img
+            - text: X
+          - button "LINE" [ref=e18] [cursor=pointer]:
+            - img
+            - text: LINE
+          - button "Facebook" [ref=e19] [cursor=pointer]:
+            - img
+            - text: Facebook
+          - button "LinkedIn" [ref=e20] [cursor=pointer]:
+            - img
+            - text: LinkedIn
+          - button "Instagram" [ref=e21] [cursor=pointer]:
+            - img
+            - text: Instagram
+          - button "画像化" [ref=e22] [cursor=pointer]:
+            - img
+            - text: 画像化
+      - generic [ref=e25]:
+        - paragraph [ref=e26]: えらいこっちゃ、えらいこっちゃで！日本の経済、2024年の第3四半期にな、前期と比べてなんと0.9%も成長したらしいやんか！
+        - paragraph [ref=e27]: ホンマかいな！？ってツッコミたくなるぐらい、予想を遥かに超えてきたで、これ。市場関係者も「え、マジで？」って、まるで宝くじ当たったみたいな顔して大歓迎しとるやろな。
+        - paragraph [ref=e28]: どんだけ景気回復したいねん！って話やけど、この数字はヤバいで。まるで551の豚まんが爆発的に売れるぐらいの勢いを感じるやん。これでやっと、みんなの財布のヒモもちょっと緩むんちゃうか？知らんけど。アカン、このノリ、止まらへんやで！
+        - paragraph [ref=e29]: "[スラングメーカー]"
+```

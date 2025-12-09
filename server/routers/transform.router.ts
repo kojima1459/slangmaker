@@ -8,6 +8,11 @@ import {
   createTransformHistory
 } from "../db";
 import { SNIPPET_LENGTH } from "@shared/constants";
+import { TransformService } from "../services/TransformService";
+import { limitedLLMCall } from "../_core/llm-concurrency";
+import { logger, logRequest, logLLM, logSecurity } from "../_core/logger";
+import { checkIpRateLimit } from "../_core/rate-limiter";
+import { sanitizeForLLM } from "../_core/llm-safety";
 
 /**
  * Transform router
@@ -37,64 +42,142 @@ export const transformProcedure = publicProcedure
     }).optional(),
   }))
   .mutation(async ({ input, ctx }) => {
-    // Check rate limit (skip if not logged in)
-    if (ctx.user) {
-      const rateLimit = await checkRateLimit(ctx.user.id);
-      if (!rateLimit.allowed) {
-        throw new TRPCError({
-          code: 'TOO_MANY_REQUESTS',
-          message: rateLimit.message || 'レート制限に達しました。',
-        });
-      }
-    }
+    const startTime = Date.now();
+    const userId = ctx.user?.id;
+    const ip = ctx.req?.ip || 'unknown';
 
-    // Check if it's a custom skin
-    let customSkinPrompt: string | undefined;
-    
-    // Handle localStorage-based custom skin (skin === 'custom')
-    if (input.skin === 'custom') {
-      if (!input.customPrompt) {
+    try {
+      // 1. Input sanitization (LLM safety)
+      let sanitizedExtracted: string;
+      try {
+        sanitizedExtracted = sanitizeForLLM(input.extracted, 10000);
+      } catch (error: any) {
+        logSecurity({
+          event: 'llm_injection_attempt',
+          userId,
+          ip,
+          details: { error: error.message },
+        });
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'カスタムスキンのプロンプトが指定されていません',
+          message: '入力テキストに不正な内容が含まれています',
         });
       }
-      customSkinPrompt = input.customPrompt;
-    }
-    // Handle database-based custom skin (skin === 'custom_1', 'custom_2', etc.)
-    else if (input.skin.startsWith('custom_')) {
-      const customSkinId = parseInt(input.skin.replace('custom_', ''));
-      const customSkin = await getCustomSkinById(customSkinId, ctx.user?.id || 0);
-      if (!customSkin) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'カスタムスキンが見つかりません',
-        });
+
+      // 2. Rate limiting (IP-based and user-based)
+      if (userId) {
+        // User-based rate limit (existing DB check)
+        const rateLimit = await checkRateLimit(userId);
+        if (!rateLimit.allowed) {
+          logSecurity({
+            event: 'rate_limit_exceeded',
+            userId,
+            ip,
+            details: { limit: 'user' },
+          });
+          throw new TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: rateLimit.message || 'レート制限に達しました。',
+          });
+        }
+      } else {
+        // IP-based rate limit for anonymous users
+        try {
+          await checkIpRateLimit(ip);
+        } catch (error) {
+          logSecurity({
+            event: 'rate_limit_exceeded',
+            ip,
+            details: { limit: 'ip' },
+          });
+          throw error;
+        }
       }
-      customSkinPrompt = customSkin.prompt;
-    }
 
-    const result = await transformArticle({
-      ...input,
-      apiKey: '', // Not needed - using Manus Built-in LLM API
-    }, customSkinPrompt);
+      // 3. Check if it's a custom skin
+      let customSkinPrompt: string | undefined;
+      
+      // Handle localStorage-based custom skin (skin === 'custom')
+      if (input.skin === 'custom') {
+        if (!input.customPrompt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'カスタムスキンのプロンプトが指定されていません',
+          });
+        }
+        customSkinPrompt = sanitizeForLLM(input.customPrompt, 5000);
+      }
+      // Handle database-based custom skin (skin === 'custom_1', 'custom_2', etc.)
+      else if (input.skin.startsWith('custom_')) {
+        const customSkinId = parseInt(input.skin.replace('custom_', ''));
+        const customSkin = await getCustomSkinById(customSkinId, userId || 0);
+        if (!customSkin) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'カスタムスキンが見つかりません',
+          });
+        }
+        customSkinPrompt = customSkin.prompt;
+      }
 
-    // Save to history if user is authenticated
-    if (ctx.user) {
-      const snippet = result.output.substring(0, SNIPPET_LENGTH);
-      await createTransformHistory({
-        userId: ctx.user.id,
-        url: input.url || "",
-        title: input.title || "記事",
-        site: input.site || "AI言い換えメーカー",
-        lang: input.lang || "ja",
-        skin: input.skin,
-        params: JSON.stringify(input.params),
-        snippet,
-        output: result.output,
-        outputHash: undefined,
+      // 4. Transform with LLM (with concurrency limit)
+      const llmStartTime = Date.now();
+      const result = await limitedLLMCall(async () => {
+        return await transformArticle({
+          ...input,
+          extracted: sanitizedExtracted,
+          apiKey: '', // Not needed - using Manus Built-in LLM API
+        }, customSkinPrompt);
       });
-    }
+      const llmDuration = Date.now() - llmStartTime;
 
-    return result;
+      // Log LLM operation
+      logLLM({
+        operation: 'transform',
+        model: 'gemini-2.5-flash',
+        userId,
+        tokensIn: result.meta?.tokensIn,
+        tokensOut: result.meta?.tokensOut,
+        duration: llmDuration,
+      });
+
+      // 5. Save to history if user is authenticated
+      if (userId) {
+        const snippet = result.output.substring(0, SNIPPET_LENGTH);
+        await createTransformHistory({
+          userId,
+          url: input.url || "",
+          title: input.title || "記事",
+          site: input.site || "AI言い換えメーカー",
+          lang: input.lang || "ja",
+          skin: input.skin,
+          params: JSON.stringify(input.params),
+          snippet,
+          output: result.output,
+          outputHash: undefined,
+        });
+      }
+
+      // Log successful request
+      const duration = Date.now() - startTime;
+      logRequest({
+        path: 'transform',
+        type: 'mutation',
+        userId,
+        duration,
+      });
+
+      return result;
+    } catch (error: any) {
+      // Log failed request
+      const duration = Date.now() - startTime;
+      logRequest({
+        path: 'transform',
+        type: 'mutation',
+        userId,
+        duration,
+        error,
+      });
+      throw error;
+    }
   });
