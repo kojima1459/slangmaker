@@ -1,0 +1,11 @@
+      
+      // 画像生成機能
+      imageGenerator: {
+        downloadSuccess: '画像をダウンロードしました',
+        downloadSuccessDesc: 'SNSで共有してみましょう！',
+        downloadError: '画像生成に失敗しました',
+        downloadErrorDesc: 'もう一度お試しください',
+        downloadPNG: 'PNG形式でダウンロード',
+        downloadJPEG: 'JPEG形式でダウンロード',
+        note: '※ 長文の場合、一部が省略されます。画像は1200x630pxで生成されます。',
+      },

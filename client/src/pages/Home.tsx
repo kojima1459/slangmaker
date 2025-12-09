@@ -9,12 +9,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
 import confetti from "canvas-confetti";
 import { HistoryStorage } from "@/types/history";
+import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
+import { getCustomSkin, deleteCustomSkin, type CustomSkin } from "@/lib/customSkinStorage";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -31,10 +33,32 @@ export default function Home() {
   // Compare mode states
   const [compareMode, setCompareMode] = useState(false);
   const [selectedSkin2, setSelectedSkin2] = useState("detached_lit");
+  
+  // Custom skin states
+  const [customSkin, setCustomSkin] = useState<CustomSkin | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const transformMutation = trpc.transform.useMutation();
   const createShareMutation = trpc.share.create.useMutation();
   const { t } = useTranslation();
+  
+  const handleCustomSkinSaved = (skin: CustomSkin) => {
+    setCustomSkin(skin);
+    // Auto-select the custom skin
+    setSelectedSkin("custom");
+  };
+  
+  const handleDeleteCustomSkin = () => {
+    if (window.confirm("カスタムスキンを削除してもよろしいですか？")) {
+      deleteCustomSkin();
+      setCustomSkin(null);
+      // Switch to default skin if custom was selected
+      if (selectedSkin === "custom") {
+        setSelectedSkin("kansai_banter");
+      }
+      toast.success("カスタムスキンを削除しました");
+    }
+  };
   
   // Fetch global stats
   const { data: stats } = trpc.stats.getGlobalStats.useQuery(undefined, {
@@ -47,6 +71,12 @@ export default function Home() {
     if (savedApiKey) {
       setApiKey(savedApiKey);
     }
+  }, []);
+  
+  // Load custom skin from localStorage
+  useEffect(() => {
+    const stored = getCustomSkin();
+    setCustomSkin(stored);
   }, []);
 
   // Check if first visit
@@ -222,11 +252,22 @@ export default function Home() {
           });
 
           const shareUrl = `${window.location.origin}${shareResult.url}`;
-          await navigator.clipboard.writeText(shareUrl);
-          toast.success("短縮URLをクリップボードにコピーしました！", {
-            description: "変換結果を簡単にシェアできます",
-            duration: 5000,
-          });
+          
+          // Check clipboard permission before writing
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            toast.success("短縮URLをクリップボードにコピーしました！", {
+              description: "変換結果を簡単にシェアできます",
+              duration: 5000,
+            });
+          } catch (clipboardError) {
+            // Clipboard permission denied - show URL in toast instead
+            console.warn("Clipboard permission denied:", clipboardError);
+            toast.info("短縮URLを生成しました", {
+              description: shareUrl,
+              duration: 8000,
+            });
+          }
         } catch (shareError) {
           console.error("Auto-share error:", shareError);
           // Don't show error toast, as the main transformation succeeded
@@ -414,6 +455,70 @@ export default function Home() {
                 {compareMode ? "ON" : "OFF"}
               </Button>
             </div>
+
+            {/* Custom Skin Section */}
+            {customSkin && (
+              <div className="space-y-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-lg font-semibold text-amber-900">カスタムスキン</Label>
+                    <p className="text-sm text-amber-800 mt-1">{customSkin.name}</p>
+                    {customSkin.description && (
+                      <p className="text-xs text-amber-700 mt-1">{customSkin.description}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowCreateModal(true)}
+                      className="border-amber-300 hover:bg-amber-100"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleDeleteCustomSkin}
+                      className="border-red-300 hover:bg-red-100"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedSkin("custom")}
+                  disabled={isLoading}
+                  className={`w-full p-4 border-2 rounded-xl text-left transition-all ${
+                    selectedSkin === "custom"
+                      ? 'border-amber-500 bg-amber-100 shadow-md ring-2 ring-amber-300'
+                      : 'border-amber-300 hover:border-amber-400 bg-white'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <div className="font-semibold text-sm mb-1">✨ {customSkin.name}</div>
+                  <div className="text-xs text-gray-600">
+                    {customSkin.description || "カスタムプロンプト"}
+                  </div>
+                </button>
+              </div>
+            )}
+
+            {/* Create Custom Skin Button */}
+            {!customSkin && (
+              <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-dashed border-amber-300">
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  カスタムスキンを作成
+                </Button>
+                <p className="text-xs text-amber-700 mt-2 text-center">
+                  独自のプロンプトで、あなただけのスキンを作成できます
+                </p>
+              </div>
+            )}
 
             {/* Skin Selection */}
             <div className="space-y-4">
@@ -644,6 +749,14 @@ export default function Home() {
             </CardContent>
           </Card>
         )}
+        
+        {/* Create Custom Skin Modal */}
+        <CreateCustomSkinModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          onSave={handleCustomSkinSaved}
+          initialSkin={customSkin || undefined}
+        />
       </div>
     </div>
   );

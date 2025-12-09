@@ -3,12 +3,21 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Columns } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Columns, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import DOMPurify from "isomorphic-dompurify";
+import { ImageGenerator } from "@/components/ImageGenerator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ReaderData {
   article: {
@@ -31,6 +40,7 @@ export default function Reader() {
   const [data, setData] = useState<ReaderData | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
   
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
@@ -207,6 +217,31 @@ export default function Reader() {
                   <Linkedin className="mr-2 h-4 w-4 text-blue-700" />
                   LinkedIn
                 </Button>
+                <Dialog open={showImageGenerator} onOpenChange={setShowImageGenerator}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 border-orange-200"
+                    >
+                      <ImageIcon className="mr-2 h-4 w-4 text-orange-600" />
+                      画像化
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>画像として保存</DialogTitle>
+                      <DialogDescription>
+                        変換前後のテキストを画像として保存できます。SNSでシェアしてみましょう！
+                      </DialogDescription>
+                    </DialogHeader>
+                    <ImageGenerator
+                      originalText={data.article.contentText}
+                      transformedText={data.result.output}
+                      skinName={data.skin}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardHeader>
             <CardContent>

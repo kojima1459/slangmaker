@@ -1,0 +1,51 @@
+// 画像生成機能の翻訳定義
+export const imageGeneratorTranslations = {
+  ja: {
+    imageGenerator: {
+      downloadSuccess: '画像をダウンロードしました',
+      downloadSuccessDesc: 'SNSで共有してみましょう！',
+      downloadError: '画像生成に失敗しました',
+      downloadErrorDesc: 'もう一度お試しください',
+      downloadPNG: 'PNG形式でダウンロード',
+      downloadJPEG: 'JPEG形式でダウンロード',
+      note: '※ 長文の場合、一部が省略されます。画像は1200x630pxで生成されます。',
+      before: '変換前',
+      after: '変換後',
+      title: 'AI言い換えメーカー',
+      convertedWith: 'で変換',
+      tryNow: 'で今すぐ試す',
+    },
+  },
+  en: {
+    imageGenerator: {
+      downloadSuccess: 'Image downloaded successfully',
+      downloadSuccessDesc: 'Share it on social media!',
+      downloadError: 'Failed to generate image',
+      downloadErrorDesc: 'Please try again',
+      downloadPNG: 'Download as PNG',
+      downloadJPEG: 'Download as JPEG',
+      note: '* Long text may be truncated. Image size: 1200x630px.',
+      before: 'Before',
+      after: 'After',
+      title: 'AI Paraphrase Maker',
+      convertedWith: 'Converted with',
+      tryNow: 'Try now at',
+    },
+  },
+  zh: {
+    imageGenerator: {
+      downloadSuccess: '图片下载成功',
+      downloadSuccessDesc: '在社交媒体上分享吧！',
+      downloadError: '图片生成失败',
+      downloadErrorDesc: '请重试',
+      downloadPNG: '下载PNG格式',
+      downloadJPEG: '下载JPEG格式',
+      note: '* 长文本可能会被截断。图片尺寸：1200x630px。',
+      before: '转换前',
+      after: '转换后',
+      title: 'AI改写生成器',
+      convertedWith: '使用',
+      tryNow: '立即试用',
+    },
+  },
+};

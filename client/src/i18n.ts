@@ -25,8 +25,8 @@ const resources = {
       characterCount: '{{count}} / 10000文字',
       characterWarning: '変換したいテキストをコピー&ペーストしてください',
       characterLimit: '文字数が上限（10000文字）を超えています',
-      geminiApiKey: 'Gemini API Key',
-      geminiApiKeyPlaceholder: 'AIza...',
+      geminiApiKey: 'Manus Built-in LLM API',
+      geminiApiKeyPlaceholder: '自動で処理されます',
       geminiApiKeyNote: 'APIキーはローカルに保存され、サーバーには送信されません',
       skinStyle: 'スキン（文体）',
       transform: '変換する',
@@ -161,8 +161,8 @@ const resources = {
       guideWhatIsDesc1: 'AIスラングメーカー は、テキストを様々な「スキン（文体）」で楽しむためのアプリです。真面目なテキストを関西弁で読んだり、ギャル語で読んだり...同じ情報でも、文体が変わるだけで全く違った印象になります。',
       guideWhatIsDesc2: 'さらに、詳細設定をいじることで、AIの「創造性」や「出力の長さ」を自由に調整できます。パラメータを変えて遊ぶことで、自分好みの変換結果を見つけてみてください！',
       guideHowToUseTitle: '使い方',
-      guideStep1Title: '1. APIキーを入力',
-      guideStep1Desc: 'Gemini APIキーを入力して保存します。APIキーはブラウザに保存され、サーバーには送信されません。',
+      guideStep1Title: '1. テキストを入力',
+      guideStep1Desc: '何も設定を必要としません。Manusのサーバー一体型 LLM APIを使用しているため、APIキーを入力する必要はありません。変換したいテキストをコピーして、下のステップに進みましょう。',
       guideStep2Title: '2. テキストを貼り付け',
       guideStep2Desc: '変換したいテキストをコピーして貼り付けます。',
       guideStep3Title: '3. スキンを選ぶ',
@@ -188,7 +188,7 @@ const resources = {
         templateApplied: 'テンプレートを適用しました',
         templates: {
           title: '人気テンプレート',
-          description: '人気のテンプレートから1クリックでカスタムスキンを作成できます',
+          description: '人気テンプレートからワンクリックでカスタムスキンを作成',
           useTemplate: 'このテンプレートを使う',
           categories: {
             all: 'すべて',
@@ -198,6 +198,17 @@ const resources = {
             social: 'SNS',
           },
         },
+      },
+      
+      // 画像生成機能
+      imageGenerator: {
+        downloadSuccess: '画像をダウンロードしました',
+        downloadSuccessDesc: 'SNSで共有してみましょう！',
+        downloadError: '画像生成に失敗しました',
+        downloadErrorDesc: 'もう一度お試しください',
+        downloadPNG: 'PNG形式でダウンロード',
+        downloadJPEG: 'JPEG形式でダウンロード',
+        note: '※ 長文の場合、一部が省略されます。画像は1200x630pxで生成されます。',
       },
     },
   },
@@ -216,9 +227,9 @@ const resources = {
       characterCount: '{{count}} / 10000 characters',
       characterWarning: 'Please copy & paste the article text you want to transform',
       characterLimit: 'Character count exceeds the limit (10000 characters)',
-      geminiApiKey: 'Gemini API Key',
-      geminiApiKeyPlaceholder: 'AIza...',
-      geminiApiKeyNote: 'API key is stored locally and not sent to the server',
+      geminiApiKey: 'Manus Built-in LLM API',
+      geminiApiKeyPlaceholder: '自動で処理されます',
+      geminiApiKeyNote: '✨ Using Manus Built-in LLM API. No API key setup required.',
       skinStyle: 'Style (Skin)',
       transform: 'Transform',
       transforming: 'Transforming...',
@@ -389,6 +400,17 @@ const resources = {
           },
         },
       },
+      
+      // Image Generator
+      imageGenerator: {
+        downloadSuccess: 'Image downloaded successfully',
+        downloadSuccessDesc: 'Share it on social media!',
+        downloadError: 'Failed to generate image',
+        downloadErrorDesc: 'Please try again',
+        downloadPNG: 'Download as PNG',
+        downloadJPEG: 'Download as JPEG',
+        note: '* Long text may be truncated. Image size: 1200x630px.',
+      },
     },
   },
   zh: {
@@ -407,7 +429,7 @@ const resources = {
       characterWarning: '请复制并粘贴您想要转换的文章正文',
       characterLimit: '字符数超过限制（10000字符）',
       geminiApiKey: 'Gemini API密钥',
-      geminiApiKeyPlaceholder: 'AIza...',
+      geminiApiKeyPlaceholder: '自動で処理されます',
       geminiApiKeyNote: 'API密钥本地保存，不会发送到服务器',
       skinStyle: '风格（皮肤）',
       transform: '转换',
@@ -565,7 +587,7 @@ const resources = {
       
       // Custom Skins Page
       customSkinsDetail: {
-        templateApplied: '已应用模板',
+        templateApplied: '应用模板',
         templates: {
           title: '热门模板',
           description: '从热门模板一键创建自定义风格',
@@ -578,6 +600,17 @@ const resources = {
             social: '社交媒体',
           },
         },
+      },
+      
+      // 图片生成功能
+      imageGenerator: {
+        downloadSuccess: '图片下载成功',
+        downloadSuccessDesc: '在社交媒体上分享吧！',
+        downloadError: '图片生成失败',
+        downloadErrorDesc: '请重试',
+        downloadPNG: '下载PNG格式',
+        downloadJPEG: '下载JPEG格式',
+        note: '* 长文本可能会被截断。图片尺寸：1200x630px。',
       },
     },
   },
