@@ -1060,3 +1060,10 @@
 - [x] カスタムスキンでの変換テスト
 - [x] カスタムスキンの削除機能の確認
 - [x] ブラウザでの実際の動作確認
+
+## Phase 16: フッター修正（2025-12-09）
+
+### 修正内容
+- [x] Home.tsxのフッターを「Made with MasahideKojima and Manus!」に変更
+- [x] ImageGenerator.tsxのフッターを「Made with MasahideKojima and Manus!」に変更
+- [ ] チェックポイント作成

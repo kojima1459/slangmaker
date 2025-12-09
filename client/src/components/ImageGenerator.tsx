@@ -144,9 +144,12 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
         </div>
 
         {/* フッター */}
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
             slang-maker.manus.space で今すぐ試す
+          </p>
+          <p className="text-xl text-gray-500 dark:text-gray-400">
+            Made with MasahideKojima and Manus!
           </p>
         </div>
       </div>

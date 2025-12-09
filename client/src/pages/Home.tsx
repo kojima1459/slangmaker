@@ -851,14 +851,9 @@ export default function Home() {
               <p>
                 © 2025 {t('appTitle') || 'AIスラングメーカー'}. All rights reserved.
               </p>
-              <div className="flex items-center gap-4">
-                <p className="flex items-center gap-1">
-                  Made with <span className="text-red-500">❤️</span> for public health awareness
-                </p>
-                <p className="flex items-center gap-1">
-                  <span>👋</span> Made with Manus
-                </p>
-              </div>
+              <p>
+                Made with MasahideKojima and Manus!
+              </p>
             </div>
           </div>
         </div>
