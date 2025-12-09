@@ -118,10 +118,14 @@ export default function Home() {
     try {
       if (compareMode) {
         // Compare mode: transform with two skins in parallel
+        const skin1 = selectedSkin;
+        const skin2 = selectedSkin2;
+        
         const [result1, result2] = await Promise.all([
           transformMutation.mutateAsync({
             extracted: articleText,
-            skin: selectedSkin,
+            skin: skin1,
+            customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
             params: {
               temperature,
               topP,
@@ -131,7 +135,8 @@ export default function Home() {
           }),
           transformMutation.mutateAsync({
             extracted: articleText,
-            skin: selectedSkin2,
+            skin: skin2,
+            customPrompt: selectedSkin2 === "custom" && customSkin ? customSkin.prompt : undefined,
             params: {
               temperature,
               topP,
@@ -188,9 +193,12 @@ export default function Home() {
         toast.success("比較変換が完了しました！");
       } else {
         // Normal mode: single transformation
+        const skinToUse = selectedSkin;
+        
         const result = await transformMutation.mutateAsync({
           extracted: articleText,
-          skin: selectedSkin,
+          skin: skinToUse,
+          customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
           params: {
             temperature,
             topP,

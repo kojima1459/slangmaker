@@ -21,6 +21,7 @@ export const transformProcedure = protectedProcedure
     lang: z.string().optional(),
     extracted: z.string(),
     skin: z.string(),
+    customPrompt: z.string().optional(), // For localStorage-based custom skins
     params: z.object({
       temperature: z.number().min(0).max(2),
       topP: z.number().min(0).max(1),
@@ -47,7 +48,19 @@ export const transformProcedure = protectedProcedure
 
     // Check if it's a custom skin
     let customSkinPrompt: string | undefined;
-    if (input.skin.startsWith('custom_')) {
+    
+    // Handle localStorage-based custom skin (skin === 'custom')
+    if (input.skin === 'custom') {
+      if (!input.customPrompt) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'カスタムスキンのプロンプトが指定されていません',
+        });
+      }
+      customSkinPrompt = input.customPrompt;
+    }
+    // Handle database-based custom skin (skin === 'custom_1', 'custom_2', etc.)
+    else if (input.skin.startsWith('custom_')) {
       const customSkinId = parseInt(input.skin.replace('custom_', ''));
       const customSkin = await getCustomSkinById(customSkinId, ctx.user.id);
       if (!customSkin) {
