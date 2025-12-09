@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle, Twitter, MessageCircle } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
@@ -348,8 +348,9 @@ export default function Home() {
                   window.open(twitterUrl, '_blank');
                 }}
                 className="text-gray-700 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                title="Xでシェア"
               >
-                <Share2 className="h-4 w-4" />
+                <Twitter className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">X</span>
               </Button>
               <Button
@@ -361,8 +362,9 @@ export default function Home() {
                   window.open(lineUrl, '_blank');
                 }}
                 className="text-gray-700 hover:text-green-500 hover:bg-green-50 transition-colors"
+                title="LINEでシェア"
               >
-                <Share2 className="h-4 w-4" />
+                <MessageCircle className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">LINE</span>
               </Button>
               <LanguageSwitcher />

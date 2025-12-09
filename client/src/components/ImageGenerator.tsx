@@ -73,10 +73,40 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
       }
       console.log('Image generated successfully, dataUrl length:', dataUrl.length);
 
-      // ダウンロード
-      console.log('Creating download link...');
+      // スマホ対応：Web Share APIを使用してカメラロールに保存
+      console.log('Creating download/share...');
+      
+      // dataURLをBlobに変換
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `slang-maker-${Date.now()}.${format}`, { type: `image/${format}` });
+
+      // Web Share APIが利用可能かチェック（スマホの場合）
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'AIスラングメーカー',
+            text: `${skinName}で変換しました！`,
+          });
+          toast.success('画像を共有しました', {
+            description: 'カメラロールに保存するか、SNSで共有できます',
+          });
+          return;
+        } catch (shareError) {
+          // ユーザーがキャンセルした場合はエラーを表示しない
+          if ((shareError as Error).name !== 'AbortError') {
+            console.log('Share API failed, falling back to download:', shareError);
+          } else {
+            setIsGenerating(false);
+            return;
+          }
+        }
+      }
+
+      // フォールバック：通常のダウンロード（PCの場合）
       const link = document.createElement('a');
-      link.download = `iikae-maker-${Date.now()}.${format}`;
+      link.download = `slang-maker-${Date.now()}.${format}`;
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
@@ -206,18 +236,33 @@ SNS別最適サイズ
           </div>
         </div>
 
-        {/* フッター */}
-        <div className="text-center space-y-2">
-          <p className={`font-semibold text-gray-600 dark:text-gray-300 ${
-            currentSize.height < 800 ? 'text-base' : 'text-xl'
-          }`}>
-            slang-maker.manus.space で今すぐ試す
-          </p>
-          <p className={`text-gray-500 dark:text-gray-400 ${
-            currentSize.height < 800 ? 'text-xs' : 'text-base'
-          }`}>
-            Made with MasahideKojima and Manus!
-          </p>
+        {/* フッター：透かしロゴを右下に配置 */}
+        <div className="relative">
+          <div className="text-center space-y-2">
+            <p className={`font-semibold text-gray-600 dark:text-gray-300 ${
+              currentSize.height < 800 ? 'text-base' : 'text-xl'
+            }`}>
+              slang-maker.manus.space で今すぐ試す
+            </p>
+            <p className={`text-gray-500 dark:text-gray-400 ${
+              currentSize.height < 800 ? 'text-xs' : 'text-base'
+            }`}>
+              Made with MasahideKojima and Manus!
+            </p>
+          </div>
+          {/* 透かしロゴ：右下に固定 */}
+          <div className="absolute bottom-0 right-0 flex items-center gap-2 opacity-60">
+            <span className={`font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ${
+              currentSize.height < 800 ? 'text-xs' : 'text-sm'
+            }`}>
+              AIスラングメーカー
+            </span>
+            <span className={`text-gray-500 dark:text-gray-400 ${
+              currentSize.height < 800 ? 'text-xs' : 'text-sm'
+            }`}>
+              slang-maker.manus.space
+            </span>
+          </div>
         </div>
       </div>
 
