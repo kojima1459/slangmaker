@@ -422,17 +422,17 @@ export default function Home() {
             {/* API Key Info - Using Manus Built-in LLM API */}
             <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
-                ✨ <strong>Manus Built-in LLM APIを使用しています</strong>
+                <strong>{t('manusBuiltInLLM.title')}</strong>
               </p>
               <p className="text-xs text-blue-700">
-                APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます。
+                {t('manusBuiltInLLM.description')}
               </p>
             </div>
 
             {/* Sample Buttons */}
             <div className="space-y-3">
               <Label className="text-base font-semibold">
-                {t('quickSamples') || "ワンクリックサンプル"}
+                {t('quickSamples')}
               </Label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Button
@@ -441,11 +441,11 @@ export default function Home() {
                   onClick={() => {
                     setArticleText("日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。個人消費が堅調に推移し、企業の設備投資も増加しています。政府はこのトレンドが続くと予測していますが、国際情勢の不確実性がリスク要因となっています。");
                     setSelectedSkin("kansai_banter");
-                    toast.success("経済ニュース × 関西弁を設定しました！");
+                    toast.success(t('sample.economy.toast'));
                   }}
                 >
-                  <span className="font-semibold text-purple-700">💰 経済ニュース × 関西弁</span>
-                  <span className="text-xs text-gray-600">「日本の経済は...」を関西弁で読む</span>
+                  <span className="font-semibold text-purple-700">{t('sample.economy.title')}</span>
+                  <span className="text-xs text-gray-600">{t('sample.economy.desc')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -453,11 +453,11 @@ export default function Home() {
                   onClick={() => {
                     setArticleText("政府は新しい環境政策を発表しました。、2030年までに二酸化炭素排出量の46%削減を目指し、再生可能エネルギーの利用を拡大します。この政策には賛否両論があり、産業界からは懸念の声が上がっていますが、環境団体は歓迎しています。");
                     setSelectedSkin("gen_z_slang");
-                    toast.success("政治ニュース × Z世代スラングを設定しました！");
+                    toast.success(t('sample.politics.toast'));
                   }}
                 >
-                  <span className="font-semibold text-pink-700">🏛️ 政治ニュース × Z世代</span>
-                  <span className="text-xs text-gray-600">「政府は新しい...」をZ世代スラングで</span>
+                  <span className="font-semibold text-pink-700">{t('sample.politics.title')}</span>
+                  <span className="text-xs text-gray-600">{t('sample.politics.desc')}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -465,11 +465,11 @@ export default function Home() {
                   onClick={() => {
                     setArticleText("今日、東京都内で大規模な交通渋滞が発生しました。朝の通勤ラッシュ時に電車の信号トラブルが発生し、約100万人の通勤・通学者に影響が出ました。鉄道会社は代替輸送を手配しましたが、多くの人が遅刻を余儀なくされました。");
                     setSelectedSkin("rap_style");
-                    toast.success("社会ニュース × ラップ風を設定しました！");
+                    toast.success(t('sample.social.toast'));
                   }}
                 >
-                  <span className="font-semibold text-orange-700">🎵 社会ニュース × ラップ</span>
-                  <span className="text-xs text-gray-600">「今日、東京都内で...」をラップ風で</span>
+                  <span className="font-semibold text-orange-700">{t('sample.social.title')}</span>
+                  <span className="text-xs text-gray-600">{t('sample.social.desc')}</span>
                 </Button>
               </div>
             </div>
@@ -875,7 +875,7 @@ export default function Home() {
             </div>
             <div className="text-center mt-4">
               <p className="text-xs text-gray-500">
-                リリース日: 2025/12/6 大安・一粒万倍日
+                {t('footer.releaseDate')}
               </p>
             </div>
           </div>

@@ -1370,3 +1370,26 @@
 - [x] Home.tsxのフッターにリリース日を追加
 - [x] 目立たない小さなテキストで表示（text-xs text-gray-500）
 - [ ] チェックポイント保存
+
+## 多言語対応の最終修正
+
+### 問題点
+- [x] 「Manus Built-in LLM APIを使用しています」ボックスが日本語のまま
+- [x] **quickSamples**（クイックサンプル）が日本語のまま
+- [x] フッターの「リリース日: 2025/12/6 大安・一粒万倍日」が日本語のまま
+
+### 修正作業
+- [x] 翻訳ファイル（i18n.ts）に新しいキーを追加
+  - [x] manusBuiltInLLM.title
+  - [x] manusBuiltInLLM.description
+  - [x] quickSamples
+  - [x] sample.economy.title/desc/toast
+  - [x] sample.politics.title/desc/toast
+  - [x] sample.social.title/desc/toast
+  - [x] footer.releaseDate
+- [x] Home.tsxを修正して翻訳キーを使用
+- [x] 英語・中国語の翻訳を追加
+- [x] UI/UXが壊れていないことを確認
+- [x] 全言語で表示確認（スクリーンショットで確認済み）
+- [ ] チェックポイント保存
+- [ ] GitHubにプッシュ

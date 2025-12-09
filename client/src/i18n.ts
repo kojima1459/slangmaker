@@ -236,6 +236,27 @@ const resources = {
         },
       },
       
+      // Manus Built-in LLM API
+      manusBuiltInLLM: {
+        title: '✨ Manus Built-in LLM APIを使用しています',
+        description: 'APIキーの設定は不要です。Manusのサーバー側で自動的に処理されます。',
+      },
+      
+      // クイックサンプル
+      quickSamples: 'quickSamples',
+      'sample.economy.title': '💰 経済ニュース × 関西弁',
+      'sample.economy.desc': '「日本の経済は...」を関西弁で読む',
+      'sample.economy.toast': '経済ニュース × 関西弁を設定しました！',
+      'sample.politics.title': '🏛️ 政治ニュース × Z世代',
+      'sample.politics.desc': '「政府は新しい...」をZ世代スラングで',
+      'sample.politics.toast': '政治ニュース × Z世代スラングを設定しました！',
+      'sample.social.title': '🎵 社会ニュース × ラップ',
+      'sample.social.desc': '「今日、東京都内で...」をラップ風で',
+      'sample.social.toast': '社会ニュース × ラップ風を設定しました！',
+      
+      // フッター - リリース日
+      'footer.releaseDate': 'リリース日: 2025/12/6 大安・一粒万倍日',
+      
       // 画像生成機能
       imageGenerator: {
         downloadSuccess: '画像をダウンロードしました',
@@ -473,6 +494,27 @@ const resources = {
         },
       },
       
+      // Manus Built-in LLM API
+      manusBuiltInLLM: {
+        title: '✨ Using Manus Built-in LLM API',
+        description: 'No API key setup required. Automatically processed on Manus server side.',
+      },
+      
+      // Quick Samples
+      quickSamples: 'Quick Samples',
+      'sample.economy.title': '💰 Economy News × Kansai Dialect',
+      'sample.economy.desc': 'Read "Japan\'s economy..." in Kansai dialect',
+      'sample.economy.toast': 'Economy News × Kansai Dialect set!',
+      'sample.politics.title': '🏛️ Politics News × Gen Z',
+      'sample.politics.desc': 'Read "Government announced..." in Gen Z slang',
+      'sample.politics.toast': 'Politics News × Gen Z Slang set!',
+      'sample.social.title': '🎵 Social News × Rap',
+      'sample.social.desc': 'Read "Today, in Tokyo..." in rap style',
+      'sample.social.toast': 'Social News × Rap Style set!',
+      
+      // Footer - Release Date
+      'footer.releaseDate': 'Release Date: Dec 6, 2025 (Taian · Ichiryu Manbai Day)',
+      
       // Image Generator
       imageGenerator: {
         downloadSuccess: 'Image downloaded successfully',
@@ -608,6 +650,27 @@ const resources = {
       'footer.donationMessage': '您的捐赠将鼓励我们开发更好的应用',
       'footer.about': '关于本站',
       'footer.description': 'AI俗语制造器是一个可以将文本转换为13种不同风格的免费工具。您还可以学习日语俗语和表达方式。',
+      
+      // Manus Built-in LLM API
+      manusBuiltInLLM: {
+        title: '✨ 使用Manus内置LLM API',
+        description: '无需设置API密钥。由Manus服务器端自动处理。',
+      },
+      
+      // 快速示例
+      quickSamples: '快速示例',
+      'sample.economy.title': '💰 经济新闻 × 关西方言',
+      'sample.economy.desc': '用关西方言阅读“日本经济...”',
+      'sample.economy.toast': '经济新闻 × 关西方言已设置！',
+      'sample.politics.title': '🏛️ 政治新闻 × Z世代',
+      'sample.politics.desc': '用Z世代俗语阅读“政府宣布...”',
+      'sample.politics.toast': '政治新闻 × Z世代俗语已设置！',
+      'sample.social.title': '🎵 社会新闻 × 说唱',
+      'sample.social.desc': '用说唱风格阅读“今天，在东京...”',
+      'sample.social.toast': '社会新闻 × 说唱风格已设置！',
+      
+      // 页脚 - 发布日期
+      'footer.releaseDate': '发布日期: 2025/12/6 大安·一粒万倍日',
       
       // 教程
       'tutorial.step1.title': '粘贴文本',
