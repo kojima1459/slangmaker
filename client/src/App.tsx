@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Guide from "./pages/Guide";
 import Reader from "./pages/Reader";
 import About from "./pages/About";
+import History from "./pages/History";
+import Compare from "./pages/Compare";
 
 function Router() {
   return (
@@ -16,6 +18,8 @@ function Router() {
       <Route path={"/about"} component={About} />
       <Route path={"/guide"} component={Guide} />
       <Route path={"/reader"} component={Reader} />
+      <Route path={"/history"} component={History} />
+      <Route path={"/compare"} component={Compare} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

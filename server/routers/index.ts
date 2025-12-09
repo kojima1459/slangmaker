@@ -9,6 +9,7 @@ import { feedbackRouter } from "./feedback.router";
 import { favoritesRouter } from "./favorites.router";
 import { customSkinsRouter } from "./customSkins.router";
 import { rateLimitRouter } from "./rateLimit.router";
+import { statsRouter } from "./stats.router";
 
 /**
  * Main application router
@@ -25,6 +26,7 @@ export const appRouter = router({
   favorites: favoritesRouter,
   customSkins: customSkinsRouter,
   rateLimit: rateLimitRouter,
+  stats: statsRouter,
 });
 
 export type AppRouter = typeof appRouter;

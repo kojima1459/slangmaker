@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Columns } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
@@ -30,6 +30,7 @@ export default function Reader() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<ReaderData | null>(null);
   const [showOriginal, setShowOriginal] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
   
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
@@ -126,19 +127,19 @@ export default function Reader() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Original Article (Optional) */}
-          {showOriginal && (
+        <div className={`grid gap-6 ${compareMode ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+          {/* Original Article (Compare Mode) */}
+          {compareMode && (
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
+                  <FileText className="h-5 w-5 text-gray-600" />
                   原文
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="prose prose-sm max-w-none">
-                  <p className="whitespace-pre-wrap text-gray-700">
+                  <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
                     {data.article.contentText}
                   </p>
                 </div>
@@ -147,16 +148,18 @@ export default function Reader() {
           )}
 
           {/* Transformed Output */}
-          <Card className={`shadow-lg ${!showOriginal ? 'lg:col-span-2' : ''}`}>
+          <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="mb-4">AISlang Maker • スキン: {data.skin}</CardTitle>
               <div className="flex flex-wrap gap-2">
                 <Button
-                  variant="outline"
+                  variant={compareMode ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setShowOriginal(!showOriginal)}
+                  onClick={() => setCompareMode(!compareMode)}
+                  className={compareMode ? "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600" : ""}
                 >
-                  {showOriginal ? "原文を隠す" : "原文を表示"}
+                  <Columns className="mr-2 h-4 w-4" />
+                  {compareMode ? "比較表示中" : "原文と比較"}
                 </Button>
                 <Button
                   variant="outline"

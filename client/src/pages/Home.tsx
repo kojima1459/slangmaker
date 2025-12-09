@@ -9,11 +9,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
 import confetti from "canvas-confetti";
+import { HistoryStorage } from "@/types/history";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -26,10 +27,19 @@ export default function Home() {
   const [lengthRatio, setLengthRatio] = useState(1.0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Compare mode states
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedSkin2, setSelectedSkin2] = useState("detached_lit");
 
   const transformMutation = trpc.transform.useMutation();
   const createShareMutation = trpc.share.create.useMutation();
   const { t } = useTranslation();
+  
+  // Fetch global stats
+  const { data: stats } = trpc.stats.getGlobalStats.useQuery(undefined, {
+    refetchInterval: 60000, // Refetch every minute
+  });
 
   // Load API key from localStorage
   useEffect(() => {
@@ -76,64 +86,151 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const result = await transformMutation.mutateAsync({
-        extracted: articleText,
-        skin: selectedSkin,
-        params: {
-          temperature,
-          topP,
-          maxOutputTokens: maxTokens,
-          lengthRatio,
-        },
-      });
-
-      // Show confetti animation
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-
-      // Save result to sessionStorage for Reader page
-      const readerData = {
-        result: {
-          output: result.output,
-          meta: {
+      if (compareMode) {
+        // Compare mode: transform with two skins in parallel
+        const [result1, result2] = await Promise.all([
+          transformMutation.mutateAsync({
+            extracted: articleText,
             skin: selectedSkin,
-          }
-        },
-        article: {
-          title: "変換結果",
-          site: "AISlang Maker",
-          url: "",
-          contentText: articleText,
-        },
-        skin: selectedSkin,
-      };
-      sessionStorage.setItem('readerData', JSON.stringify(readerData));
+            params: {
+              temperature,
+              topP,
+              maxOutputTokens: maxTokens,
+              lengthRatio,
+            },
+          }),
+          transformMutation.mutateAsync({
+            extracted: articleText,
+            skin: selectedSkin2,
+            params: {
+              temperature,
+              topP,
+              maxOutputTokens: maxTokens,
+              lengthRatio,
+            },
+          }),
+        ]);
 
-      // Navigate to reader page
-      setLocation("/reader");
+        // Show confetti animation
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
 
-      toast.success(t('transformSuccess') || "変換が完了しました！");
+        // Save to history (localStorage)
+        try {
+          const skinName1 = Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin;
+          const skinName2 = Object.values(SKINS).find((s: any) => s.key === selectedSkin2)?.name || selectedSkin2;
+          HistoryStorage.add({
+            originalText: articleText,
+            transformedText: result1.output,
+            skinKey: selectedSkin,
+            skinName: skinName1,
+            isCompareMode: true,
+            skinKey2: selectedSkin2,
+            skinName2: skinName2,
+            transformedText2: result2.output,
+          });
+        } catch (historyError) {
+          console.error("Failed to save history:", historyError);
+        }
 
-      // Auto-generate short URL and copy to clipboard
-      try {
-        const shareResult = await createShareMutation.mutateAsync({
-          content: result.output,
-          sourceUrl: undefined,
+        // Save compare result to sessionStorage
+        const compareData = {
+          originalText: articleText,
+          result1: {
+            output: result1.output,
+            skinKey: selectedSkin,
+            skinName: Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin,
+          },
+          result2: {
+            output: result2.output,
+            skinKey: selectedSkin2,
+            skinName: Object.values(SKINS).find((s: any) => s.key === selectedSkin2)?.name || selectedSkin2,
+          },
+        };
+        sessionStorage.setItem('compareData', JSON.stringify(compareData));
+
+        // Navigate to compare page
+        setLocation("/compare");
+
+        toast.success("比較変換が完了しました！");
+      } else {
+        // Normal mode: single transformation
+        const result = await transformMutation.mutateAsync({
+          extracted: articleText,
           skin: selectedSkin,
+          params: {
+            temperature,
+            topP,
+            maxOutputTokens: maxTokens,
+            lengthRatio,
+          },
         });
 
-        const shareUrl = `${window.location.origin}${shareResult.url}`;
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("短縮URLをクリップボードにコピーしました！", {
-          description: "変換結果を簡単にシェアできます",
-          duration: 5000,
+        // Show confetti animation
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
         });
-      } catch (shareError) {
-        console.error("Auto-share error:", shareError);
-        // Don't show error toast, as the main transformation succeeded
+
+        // Save result to sessionStorage for Reader page
+        const readerData = {
+          result: {
+            output: result.output,
+            meta: {
+              skin: selectedSkin,
+            }
+          },
+          article: {
+            title: "変換結果",
+            site: "AISlang Maker",
+            url: "",
+            contentText: articleText,
+          },
+          skin: selectedSkin,
+        };
+        sessionStorage.setItem('readerData', JSON.stringify(readerData));
+
+        // Save to history (localStorage)
+        try {
+          const skinName = Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin;
+          HistoryStorage.add({
+            originalText: articleText,
+            transformedText: result.output,
+            skinKey: selectedSkin,
+            skinName: skinName,
+          });
+        } catch (historyError) {
+          console.error("Failed to save history:", historyError);
+          // Don't block the flow if history save fails
+        }
+
+        // Navigate to reader page
+        setLocation("/reader");
+
+        toast.success(t('transformSuccess') || "変換が完了しました！");
+
+        // Auto-generate short URL and copy to clipboard
+        try {
+          const shareResult = await createShareMutation.mutateAsync({
+            content: result.output,
+            sourceUrl: undefined,
+            skin: selectedSkin,
+          });
+
+          const shareUrl = `${window.location.origin}${shareResult.url}`;
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success("短縮URLをクリップボードにコピーしました！", {
+            description: "変換結果を簡単にシェアできます",
+            duration: 5000,
+          });
+        } catch (shareError) {
+          console.error("Auto-share error:", shareError);
+          // Don't show error toast, as the main transformation succeeded
+        }
       }
     } catch (error: any) {
       console.error("Transform error:", error);
@@ -169,6 +266,15 @@ export default function Home() {
             >
               <BookOpen className="h-4 w-4 mr-1.5" />
               <span>{t('howToUse')}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation("/history")}
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+            >
+              <History className="h-4 w-4 mr-1.5" />
+              <span>履歴</span>
             </Button>
             <LanguageSwitcher />
           </div>
@@ -290,9 +396,30 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Compare Mode Toggle */}
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+              <div className="flex items-center gap-3">
+                <Columns className="h-5 w-5 text-purple-600" />
+                <div>
+                  <p className="font-semibold text-gray-800">スキン比較モード</p>
+                  <p className="text-xs text-gray-600">同じテキストを2つのスキンで同時変換</p>
+                </div>
+              </div>
+              <Button
+                variant={compareMode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCompareMode(!compareMode)}
+                className={compareMode ? "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600" : ""}
+              >
+                {compareMode ? "ON" : "OFF"}
+              </Button>
+            </div>
+
             {/* Skin Selection */}
             <div className="space-y-4">
-              <Label className="text-lg font-semibold">{t('skinStyle') || "スタイル選択"}</Label>
+              <Label className="text-lg font-semibold">
+                {compareMode ? "スキン1を選択" : (t('skinStyle') || "スタイル選択")}
+              </Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {Object.entries(SKINS).map(([key, skin]) => (
                   <button
@@ -314,6 +441,33 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Skin 2 Selection (Compare Mode Only) */}
+            {compareMode && (
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">スキン2を選択</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {Object.entries(SKINS).map(([key, skin]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedSkin2(key)}
+                      disabled={isLoading}
+                      className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                        selectedSkin2 === key
+                          ? 'border-pink-500 bg-pink-50 shadow-md ring-2 ring-pink-200'
+                          : 'border-gray-200 hover:border-pink-300'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
+                      <div className="text-xs text-gray-600 line-clamp-2">
+                        {t(`skin.${key}.desc`) || skin.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Advanced Settings */}
             <Collapsible>
@@ -422,6 +576,74 @@ export default function Home() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Global Stats Section */}
+        {stats && (
+          <Card className="mt-8 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-purple-600" />
+                コミュニティ統計
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Total Transformations */}
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-purple-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-purple-100 rounded-full">
+                      <Sparkles className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">総変換数</p>
+                      <p className="text-2xl font-bold text-purple-700">
+                        {stats.totalTransformations.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-pink-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-pink-100 rounded-full">
+                      <Zap className="h-6 w-6 text-pink-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">24時間以内</p>
+                      <p className="text-2xl font-bold text-pink-700">
+                        {stats.recentTransformations.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Popular Skins */}
+                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-orange-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-orange-100 rounded-full">
+                      <Users className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600 mb-2">人気スキン</p>
+                      {stats.popularSkins.slice(0, 3).map((item, index) => {
+                        const skinData = Object.values(SKINS).find((s: any) => s.key === item.skin);
+                        return (
+                          <div key={item.skin} className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-gray-700">
+                              {index + 1}. {skinData?.name || item.skin}
+                            </span>
+                            <span className="text-orange-600 font-semibold">{item.count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
