@@ -4,6 +4,8 @@ import { Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 interface ImageGeneratorProps {
   originalText: string;
@@ -11,10 +13,29 @@ interface ImageGeneratorProps {
   skinName: string;
 }
 
+type SnsSize = {
+  name: string;
+  width: number;
+  height: number;
+  description: string;
+};
+
+const SNS_SIZES: Record<string, SnsSize> = {
+  x: { name: 'X (Twitter)', width: 1200, height: 675, description: '横長・タイムライン最適' },
+  instagram: { name: 'Instagram', width: 1080, height: 1080, description: '正方形・フィード最適' },
+  facebook: { name: 'Facebook', width: 1200, height: 630, description: '横長・シェア最適' },
+  line: { name: 'LINE', width: 1200, height: 630, description: '横長・トーク最適' },
+  linkedin: { name: 'LinkedIn', width: 1200, height: 627, description: '横長・ビジネス最適' },
+  custom: { name: 'カスタム', width: 1600, height: 1200, description: '高解像度・汎用' },
+};
+
 export function ImageGenerator({ originalText, transformedText, skinName }: ImageGeneratorProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string>('x');
   const { t } = useTranslation();
+
+  const currentSize = SNS_SIZES[selectedSize];
 
   const downloadImage = async (format: 'png' | 'jpeg') => {
     if (!contentRef.current) {
@@ -105,50 +126,96 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
   return (
     <div className="space-y-4">
       {/* プレビュー */}
+      {/* サイズ選択 */}
+      <div className="space-y-2 mb-4">
+        <Label htmlFor="sns-size" className="text-base font-semibold">
+SNS別最適サイズ
+</Label>
+        <Select value={selectedSize} onValueChange={setSelectedSize}>
+          <SelectTrigger id="sns-size" className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(SNS_SIZES).map(([key, size]) => (
+              <SelectItem key={key} value={key}>
+                {size.name} ({size.width}x{size.height}px) - {size.description}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* プレビュー */}
       <div
         ref={contentRef}
-        className="bg-white dark:bg-gray-900 p-12 rounded-lg"
-        style={{ width: '1600px', minHeight: '1200px' }}
+        className="bg-white dark:bg-gray-900 p-8 rounded-lg overflow-hidden"
+        style={{ 
+          width: `${currentSize.width}px`, 
+          height: `${currentSize.height}px`,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}
       >
         {/* ヘッダー */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            AI言い換えメーカー
+        <div className="text-center mb-6">
+          <h1 className={`font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 ${
+            currentSize.height < 800 ? 'text-3xl' : 'text-5xl'
+          }`}>
+            AIスラングメーカー
           </h1>
-          <p className="text-3xl font-semibold text-gray-700 dark:text-gray-200">
+          <p className={`font-semibold text-gray-700 dark:text-gray-200 ${
+            currentSize.height < 800 ? 'text-lg' : 'text-2xl'
+          }`}>
             {skinName}で変換
           </p>
         </div>
 
-        {/* 1カラムレイアウト */}
-        <div className="space-y-8 mb-12">
+        {/* レイアウト：サイズに応じて調整 */}
+        <div className={`flex-1 ${
+          currentSize.width / currentSize.height > 1.3 
+            ? 'grid grid-cols-2 gap-4' 
+            : 'space-y-4'
+        } mb-4`}>
           {/* 変換前 */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-8 rounded-xl shadow-xl border-4 border-purple-300 dark:border-purple-600">
-            <h2 className="text-4xl font-bold text-purple-800 dark:text-purple-100 mb-6 border-b-4 border-purple-500 pb-4">
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-4 rounded-lg shadow-lg border-2 border-purple-300 dark:border-purple-600 overflow-hidden">
+            <h2 className={`font-bold text-purple-800 dark:text-purple-100 mb-3 border-b-2 border-purple-500 pb-2 ${
+              currentSize.height < 800 ? 'text-xl' : 'text-3xl'
+            }`}>
               変換前
             </h2>
-            <p className="text-2xl text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium">
-              {truncateText(originalText, 1200)}
+            <p className={`text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
+              currentSize.height < 800 ? 'text-sm' : 'text-lg'
+            }`} style={{ maxHeight: `${currentSize.height * 0.35}px` }}>
+              {truncateText(originalText, currentSize.height < 800 ? 400 : 800)}
             </p>
           </div>
 
           {/* 変換後 */}
-          <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900 dark:to-pink-800 p-8 rounded-xl shadow-xl border-4 border-pink-300 dark:border-pink-600">
-            <h2 className="text-4xl font-bold text-pink-800 dark:text-pink-100 mb-6 border-b-4 border-pink-500 pb-4">
+          <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900 dark:to-pink-800 p-4 rounded-lg shadow-lg border-2 border-pink-300 dark:border-pink-600 overflow-hidden">
+            <h2 className={`font-bold text-pink-800 dark:text-pink-100 mb-3 border-b-2 border-pink-500 pb-2 ${
+              currentSize.height < 800 ? 'text-xl' : 'text-3xl'
+            }`}>
               変換後
             </h2>
-            <p className="text-2xl text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium">
-              {truncateText(transformedText, 1200)}
+            <p className={`text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
+              currentSize.height < 800 ? 'text-sm' : 'text-lg'
+            }`} style={{ maxHeight: `${currentSize.height * 0.35}px` }}>
+              {truncateText(transformedText, currentSize.height < 800 ? 400 : 800)}
             </p>
           </div>
         </div>
 
         {/* フッター */}
-        <div className="text-center space-y-4">
-          <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
+        <div className="text-center space-y-2">
+          <p className={`font-semibold text-gray-600 dark:text-gray-300 ${
+            currentSize.height < 800 ? 'text-base' : 'text-xl'
+          }`}>
             slang-maker.manus.space で今すぐ試す
           </p>
-          <p className="text-xl text-gray-500 dark:text-gray-400">
+          <p className={`text-gray-500 dark:text-gray-400 ${
+            currentSize.height < 800 ? 'text-xs' : 'text-base'
+          }`}>
             Made with MasahideKojima and Manus!
           </p>
         </div>
@@ -184,7 +251,7 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
 
       {/* 注意事項 */}
       <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-        {t('imageGenerator.note') || '※ 長文の場合、一部が省略されます。画像は1600x1200pxで生成されます。'}
+        ※ 長文の場合、一部が省略されます。画像は{currentSize.width}x{currentSize.height}pxで生成されます。
       </p>
     </div>
   );

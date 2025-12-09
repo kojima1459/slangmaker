@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Columns, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Instagram, Columns, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
@@ -114,6 +114,12 @@ export default function Reader() {
     window.open(shareUrl, '_blank', 'width=550,height=420');
   };
 
+  const handleInstagramShare = () => {
+    // Instagram does not support direct web sharing with text
+    // Show a toast message to guide users to use the image generation feature
+    toast.info('Instagramへのシェアは「画像化」ボタンから画像を生成してご利用ください');
+  };
+
   const handleBack = () => {
     sessionStorage.removeItem('readerData');
     setLocation("/");
@@ -216,6 +222,15 @@ export default function Reader() {
                 >
                   <Linkedin className="mr-2 h-4 w-4 text-blue-700" />
                   LinkedIn
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleInstagramShare}
+                  className="bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border-pink-200"
+                >
+                  <Instagram className="mr-2 h-4 w-4 text-pink-600" />
+                  Instagram
                 </Button>
                 <Dialog open={showImageGenerator} onOpenChange={setShowImageGenerator}>
                   <DialogTrigger asChild>
