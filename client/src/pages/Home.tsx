@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2 } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
@@ -308,6 +308,15 @@ export default function Home() {
               >
                 <BookOpen className="h-4 w-4 mr-1.5" />
                 <span>{t('howToUse')}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/faq")}
+                className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+              >
+                <HelpCircle className="h-4 w-4 mr-1.5" />
+                <span>FAQ</span>
               </Button>
               <Button
                 variant="ghost"

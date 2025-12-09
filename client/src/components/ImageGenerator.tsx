@@ -17,8 +17,15 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
   const { t } = useTranslation();
 
   const downloadImage = async (format: 'png' | 'jpeg') => {
-    if (!contentRef.current) return;
+    if (!contentRef.current) {
+      console.error('contentRef.current is null');
+      toast.error('画像生成に失敗しました', {
+        description: 'ページを再読み込みしてください',
+      });
+      return;
+    }
 
+    console.log('Starting image generation...', { format, element: contentRef.current });
     setIsGenerating(true);
     try {
       // メモリ使用量チェック（長文の場合）
@@ -29,6 +36,7 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
 
       let dataUrl: string;
       
+      console.log('Generating image with html-to-image...');
       if (format === 'png') {
         dataUrl = await htmlToImage.toPng(contentRef.current, {
           quality: 1.0,
@@ -42,18 +50,24 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
           cacheBust: true,
         });
       }
+      console.log('Image generated successfully, dataUrl length:', dataUrl.length);
 
       // ダウンロード
+      console.log('Creating download link...');
       const link = document.createElement('a');
       link.download = `iikae-maker-${Date.now()}.${format}`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      console.log('Download triggered successfully');
 
       toast.success(t('imageGenerator.downloadSuccess') || '画像をダウンロードしました', {
         description: t('imageGenerator.downloadSuccessDesc') || 'SNSで共有してみましょう！',
       });
     } catch (error) {
       console.error('画像生成エラー:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       
       // エラーの種類に応じたメッセージ
       let errorMessage = t('imageGenerator.downloadError') || '画像生成に失敗しました';

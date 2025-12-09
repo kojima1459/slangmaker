@@ -1,0 +1,145 @@
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, HelpCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+export default function FAQ() {
+  const [, setLocation] = useLocation();
+  const { t } = useTranslation();
+
+  const faqs = [
+    {
+      question: t('faq.q1') || "APIキーは必要ですか？",
+      answer: t('faq.a1') || "いいえ、APIキーは不要です。Manus Built-in LLM APIを使用しているため、サーバー側で自動的に処理されます。",
+    },
+    {
+      question: t('faq.q2') || "どのくらいの長さのテキストを変換できますか？",
+      answer: t('faq.a2') || "最大10,000文字まで変換できます。ただし、最適な結果を得るためには5,000文字以内を推奨しています。",
+    },
+    {
+      question: t('faq.q3') || "変換結果をシェアできますか？",
+      answer: t('faq.a3') || "はい、変換後に自動的に短縮URLが生成され、クリップボードにコピーされます。TwitterやLINEで簡単にシェアできます。",
+    },
+    {
+      question: t('faq.q4') || "画像としてダウンロードできますか？",
+      answer: t('faq.a4') || "はい、変換結果をPNGまたはJPEG形式の画像としてダウンロードできます。SNSでのシェアに便利です。",
+    },
+    {
+      question: t('faq.q5') || "カスタムスキンとは何ですか？",
+      answer: t('faq.a5') || "自分だけのオリジナルの文体を作成できる機能です。トーン、スタイル、特徴を指定して、独自のスキンを作成できます。",
+    },
+    {
+      question: t('faq.q6') || "スキン比較モードとは何ですか？",
+      answer: t('faq.a6') || "同じテキストを2つの異なるスキンで同時に変換できる機能です。スキンの違いを比較したい時に便利です。",
+    },
+    {
+      question: t('faq.q7') || "詳細設定の「温度」とは何ですか？",
+      answer: t('faq.a7') || "AIの創造性を制御するパラメータです。値が高いほどランダムで創造的な変換になり、低いほど安定した変換になります。",
+    },
+    {
+      question: t('faq.q8') || "変換結果が期待と違う場合はどうすればいいですか？",
+      answer: t('faq.a8') || "詳細設定で温度やTop-pを調整してみてください。また、同じテキストでも何度か変換すると異なる結果が得られます。",
+    },
+    {
+      question: t('faq.q9') || "履歴機能はありますか？",
+      answer: t('faq.a9') || "はい、過去の変換結果は自動的に保存され、ヘッダーの「履歴」ボタンからアクセスできます。",
+    },
+    {
+      question: t('faq.q10') || "多言語対応していますか？",
+      answer: t('faq.a10') || "はい、日本語、英語、中国語に対応しています。ヘッダーの言語切り替えボタンから変更できます。",
+    },
+    {
+      question: t('faq.q11') || "変換回数に制限はありますか？",
+      answer: t('faq.a11') || "現在、変換回数に制限はありません。自由にお使いいただけます。",
+    },
+    {
+      question: t('faq.q12') || "モバイルでも使えますか？",
+      answer: t('faq.a12') || "はい、レスポンシブデザインに対応しているため、スマートフォンやタブレットでも快適に使用できます。",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div className="container max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation("/")}
+              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1.5" />
+              <span>{t('backToTop') || 'トップに戻る'}</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <HelpCircle className="w-12 h-12 text-purple-600" />
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">
+              {t('faq.title') || 'よくある質問'}
+            </h1>
+          </div>
+          <p className="text-lg text-gray-600">
+            {t('faq.subtitle') || 'AIスラングメーカーに関するよくある質問と回答'}
+          </p>
+        </div>
+
+        {/* FAQ List */}
+        <div className="space-y-6">
+          {faqs.map((faq, index) => (
+            <Card key={index} className="shadow-lg border-0 hover:shadow-xl transition-shadow">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-orange-50">
+                <CardTitle className="text-xl flex items-start gap-3">
+                  <span className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    Q{index + 1}
+                  </span>
+                  <span className="flex-1">{faq.question}</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    A
+                  </span>
+                  <p className="flex-1 text-gray-700 leading-relaxed">{faq.answer}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Contact Section */}
+        <Card className="mt-12 shadow-2xl border-0 bg-gradient-to-r from-purple-100 via-pink-100 to-orange-100">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              {t('faq.contactTitle') || 'その他のご質問'}
+            </CardTitle>
+            <CardDescription className="text-center text-base">
+              {t('faq.contactDesc') || 'FAQに記載されていない質問がある場合は、お気軽にお問い合わせください'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-lg mb-4">
+              <strong>{t('footer.contact') || '問い合わせ'}:</strong>{' '}
+              <a href="mailto:mk19830920@gmail.com" className="text-blue-600 hover:text-blue-700 transition-colors">
+                mk19830920@gmail.com
+              </a>
+            </p>
+            <p className="text-sm text-gray-600">
+              {t('faq.responseTime') || '通常、24時間以内に返信いたします'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

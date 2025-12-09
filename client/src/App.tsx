@@ -10,6 +10,7 @@ import Reader from "./pages/Reader";
 import About from "./pages/About";
 import History from "./pages/History";
 import Compare from "./pages/Compare";
+import FAQ from "./pages/FAQ";
 
 function Router() {
   return (
@@ -20,6 +21,7 @@ function Router() {
       <Route path={"/reader"} component={Reader} />
       <Route path={"/history"} component={History} />
       <Route path={"/compare"} component={Compare} />
+      <Route path={"/faq"} component={FAQ} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
