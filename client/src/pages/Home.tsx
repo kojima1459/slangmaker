@@ -873,6 +873,11 @@ export default function Home() {
                 Made with MasahideKojima and Manus!
               </p>
             </div>
+            <div className="text-center mt-4">
+              <p className="text-xs text-gray-500">
+                リリース日: 2025/12/6 大安・一粒万倍日
+              </p>
+            </div>
           </div>
         </div>
       </footer>
