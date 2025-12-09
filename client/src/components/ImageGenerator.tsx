@@ -107,45 +107,45 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
       {/* プレビュー */}
       <div
         ref={contentRef}
-        className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-8 rounded-lg"
-        style={{ width: '1200px', minHeight: '630px' }}
+        className="bg-white dark:bg-gray-900 p-12 rounded-lg"
+        style={{ width: '1600px', minHeight: '1200px' }}
       >
         {/* ヘッダー */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             AI言い換えメーカー
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-3xl font-semibold text-gray-700 dark:text-gray-200">
             {skinName}で変換
           </p>
         </div>
 
-        {/* 2カラムレイアウト */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        {/* 1カラムレイアウト */}
+        <div className="space-y-8 mb-12">
           {/* 変換前 */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 border-b-2 border-purple-500 pb-2">
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-8 rounded-xl shadow-xl border-4 border-purple-300 dark:border-purple-600">
+            <h2 className="text-4xl font-bold text-purple-800 dark:text-purple-100 mb-6 border-b-4 border-purple-500 pb-4">
               変換前
             </h2>
-            <p className={`text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed ${getFontSize(originalText)}`}>
-              {truncateText(originalText, 800)}
+            <p className="text-2xl text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium">
+              {truncateText(originalText, 1200)}
             </p>
           </div>
 
           {/* 変換後 */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 border-b-2 border-pink-500 pb-2">
+          <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900 dark:to-pink-800 p-8 rounded-xl shadow-xl border-4 border-pink-300 dark:border-pink-600">
+            <h2 className="text-4xl font-bold text-pink-800 dark:text-pink-100 mb-6 border-b-4 border-pink-500 pb-4">
               変換後
             </h2>
-            <p className={`text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed ${getFontSize(transformedText)}`}>
-              {truncateText(transformedText, 800)}
+            <p className="text-2xl text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium">
+              {truncateText(transformedText, 1200)}
             </p>
           </div>
         </div>
 
         {/* フッター */}
         <div className="text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
             iikae-maker.manus.space で今すぐ試す
           </p>
         </div>
@@ -180,8 +180,8 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
       </div>
 
       {/* 注意事項 */}
-      <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-        {t('imageGenerator.note') || '※ 長文の場合、一部が省略されます。画像は1200x630pxで生成されます。'}
+      <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+        {t('imageGenerator.note') || '※ 長文の場合、一部が省略されます。画像は1600x1200pxで生成されます。'}
       </p>
     </div>
   );

@@ -333,8 +333,8 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n${window.location.origin}`;
-                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&hashtags=AIスラングメーカー,文体変換`;
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n\nhttps://iikae-maker.manus.space`;
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
                   window.open(twitterUrl, '_blank');
                 }}
                 className="text-gray-700 hover:text-blue-500 hover:bg-blue-50 transition-colors"
@@ -346,7 +346,7 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n${window.location.origin}`;
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n\nhttps://iikae-maker.manus.space`;
                   const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
                   window.open(lineUrl, '_blank');
                 }}
