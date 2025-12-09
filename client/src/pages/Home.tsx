@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2 } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
@@ -298,26 +298,56 @@ export default function Home() {
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="container max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation("/guide")}
-              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
-            >
-              <BookOpen className="h-4 w-4 mr-1.5" />
-              <span>{t('howToUse')}</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation("/history")}
-              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
-            >
-              <History className="h-4 w-4 mr-1.5" />
-              <span>履歴</span>
-            </Button>
-            <LanguageSwitcher />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/guide")}
+                className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+              >
+                <BookOpen className="h-4 w-4 mr-1.5" />
+                <span>{t('howToUse')}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/history")}
+                className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+              >
+                <History className="h-4 w-4 mr-1.5" />
+                <span>履歴</span>
+              </Button>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n${window.location.origin}`;
+                  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&hashtags=AIスラングメーカー,文体変換`;
+                  window.open(twitterUrl, '_blank');
+                }}
+                className="text-gray-700 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+              >
+                <Share2 className="h-4 w-4 mr-1.5" />
+                <span>X</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n${window.location.origin}`;
+                  const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
+                  window.open(lineUrl, '_blank');
+                }}
+                className="text-gray-700 hover:text-green-500 hover:bg-green-50 transition-colors"
+              >
+                <Share2 className="h-4 w-4 mr-1.5" />
+                <span>LINE</span>
+              </Button>
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </div>
@@ -758,6 +788,64 @@ export default function Home() {
           initialSkin={customSkin || undefined}
         />
       </div>
+      
+      {/* Footer */}
+      <footer className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white py-12 mt-16">
+        <div className="container max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            {/* Left Column: Creator & Contact */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4">{t('footer.creatorInfo') || '製作者・寄付情報'}</h3>
+              <div className="space-y-2 text-sm">
+                <p>
+                  <span className="font-semibold">{t('footer.creator') || '製作者'}:</span>{' '}
+                  <a href="https://twitter.com/kojima920" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors">
+                    @kojima920
+                  </a>
+                </p>
+                <p>
+                  <span className="font-semibold">{t('footer.contact') || '問い合わせ'}:</span>{' '}
+                  <a href="mailto:mk19830920@gmail.com" className="text-blue-400 hover:text-blue-300 transition-colors">
+                    mk19830920@gmail.com
+                  </a>
+                </p>
+                <p>
+                  <span className="font-semibold">{t('footer.donation') || '寄付先'}:</span>{' '}
+                  <span className="text-yellow-300">PayPayID: kojima1459</span>
+                </p>
+                <p className="text-xs text-gray-300 mt-2">
+                  ★{t('footer.donationMessage') || '寄付頂けると励みになる為、より良いアプリ開発の為にご寄付を'}★
+                </p>
+              </div>
+            </div>
+            
+            {/* Right Column: About */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold mb-4">{t('footer.about') || 'このサイトについて'}</h3>
+              <p className="text-sm text-gray-300">
+                {t('footer.description') || 'AIスラングメーカーは、13種類のスタイルでテキストを変換できる無料ツールです。日本語のスラングや言い回しを学ぶこともできます。'}
+              </p>
+            </div>
+          </div>
+          
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-600 pt-6 mt-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-300">
+              <p>
+                © 2025 {t('appTitle') || 'AIスラングメーカー'}. All rights reserved.
+              </p>
+              <div className="flex items-center gap-4">
+                <p className="flex items-center gap-1">
+                  Made with <span className="text-red-500">❤️</span> for public health awareness
+                </p>
+                <p className="flex items-center gap-1">
+                  <span>👋</span> Made with Manus
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

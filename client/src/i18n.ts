@@ -93,6 +93,13 @@ const resources = {
       creator: '作者',
       contact: 'お問い合わせ',
       donation: '寄付',
+      'footer.creatorInfo': '製作者・寄付情報',
+      'footer.creator': '製作者',
+      'footer.contact': '問い合わせ',
+      'footer.donation': '寄付先',
+      'footer.donationMessage': '寄付頂けると励みになる為、より良いアプリ開発の為にご寄付を',
+      'footer.about': 'このサイトについて',
+      'footer.description': 'AIスラングメーカーは、13種類のスタイルでテキストを変換できる無料ツールです。日本語のスラングや言い回しを学ぶこともできます。',
       
       // チュートリアル
       'tutorial.step1.title': '記事を貼り付け',
@@ -328,6 +335,13 @@ const resources = {
       creator: 'Creator',
       contact: 'Contact',
       donation: 'Donation',
+      'footer.creatorInfo': 'Creator & Donation Info',
+      'footer.creator': 'Creator',
+      'footer.contact': 'Contact',
+      'footer.donation': 'Donation',
+      'footer.donationMessage': 'Your donation encourages us to develop better apps',
+      'footer.about': 'About This Site',
+      'footer.description': 'AI Slang Maker is a free tool that can convert text into 13 different styles. You can also learn Japanese slang and expressions.',
       
       // Tutorial
       'tutorial.step1.title': 'Paste Article',
@@ -529,6 +543,13 @@ const resources = {
       creator: '作者',
       contact: '联系方式',
       donation: '捐赠',
+      'footer.creatorInfo': '制作者·捐赠信息',
+      'footer.creator': '制作者',
+      'footer.contact': '联系方式',
+      'footer.donation': '捐赠地址',
+      'footer.donationMessage': '您的捐赠将鼓励我们开发更好的应用',
+      'footer.about': '关于本站',
+      'footer.description': 'AI俗语制造器是一个可以将文本转换为13种不同风格的免费工具。您还可以学习日语俗语和表达方式。',
       
       // 教程
       'tutorial.step1.title': '粘贴文章',
