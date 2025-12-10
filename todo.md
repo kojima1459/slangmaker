@@ -1415,11 +1415,18 @@
 
 ## 新機能: PWA対応の実装
 
-- [ ] manifest.jsonを作成（アプリ名、テーマカラー、アイコン設定）
-- [ ] Service Workerを実装（オフライン対応、キャッシュ戦略）
-- [ ] PWAアイコン（192x192、512x512）を生成
-- [ ] index.htmlにmanifest.jsonとService Worker登録を追加
-- [ ] オフライン時のフォールバックページを作成
-- [ ] ホーム画面追加の動作確認（スマホで確認）
-- [ ] チェックポイント保存
-- [ ] GitHubにプッシュ
+- [x] manifest.jsonを作成（アプリ名、テーマカラー、アイコン設定）
+- [x] Service Workerを実装（オフライン対応、キャッシュ戦略）
+- [x] PWAアイコン（192x192、512x512）を生成
+- [x] index.htmlにmanifest.jsonとService Worker登録を追加
+- [x] オフライン時のフォールバックページを作成
+- [x] ホーム画面追加の動作確認（スマホで確認）
+- [x] チェックポイント保存（18447136）
+- [x] GitHubにプッシュ（https://github.com/kojima1459/iikae-maker）
+
+## バグ修正: Vite WebSocket接続エラー
+
+- [ ] vite.config.tsのHMR設定を確認・修正
+- [ ] ブラウザのWebSocket接続を確認
+- [ ] 開発サーバーを再起動
+- [ ] ブラウザでエラーが解消されたことを確認

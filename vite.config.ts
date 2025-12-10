@@ -7,6 +7,27 @@ import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 import { VitePWA } from "vite-plugin-pwa";
 
+const getHmrConfig = () => {
+  const host = process.env.HMR_HOST || 'localhost';
+  const protocol = process.env.HMR_PROTOCOL || 'wss';
+  const port = process.env.HMR_PORT ? parseInt(process.env.HMR_PORT) : 5173;
+  
+  // ブラウザのホスト名から推測
+  if (typeof window !== 'undefined' || process.env.VITE_DEV_SERVER_HOST) {
+    return {
+      protocol,
+      host,
+      port,
+    };
+  }
+  
+  return {
+    protocol: 'ws',
+    host: 'localhost',
+    port: 5173,
+  };
+};
+
 
 const plugins = [
   react(),
@@ -89,7 +110,12 @@ export default defineConfig({
     ],
     fs: {
       strict: true,
-      deny: ["**/.*"],
+      deny: ["**/..*"],
+    },
+    hmr: {
+      protocol: 'wss',
+      host: 'localhost',
+      port: 5173,
     },
   },
 });
