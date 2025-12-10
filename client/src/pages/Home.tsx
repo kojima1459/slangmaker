@@ -59,10 +59,19 @@ export default function Home() {
     }
   };
   
+  // Ranking period state
+  const [rankingPeriod, setRankingPeriod] = useState<"24h" | "7d" | "30d">("24h");
+  
   // Fetch global stats
   const { data: stats } = trpc.stats.getGlobalStats.useQuery(undefined, {
     refetchInterval: 60000, // Refetch every minute
   });
+  
+  // Fetch popular skins by period
+  const { data: popularSkins } = trpc.stats.getPopularSkinsByPeriod.useQuery(
+    { period: rankingPeriod, limit: 5 },
+    { refetchInterval: 60000 }
+  );
 
   // Load API key from localStorage
   useEffect(() => {
@@ -763,8 +772,47 @@ export default function Home() {
                       <Users className="h-6 w-6 text-orange-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-600 mb-2">24時間人気スキン</p>
-                      {stats.popularSkins.slice(0, 3).map((item, index) => {
+                      {/* Period tabs */}
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={() => setRankingPeriod("24h")}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                            rankingPeriod === "24h"
+                              ? "bg-orange-600 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          24時間
+                        </button>
+                        <button
+                          onClick={() => setRankingPeriod("7d")}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                            rankingPeriod === "7d"
+                              ? "bg-orange-600 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          7日間
+                        </button>
+                        <button
+                          onClick={() => setRankingPeriod("30d")}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                            rankingPeriod === "30d"
+                              ? "bg-orange-600 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          30日間
+                        </button>
+                      </div>
+                      
+                      {/* Popular skins list */}
+                      <p className="text-sm text-gray-600 mb-2">
+                        {rankingPeriod === "24h" && "24時間人気スキン"}
+                        {rankingPeriod === "7d" && "7日間人気スキン"}
+                        {rankingPeriod === "30d" && "30日間人気スキン"}
+                      </p>
+                      {popularSkins && popularSkins.slice(0, 3).map((item, index) => {
                         const skinData = Object.values(SKINS).find((s: any) => s.key === item.skin);
                         return (
                           <div key={item.skin} className="flex items-center justify-between text-xs mb-1">
@@ -775,6 +823,9 @@ export default function Home() {
                           </div>
                         );
                       })}
+                      {(!popularSkins || popularSkins.length === 0) && (
+                        <p className="text-xs text-gray-500">データがありません</p>
+                      )}
                     </div>
                   </div>
                 </div>

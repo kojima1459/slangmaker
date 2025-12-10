@@ -2,6 +2,7 @@ import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { transformHistory } from "../../drizzle/schema";
 import { sql } from "drizzle-orm";
+import { z } from "zod";
 
 /**
  * Stats router
@@ -65,4 +66,58 @@ export const statsRouter = router({
       };
     }
   }),
+
+  /**
+   * Get popular skins by time period
+   * Supports 24h, 7d, 30d periods
+   */
+  getPopularSkinsByPeriod: publicProcedure
+    .input(
+      z.object({
+        period: z.enum(["24h", "7d", "30d"]),
+        limit: z.number().min(1).max(20).default(5),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const db = await getDb();
+        if (!db) {
+          throw new Error("Database not available");
+        }
+
+        // Calculate timestamp based on period
+        let periodAgo: Date;
+        switch (input.period) {
+          case "24h":
+            periodAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            break;
+          case "7d":
+            periodAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            break;
+          case "30d":
+            periodAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            break;
+        }
+
+        // Get skin usage statistics for the period
+        const skinStatsResult = await db
+          .select({
+            skin: transformHistory.skin,
+            count: sql<number>`count(*)`,
+          })
+          .from(transformHistory)
+          .where(sql`${transformHistory.createdAt} >= ${periodAgo}`)
+          .groupBy(transformHistory.skin)
+          .orderBy(sql`count(*) desc`)
+          .limit(input.limit);
+
+        return skinStatsResult.map((row: { skin: string; count: number }) => ({
+          skin: row.skin,
+          count: row.count,
+        }));
+      } catch (error) {
+        console.error(`Failed to fetch popular skins for period ${input.period}:`, error);
+        return [];
+      }
+    }),
 });
