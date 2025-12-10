@@ -7,6 +7,7 @@ import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 import { VitePWA } from "vite-plugin-pwa";
 
+
 const plugins = [
   react(),
   tailwindcss(),
@@ -89,11 +90,6 @@ export default defineConfig({
     fs: {
       strict: true,
       deny: ["**/..*"],
-    },
-    hmr: {
-      protocol: 'wss',
-      host: 'localhost',
-      port: 443,
     },
   },
 });
