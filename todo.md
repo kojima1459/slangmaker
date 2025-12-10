@@ -1426,7 +1426,17 @@
 
 ## バグ修正: Vite WebSocket接続エラー
 
-- [ ] vite.config.tsのHMR設定を確認・修正
-- [ ] ブラウザのWebSocket接続を確認
-- [ ] 開発サーバーを再起動
-- [ ] ブラウザでエラーが解消されたことを確認
+- [x] vite.config.tsのHMR設定を確認・修正
+- [x] ブラウザのWebSocket接続を確認
+- [x] 開発サーバーを再起動
+- [x] ブラウザでエラーが解消されたことを確認（cb9e1902）
+- [x] GitHubにプッシュ（https://github.com/kojima1459/iikae-maker）
+
+## バグ修正: 24時間人気スキンランキングの実装
+
+- [ ] stats.router.tsのgetGlobalStatsを修正（全期間から24時間に変更）
+- [ ] popularSkinsを24時間以内のランキングに修正
+- [ ] Home.tsxの表示を「人気スキン」から「24時間人気スキン」に変更
+- [ ] 動作確認（ランキングが正しく24時間以内のデータを反映しているか）
+- [ ] チェックポイント保存
+- [ ] GitHubにプッシュ

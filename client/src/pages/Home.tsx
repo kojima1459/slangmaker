@@ -763,7 +763,7 @@ export default function Home() {
                       <Users className="h-6 w-6 text-orange-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-600 mb-2">人気スキン</p>
+                      <p className="text-sm text-gray-600 mb-2">24時間人気スキン</p>
                       {stats.popularSkins.slice(0, 3).map((item, index) => {
                         const skinData = Object.values(SKINS).find((s: any) => s.key === item.skin);
                         return (

@@ -10,7 +10,7 @@ import { sql } from "drizzle-orm";
 export const statsRouter = router({
   /**
    * Get global statistics (anonymous, cached)
-   * Returns total transformations, popular skins, etc.
+   * Returns total transformations, popular skins (24h), etc.
    */
   getGlobalStats: publicProcedure.query(async () => {
     try {
@@ -19,25 +19,28 @@ export const statsRouter = router({
         throw new Error("Database not available");
       }
       
+      // Calculate 24 hours ago timestamp
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      
       // Get total transformation count
       const totalResult = await db
         .select({ count: sql<number>`count(*)` })
         .from(transformHistory);
       const totalTransformations = totalResult[0]?.count || 0;
 
-      // Get skin usage statistics (top 5)
+      // Get skin usage statistics for last 24 hours (top 5)
       const skinStatsResult = await db
         .select({
           skin: transformHistory.skin,
           count: sql<number>`count(*)`,
         })
         .from(transformHistory)
+        .where(sql`${transformHistory.createdAt} >= ${oneDayAgo}`)
         .groupBy(transformHistory.skin)
         .orderBy(sql`count(*) desc`)
         .limit(5);
 
       // Get recent activity (last 24 hours)
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const recentResult = await db
         .select({ count: sql<number>`count(*)` })
         .from(transformHistory)
