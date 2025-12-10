@@ -8,26 +8,25 @@ import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 import { VitePWA } from "vite-plugin-pwa";
 
 const getHmrConfig = () => {
-  const host = process.env.HMR_HOST || 'localhost';
-  const protocol = process.env.HMR_PROTOCOL || 'wss';
-  const port = process.env.HMR_PORT ? parseInt(process.env.HMR_PORT) : 5173;
+  // Extract hostname from environment or use default
+  const host = process.env.HMR_HOST || process.env.VITE_DEV_SERVER_HOST || 'localhost';
   
-  // ブラウザのホスト名から推測
-  if (typeof window !== 'undefined' || process.env.VITE_DEV_SERVER_HOST) {
+  // For Manus environment, use wss protocol
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
     return {
-      protocol,
-      host,
-      port,
+      protocol: 'wss',
+      host: host,
+      port: 443,
     };
   }
   
+  // For local development
   return {
     protocol: 'ws',
     host: 'localhost',
     port: 5173,
   };
 };
-
 
 const plugins = [
   react(),
@@ -112,10 +111,6 @@ export default defineConfig({
       strict: true,
       deny: ["**/..*"],
     },
-    hmr: {
-      protocol: 'wss',
-      host: 'localhost',
-      port: 5173,
-    },
+    hmr: getHmrConfig(),
   },
 });
