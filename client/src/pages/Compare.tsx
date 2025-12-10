@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Copy, Columns } from "lucide-react";
+import { ArrowLeft, Copy, Columns, Share2 } from "lucide-react";
+import { FaXTwitter, FaLine, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { toast } from "sonner";
 
 interface CompareData {
@@ -45,6 +46,37 @@ export default function Compare() {
   const handleBack = () => {
     sessionStorage.removeItem('compareData');
     setLocation("/");
+  };
+
+  const handleTwitterShare = () => {
+    const siteUrl = 'https://slang-maker.manus.space';
+    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(tweetUrl, '_blank', 'width=550,height=420');
+  };
+
+  const handleLineShare = () => {
+    const siteUrl = 'https://slang-maker.manus.space';
+    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
+    const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleFacebookShare = () => {
+    const siteUrl = 'https://slang-maker.manus.space';
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(`AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n#BuiltwithManus`)}`;
+    window.open(shareUrl, '_blank', 'width=550,height=420');
+  };
+
+  const handleLinkedInShare = () => {
+    const siteUrl = 'https://slang-maker.manus.space';
+    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n#BuiltwithManus`;
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}&summary=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank', 'width=550,height=420');
+  };
+
+  const handleInstagramShare = () => {
+    toast.info('Instagramへのシェアはテキストをコピーして、#BuiltwithManusタグを追加してご利用ください');
   };
 
   return (
@@ -143,7 +175,7 @@ export default function Compare() {
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex justify-center gap-4">
+        <div className="mt-6 flex flex-col items-center gap-6">
           <Button
             onClick={() => {
               const combined = `【${data.result1.skinName}】\n${data.result1.output}\n\n【${data.result2.skinName}】\n${data.result2.output}`;
@@ -155,6 +187,60 @@ export default function Compare() {
             <Copy className="h-4 w-4 mr-2" />
             両方をコピー
           </Button>
+
+          {/* SNS Share Buttons */}
+          <Card className="w-full max-w-2xl">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Share2 className="h-5 w-5" />
+                SNSでシェア
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-gray-100"
+                  onClick={handleTwitterShare}
+                >
+                  <FaXTwitter className="h-6 w-6" />
+                  <span className="text-xs">X</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-green-50"
+                  onClick={handleLineShare}
+                >
+                  <FaLine className="h-6 w-6 text-green-500" />
+                  <span className="text-xs">LINE</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-blue-50"
+                  onClick={handleFacebookShare}
+                >
+                  <FaFacebook className="h-6 w-6 text-blue-600" />
+                  <span className="text-xs">Facebook</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-pink-50"
+                  onClick={handleInstagramShare}
+                >
+                  <FaInstagram className="h-6 w-6 text-pink-600" />
+                  <span className="text-xs">Instagram</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center gap-2 h-auto py-4 hover:bg-blue-50"
+                  onClick={handleLinkedInShare}
+                >
+                  <FaLinkedin className="h-6 w-6 text-blue-700" />
+                  <span className="text-xs">LinkedIn</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

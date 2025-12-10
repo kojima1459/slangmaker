@@ -1396,9 +1396,19 @@
 
 ## バグ修正: 画像化機能のCORSエラー
 
-- [ ] エラー原因の特定（Google Fontsなどの外部CSSが原因）
-- [ ] html-to-imageのオプションを修正（skipFonts: trueまたはuseCORS: true）
-- [ ] ImageGenerator.tsxを修正
-- [ ] スマホで動作確認
+- [x] エラー原因の特定（Google Fontsなどの外部CSSが原因）
+- [x] html-to-imageのオプションを修正（skipFonts: trueまたはuseCORS: true）
+- [x] ImageGenerator.tsxを修正
+- [x] スマホで動作確認
+- [x] チェックポイント保存（f86d9f10）
+- [x] GitHubにプッシュ（https://github.com/kojima1459/iikae-maker）
+
+## 新機能: スキン比較モードにSNSシェアボタンを追加
+
+- [ ] Compare.tsxにSNSシェアボタンセクションを追加
+- [ ] X（Twitter）、LINE、Facebook、Instagram、LinkedInのシェアボタンを実装
+- [ ] Reader.tsxと同様のシェアロジックを適用
+- [ ] 比較結果のテキストをシェア用に整形
+- [ ] 動作確認（各SNSへのシェアが正常に動作するか）
 - [ ] チェックポイント保存
 - [ ] GitHubにプッシュ
