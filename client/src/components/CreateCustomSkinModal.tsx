@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +33,14 @@ export function CreateCustomSkinModal({
   const [example, setExample] = useState(initialSkin?.example || "");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Sync form with initialSkin when it changes
+  useEffect(() => {
+    setName(initialSkin?.name || "");
+    setDescription(initialSkin?.description || "");
+    setPrompt(initialSkin?.prompt || "");
+    setExample(initialSkin?.example || "");
+  }, [initialSkin]);
+
   const handleSave = async () => {
     // Validation
     if (!name.trim()) {
@@ -47,14 +55,15 @@ export function CreateCustomSkinModal({
 
     try {
       setIsSaving(true);
+      // Pass existing ID when editing
       const savedSkin = saveCustomSkin({
         name: name.trim(),
         description: description.trim() || undefined,
         prompt: prompt.trim(),
         example: example.trim() || undefined,
-      });
+      }, initialSkin?.id);
 
-      toast.success("カスタムスキンを保存しました！");
+      toast.success(initialSkin ? "カスタムスキンを更新しました！" : "カスタムスキンを保存しました！");
       onSave(savedSkin);
       onOpenChange(false);
 
@@ -63,9 +72,9 @@ export function CreateCustomSkinModal({
       setDescription("");
       setPrompt("");
       setExample("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save custom skin:", error);
-      toast.error("カスタムスキンの保存に失敗しました");
+      toast.error(error.message || "カスタムスキンの保存に失敗しました");
     } finally {
       setIsSaving(false);
     }

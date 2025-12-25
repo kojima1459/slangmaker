@@ -16,7 +16,7 @@ import { Tutorial } from "@/components/Tutorial";
 import confetti from "canvas-confetti";
 import { HistoryStorage } from "@/types/history";
 import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
-import { getCustomSkin, deleteCustomSkin, type CustomSkin } from "@/lib/customSkinStorage";
+import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSkins, type CustomSkin } from "@/lib/customSkinStorage";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -35,27 +35,35 @@ export default function Home() {
   const [selectedSkin2, setSelectedSkin2] = useState("detached_lit");
   
   // Custom skin states
-  const [customSkin, setCustomSkin] = useState<CustomSkin | null>(null);
+  const [customSkins, setCustomSkins] = useState<CustomSkin[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingSkin, setEditingSkin] = useState<CustomSkin | undefined>(undefined);
 
   const { t } = useTranslation();
   
   const handleCustomSkinSaved = (skin: CustomSkin) => {
-    setCustomSkin(skin);
-    // Auto-select the custom skin
-    setSelectedSkin("custom");
+    // Reload all custom skins
+    setCustomSkins(getCustomSkins());
+    // Auto-select the saved skin
+    setSelectedSkin(skin.id);
+    setEditingSkin(undefined);
   };
   
-  const handleDeleteCustomSkin = () => {
-    if (window.confirm("カスタムスキンを削除してもよろしいですか？")) {
-      deleteCustomSkin();
-      setCustomSkin(null);
-      // Switch to default skin if custom was selected
-      if (selectedSkin === "custom") {
+  const handleDeleteCustomSkin = (skinId: string, skinName: string) => {
+    if (window.confirm(`「${skinName}」を削除してもよろしいですか？`)) {
+      deleteCustomSkinById(skinId);
+      setCustomSkins(getCustomSkins());
+      // Switch to default skin if this was selected
+      if (selectedSkin === skinId) {
         setSelectedSkin("kansai_banter");
       }
       toast.success("カスタムスキンを削除しました");
     }
+  };
+  
+  const handleEditCustomSkin = (skin: CustomSkin) => {
+    setEditingSkin(skin);
+    setShowCreateModal(true);
   };
   
   // Stats are disabled in Firebase simple mode (no backend)
@@ -70,10 +78,9 @@ export default function Home() {
     }
   }, []);
   
-  // Load custom skin from localStorage
+  // Load custom skins from localStorage
   useEffect(() => {
-    const stored = getCustomSkin();
-    setCustomSkin(stored);
+    setCustomSkins(getCustomSkins());
   }, []);
 
   // Check if first visit
@@ -125,11 +132,15 @@ export default function Home() {
         const skin1 = selectedSkin;
         const skin2 = selectedSkin2;
         
+        // Get custom skin prompts if needed
+        const customPrompt1 = skin1.startsWith('custom_') ? getCustomSkinById(skin1)?.prompt : undefined;
+        const customPrompt2 = skin2.startsWith('custom_') ? getCustomSkinById(skin2)?.prompt : undefined;
+        
         const [result1, result2] = await Promise.all([
           transformWithGemini({
             extracted: articleText,
             skin: skin1,
-            customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
+            customPrompt: customPrompt1,
             params: {
               temperature,
               topP,
@@ -141,7 +152,7 @@ export default function Home() {
           transformWithGemini({
             extracted: articleText,
             skin: skin2,
-            customPrompt: selectedSkin2 === "custom" && customSkin ? customSkin.prompt : undefined,
+            customPrompt: customPrompt2,
             params: {
               temperature,
               topP,
@@ -202,10 +213,13 @@ export default function Home() {
         const skinToUse = selectedSkin;
         const savedApiKey = localStorage.getItem('geminiApiKey')!;
         
+        // Get custom skin prompt if needed
+        const customPrompt = skinToUse.startsWith('custom_') ? getCustomSkinById(skinToUse)?.prompt : undefined;
+        
         const result = await transformWithGemini({
           extracted: articleText,
           skin: skinToUse,
-          customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
+          customPrompt,
           params: {
             temperature,
             topP,
@@ -519,69 +533,85 @@ export default function Home() {
               </Button>
             </div>
 
-            {/* Custom Skin Section */}
-            {customSkin && (
-              <div className="space-y-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-300">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-lg font-semibold text-amber-900">カスタムスキン</Label>
-                    <p className="text-sm text-amber-800 mt-1">{customSkin.name}</p>
-                    {customSkin.description && (
-                      <p className="text-xs text-amber-700 mt-1">{customSkin.description}</p>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowCreateModal(true)}
-                      className="border-amber-300 hover:bg-amber-100"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleDeleteCustomSkin}
-                      className="border-red-300 hover:bg-red-100"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {/* Custom Skins Section */}
+            <div className="space-y-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-300">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-lg font-semibold text-amber-900">カスタムスキン</Label>
+                  <p className="text-xs text-amber-700 mt-1">
+                    {customSkins.length} / {getMaxCustomSkins()} 作成済み
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSkin("custom")}
-                  disabled={isLoading}
-                  className={`w-full p-4 border-2 rounded-xl text-left transition-all ${
-                    selectedSkin === "custom"
-                      ? 'border-amber-500 bg-amber-100 shadow-md ring-2 ring-amber-300'
-                      : 'border-amber-300 hover:border-amber-400 bg-white'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  <div className="font-semibold text-sm mb-1">✨ {customSkin.name}</div>
-                  <div className="text-xs text-gray-600">
-                    {customSkin.description || "カスタムプロンプト"}
-                  </div>
-                </button>
+                {customSkins.length < getMaxCustomSkins() && (
+                  <Button
+                    size="sm"
+                    onClick={() => { setEditingSkin(undefined); setShowCreateModal(true); }}
+                    className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    新規作成
+                  </Button>
+                )}
               </div>
-            )}
-
-            {/* Create Custom Skin Button */}
-            {!customSkin && (
-              <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-dashed border-amber-300">
-                <Button
-                  onClick={() => setShowCreateModal(true)}
-                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  カスタムスキンを作成
-                </Button>
-                <p className="text-xs text-amber-700 mt-2 text-center">
-                  独自のプロンプトで、あなただけのスキンを作成できます
-                </p>
-              </div>
-            )}
+              
+              {customSkins.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-sm text-amber-700 mb-3">
+                    独自のプロンプトで、あなただけのスキンを作成できます
+                  </p>
+                  <Button
+                    onClick={() => { setEditingSkin(undefined); setShowCreateModal(true); }}
+                    className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    カスタムスキンを作成
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {customSkins.map((skin) => (
+                    <div
+                      key={skin.id}
+                      className={`relative p-4 border-2 rounded-xl transition-all ${
+                        selectedSkin === skin.id
+                          ? 'border-amber-500 bg-amber-100 shadow-md ring-2 ring-amber-300'
+                          : 'border-amber-300 hover:border-amber-400 bg-white'
+                      }`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSkin(skin.id)}
+                        disabled={isLoading}
+                        className="w-full text-left disabled:opacity-50"
+                      >
+                        <div className="font-semibold text-sm mb-1">✨ {skin.name}</div>
+                        <div className="text-xs text-gray-600 line-clamp-2">
+                          {skin.description || "カスタムプロンプト"}
+                        </div>
+                      </button>
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEditCustomSkin(skin)}
+                          className="h-7 w-7 p-0 hover:bg-amber-100"
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteCustomSkin(skin.id, skin.name)}
+                          className="h-7 w-7 p-0 hover:bg-red-100"
+                        >
+                          <Trash2 className="h-3 w-3 text-red-500" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Skin Selection */}
             <div className="space-y-4">
@@ -858,9 +888,9 @@ export default function Home() {
         {/* Create Custom Skin Modal */}
         <CreateCustomSkinModal
           open={showCreateModal}
-          onOpenChange={setShowCreateModal}
+          onOpenChange={(open) => { setShowCreateModal(open); if (!open) setEditingSkin(undefined); }}
           onSave={handleCustomSkinSaved}
-          initialSkin={customSkin || undefined}
+          initialSkin={editingSkin}
         />
       </div>
       

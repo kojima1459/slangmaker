@@ -29,14 +29,96 @@ const SNS_SIZES: Record<string, SnsSize> = {
   custom: { name: 'カスタム', width: 1600, height: 1200, description: '高解像度・汎用' },
 };
 
+// Design templates
+type DesignTemplate = {
+  name: string;
+  description: string;
+  bgStyle: string;
+  headerBg: string;
+  headerText: string;
+  beforeBg: string;
+  beforeBorder: string;
+  beforeTitle: string;
+  afterBg: string;
+  afterBorder: string;
+  afterTitle: string;
+  footerText: string;
+  watermarkStyle: string;
+};
+
+const TEMPLATES: Record<string, DesignTemplate> = {
+  simple: {
+    name: 'シンプル',
+    description: '白背景でクリーン',
+    bgStyle: 'bg-white',
+    headerBg: '',
+    headerText: 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent',
+    beforeBg: 'bg-gray-50',
+    beforeBorder: 'border-gray-200',
+    beforeTitle: 'text-gray-700',
+    afterBg: 'bg-gray-50',
+    afterBorder: 'border-gray-200',
+    afterTitle: 'text-gray-700',
+    footerText: 'text-gray-600',
+    watermarkStyle: 'text-gray-400',
+  },
+  dark: {
+    name: 'ダーク',
+    description: '黒背景でシック',
+    bgStyle: 'bg-gray-900',
+    headerBg: '',
+    headerText: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent',
+    beforeBg: 'bg-gray-800',
+    beforeBorder: 'border-purple-500',
+    beforeTitle: 'text-purple-300',
+    afterBg: 'bg-gray-800',
+    afterBorder: 'border-pink-500',
+    afterTitle: 'text-pink-300',
+    footerText: 'text-gray-400',
+    watermarkStyle: 'text-gray-600',
+  },
+  gradient: {
+    name: 'グラデーション',
+    description: '華やかで目を引く',
+    bgStyle: 'bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400',
+    headerBg: '',
+    headerText: 'text-white drop-shadow-lg',
+    beforeBg: 'bg-white/90 backdrop-blur-sm',
+    beforeBorder: 'border-white/50',
+    beforeTitle: 'text-purple-700',
+    afterBg: 'bg-white/90 backdrop-blur-sm',
+    afterBorder: 'border-white/50',
+    afterTitle: 'text-pink-700',
+    footerText: 'text-white',
+    watermarkStyle: 'text-white/70',
+  },
+  pop: {
+    name: 'ポップ',
+    description: '明るくカラフル',
+    bgStyle: 'bg-gradient-to-br from-yellow-200 via-pink-200 to-cyan-200',
+    headerBg: '',
+    headerText: 'bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent',
+    beforeBg: 'bg-purple-100',
+    beforeBorder: 'border-purple-400',
+    beforeTitle: 'text-purple-800',
+    afterBg: 'bg-pink-100',
+    afterBorder: 'border-pink-400',
+    afterTitle: 'text-pink-800',
+    footerText: 'text-gray-700',
+    watermarkStyle: 'text-gray-600',
+  },
+};
+
 export function ImageGenerator({ originalText, transformedText, skinName }: ImageGeneratorProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('x');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('gradient');
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const { t } = useTranslation();
 
   const currentSize = SNS_SIZES[selectedSize];
+  const currentTemplate = TEMPLATES[selectedTemplate];
 
   const generateImage = async (format: 'png' | 'jpeg') => {
     if (!contentRef.current) {
@@ -122,12 +204,11 @@ export function ImageGenerator({ originalText, transformedText, skinName }: Imag
 
   return (
     <div className="space-y-4">
-      {/* プレビュー */}
       {/* サイズ選択 */}
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2">
         <Label htmlFor="sns-size" className="text-base font-semibold">
-SNS別最適サイズ
-</Label>
+          SNS別サイズ
+        </Label>
         <Select value={selectedSize} onValueChange={setSelectedSize}>
           <SelectTrigger id="sns-size" className="w-full">
             <SelectValue />
@@ -135,17 +216,39 @@ SNS別最適サイズ
           <SelectContent>
             {Object.entries(SNS_SIZES).map(([key, size]) => (
               <SelectItem key={key} value={key}>
-                {size.name} ({size.width}x{size.height}px) - {size.description}
+                {size.name} ({size.width}x{size.height}px)
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
+      {/* テンプレート選択 */}
+      <div className="space-y-2">
+        <Label className="text-base font-semibold">デザインテンプレート</Label>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {Object.entries(TEMPLATES).map(([key, template]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setSelectedTemplate(key)}
+              className={`p-3 rounded-lg border-2 text-left transition-all ${
+                selectedTemplate === key
+                  ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200'
+                  : 'border-gray-200 hover:border-purple-300'
+              }`}
+            >
+              <div className="font-semibold text-sm">{template.name}</div>
+              <div className="text-xs text-gray-500">{template.description}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* プレビュー */}
       <div
         ref={contentRef}
-        className="bg-white dark:bg-gray-900 p-8 rounded-lg overflow-hidden"
+        className={`${currentTemplate.bgStyle} p-8 rounded-lg overflow-hidden`}
         style={{ 
           width: `${currentSize.width}px`, 
           height: `${currentSize.height}px`,
@@ -156,12 +259,12 @@ SNS別最適サイズ
       >
         {/* ヘッダー */}
         <div className="text-center mb-6">
-          <h1 className={`font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 ${
+          <h1 className={`font-bold ${currentTemplate.headerText} mb-2 ${
             currentSize.height < 800 ? 'text-3xl' : 'text-5xl'
           }`}>
             AIスラングメーカー
           </h1>
-          <p className={`font-semibold text-gray-700 dark:text-gray-200 ${
+          <p className={`font-semibold ${currentTemplate.footerText} ${
             currentSize.height < 800 ? 'text-lg' : 'text-2xl'
           }`}>
             {skinName}で変換
@@ -175,13 +278,13 @@ SNS別最適サイズ
             : 'space-y-4'
         } mb-4`}>
           {/* 変換前 */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-4 rounded-lg shadow-lg border-2 border-purple-300 dark:border-purple-600 overflow-hidden">
-            <h2 className={`font-bold text-purple-800 dark:text-purple-100 mb-3 border-b-2 border-purple-500 pb-2 ${
+          <div className={`${currentTemplate.beforeBg} p-4 rounded-lg shadow-lg border-2 ${currentTemplate.beforeBorder} overflow-hidden`}>
+            <h2 className={`font-bold ${currentTemplate.beforeTitle} mb-3 border-b-2 ${currentTemplate.beforeBorder} pb-2 ${
               currentSize.height < 800 ? 'text-xl' : 'text-3xl'
             }`}>
               変換前
             </h2>
-            <p className={`text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
+            <p className={`text-gray-900 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
               currentSize.height < 800 ? 'text-sm' : 'text-lg'
             }`} style={{ maxHeight: `${currentSize.height * 0.35}px` }}>
               {truncateText(originalText, currentSize.height < 800 ? 400 : 800)}
@@ -189,13 +292,13 @@ SNS別最適サイズ
           </div>
 
           {/* 変換後 */}
-          <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900 dark:to-pink-800 p-4 rounded-lg shadow-lg border-2 border-pink-300 dark:border-pink-600 overflow-hidden">
-            <h2 className={`font-bold text-pink-800 dark:text-pink-100 mb-3 border-b-2 border-pink-500 pb-2 ${
+          <div className={`${currentTemplate.afterBg} p-4 rounded-lg shadow-lg border-2 ${currentTemplate.afterBorder} overflow-hidden`}>
+            <h2 className={`font-bold ${currentTemplate.afterTitle} mb-3 border-b-2 ${currentTemplate.afterBorder} pb-2 ${
               currentSize.height < 800 ? 'text-xl' : 'text-3xl'
             }`}>
               変換後
             </h2>
-            <p className={`text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
+            <p className={`text-gray-900 whitespace-pre-wrap leading-relaxed font-medium overflow-y-auto ${
               currentSize.height < 800 ? 'text-sm' : 'text-lg'
             }`} style={{ maxHeight: `${currentSize.height * 0.35}px` }}>
               {truncateText(transformedText, currentSize.height < 800 ? 400 : 800)}
@@ -206,15 +309,15 @@ SNS別最適サイズ
         {/* フッター：透かしロゴを右下に配置 */}
         <div className="relative">
           <div className="text-center space-y-2">
-            <p className={`font-semibold text-gray-600 dark:text-gray-300 ${
+            <p className={`font-semibold ${currentTemplate.footerText} ${
               currentSize.height < 800 ? 'text-base' : 'text-xl'
             }`}>
-              slang-maker.manus.space で今すぐ試す
+              slangmaker-11c54.web.app で今すぐ試す
             </p>
-            <p className={`text-gray-500 dark:text-gray-400 ${
+            <p className={`${currentTemplate.watermarkStyle} ${
               currentSize.height < 800 ? 'text-xs' : 'text-base'
             }`}>
-              Made with MasahideKojima and Manus!
+              Made with ❤️ by MasahideKojima
             </p>
           </div>
           {/* 透かしロゴ：右下に固定 */}
