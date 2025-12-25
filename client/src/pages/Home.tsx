@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { trpc } from "@/lib/trpc";
+import { transformWithGemini } from "@/lib/gemini";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
 import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle, Twitter, MessageCircle } from "lucide-react";
@@ -38,7 +38,6 @@ export default function Home() {
   const [customSkin, setCustomSkin] = useState<CustomSkin | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const transformMutation = trpc.transform.useMutation();
   const { t } = useTranslation();
   
   const handleCustomSkinSaved = (skin: CustomSkin) => {
@@ -59,19 +58,9 @@ export default function Home() {
     }
   };
   
-  // Ranking period state
-  const [rankingPeriod, setRankingPeriod] = useState<"24h" | "7d" | "30d">("24h");
-  
-  // Fetch global stats
-  const { data: stats } = trpc.stats.getGlobalStats.useQuery(undefined, {
-    refetchInterval: 60000, // Refetch every minute
-  });
-  
-  // Fetch popular skins by period
-  const { data: popularSkins } = trpc.stats.getPopularSkinsByPeriod.useQuery(
-    { period: rankingPeriod, limit: 5 },
-    { refetchInterval: 60000 }
-  );
+  // Stats are disabled in Firebase simple mode (no backend)
+  const stats = null;
+  const popularSkins = null;
 
   // Load API key from localStorage
   useEffect(() => {
@@ -124,13 +113,20 @@ export default function Home() {
     setIsLoading(true);
 
     try {
+      // Validate API key
+      const savedApiKey = localStorage.getItem('geminiApiKey');
+      if (!savedApiKey) {
+        toast.error("Gemini APIキーを入力してください。設定から保存できます。");
+        return;
+      }
+
       if (compareMode) {
         // Compare mode: transform with two skins in parallel
         const skin1 = selectedSkin;
         const skin2 = selectedSkin2;
         
         const [result1, result2] = await Promise.all([
-          transformMutation.mutateAsync({
+          transformWithGemini({
             extracted: articleText,
             skin: skin1,
             customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
@@ -140,8 +136,9 @@ export default function Home() {
               maxOutputTokens: maxTokens,
               lengthRatio,
             },
+            apiKey: savedApiKey,
           }),
-          transformMutation.mutateAsync({
+          transformWithGemini({
             extracted: articleText,
             skin: skin2,
             customPrompt: selectedSkin2 === "custom" && customSkin ? customSkin.prompt : undefined,
@@ -151,6 +148,7 @@ export default function Home() {
               maxOutputTokens: maxTokens,
               lengthRatio,
             },
+            apiKey: savedApiKey,
           }),
         ]);
 
@@ -202,8 +200,9 @@ export default function Home() {
       } else {
         // Normal mode: single transformation
         const skinToUse = selectedSkin;
+        const savedApiKey = localStorage.getItem('geminiApiKey')!;
         
-        const result = await transformMutation.mutateAsync({
+        const result = await transformWithGemini({
           extracted: articleText,
           skin: skinToUse,
           customPrompt: selectedSkin === "custom" && customSkin ? customSkin.prompt : undefined,
@@ -213,6 +212,7 @@ export default function Home() {
             maxOutputTokens: maxTokens,
             lengthRatio,
           },
+          apiKey: savedApiKey,
         });
 
         // Show confetti animation
@@ -396,13 +396,34 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pt-6">
-            {/* API Key Info - Using Manus Built-in LLM API */}
+            {/* API Key Input - Required for Firebase version */}
             <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800">
-                <strong>{t('manusBuiltInLLM.title')}</strong>
-              </p>
+              <Label htmlFor="apiKey" className="text-sm font-semibold text-blue-800">
+                🔑 Gemini API キー
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="apiKey"
+                  type="password"
+                  placeholder="AIza..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="flex-1"
+                />
+                <Button onClick={handleSaveApiKey} variant="outline" size="sm">
+                  保存
+                </Button>
+              </div>
               <p className="text-xs text-blue-700">
-                {t('manusBuiltInLLM.description')}
+                <a 
+                  href="https://makersuite.google.com/app/apikey" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-900"
+                >
+                  Google AI Studio
+                </a>
+                {" "}から無料でAPIキーを取得できます。キーはブラウザに保存されます。
               </p>
             </div>
 
