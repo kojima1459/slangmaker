@@ -30,6 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AdBanner } from "@/components/AdBanner";
 
 export default function Gallery() {
   const [, setLocation] = useLocation();
@@ -284,6 +285,13 @@ export default function Gallery() {
             </TabsContent>
           </Tabs>
         )}
+      </div>
+
+      {/* Ad Banner */}
+      <div className="container max-w-5xl mx-auto px-4 pb-6">
+        <div className="flex justify-center">
+          <AdBanner />
+        </div>
       </div>
 
       {/* Report Dialog */}

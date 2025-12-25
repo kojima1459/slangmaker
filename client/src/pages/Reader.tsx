@@ -11,6 +11,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DOMPurify from "isomorphic-dompurify";
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { getThemeForSkin } from "@/lib/skinThemes";
+import { AdBanner } from "@/components/AdBanner";
 import {
   Dialog,
   DialogContent,
@@ -317,6 +318,13 @@ export default function Reader() {
               )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      {/* Ad Banner */}
+      <div className="container max-w-6xl pb-8">
+        <div className="flex justify-center">
+          <AdBanner />
         </div>
       </div>
 

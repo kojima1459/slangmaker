@@ -18,6 +18,7 @@ import { HistoryStorage } from "@/types/history";
 import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
 import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSkins, type CustomSkin } from "@/lib/customSkinStorage";
 import { getThemeForSkin } from "@/lib/skinThemes";
+import { AdBanner } from "@/components/AdBanner";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -844,6 +845,11 @@ export default function Home() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Ad Banner */}
+        <div className="mt-6 flex justify-center">
+          <AdBanner />
+        </div>
 
         {/* Global Stats Section */}
         {stats && (
