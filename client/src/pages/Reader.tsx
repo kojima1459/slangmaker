@@ -3,8 +3,9 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Instagram, Columns, Image as ImageIcon, SkipForward } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Instagram, Columns, Image as ImageIcon, SkipForward, Send } from "lucide-react";
 import { toast } from "sonner";
+import { ShareToGalleryModal } from "@/components/ShareToGalleryModal";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import DOMPurify from "isomorphic-dompurify";
@@ -74,6 +75,7 @@ export default function Reader() {
   const [showOriginal, setShowOriginal] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
   const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   
   // Hooks must be called at the top level, before any early returns
   const { isAuthenticated } = useAuth();
@@ -256,6 +258,15 @@ export default function Reader() {
                   <Instagram className="mr-2 h-4 w-4 text-pink-600" />
                   Instagram
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowShareModal(true)}
+                  className="bg-gradient-to-r from-green-50 to-teal-50 hover:from-green-100 hover:to-teal-100 border-green-300"
+                >
+                  <Send className="mr-2 h-4 w-4 text-green-600" />
+                  ギャラリー投稿
+                </Button>
                 <Dialog open={showImageGenerator} onOpenChange={setShowImageGenerator}>
                   <DialogTrigger asChild>
                     <Button
@@ -308,6 +319,17 @@ export default function Reader() {
           </Card>
         </div>
       </div>
+
+      {/* Share to Gallery Modal */}
+      <ShareToGalleryModal
+        open={showShareModal}
+        onOpenChange={setShowShareModal}
+        originalText={data.article.contentText}
+        transformedText={data.result.output}
+        skinKey={data.result.meta.skin}
+        skinName={data.skin}
+      />
     </div>
   );
 }
+

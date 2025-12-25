@@ -334,6 +334,15 @@ export default function Home() {
                 <History className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">履歴</span>
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/gallery")}
+                className="text-gray-700 hover:text-green-700 hover:bg-green-50 transition-colors"
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1.5">ギャラリー</span>
+              </Button>
             </div>
             {/* Right: Share & Language */}
             <div className="flex items-center gap-2">

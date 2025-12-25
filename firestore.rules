@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Gallery posts
+    match /gallery/{postId} {
+      // Anyone can read visible posts
+      allow read: if true;
+      
+      // Anyone can create posts with required fields
+      allow create: if request.resource.data.keys().hasAll([
+        'originalText', 'transformedText', 'skinKey', 'skinName', 'nickname', 'likes', 'reportCount', 'createdAt', 'isHidden'
+      ])
+      && request.resource.data.likes == 0
+      && request.resource.data.reportCount == 0
+      && request.resource.data.isHidden == false
+      && request.resource.data.originalText.size() <= 500
+      && request.resource.data.transformedText.size() <= 2000
+      && request.resource.data.nickname.size() <= 20;
+      
+      // Only allow incrementing likes or reportCount
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes', 'reportCount']);
+    }
+    
+    // Reports collection
+    match /reports/{reportId} {
+      // Anyone can create a report
+      allow create: if request.resource.data.keys().hasAll(['postId', 'reason', 'createdAt']);
+      
+      // No read access to reports (admin only via console)
+      allow read: if false;
+    }
+  }
+}

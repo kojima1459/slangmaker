@@ -11,6 +11,7 @@ import About from "./pages/About";
 import History from "./pages/History";
 import Compare from "./pages/Compare";
 import FAQ from "./pages/FAQ";
+import Gallery from "./pages/Gallery";
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
       <Route path={"/history"} component={History} />
       <Route path={"/compare"} component={Compare} />
       <Route path={"/faq"} component={FAQ} />
+      <Route path={"/gallery"} component={Gallery} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
