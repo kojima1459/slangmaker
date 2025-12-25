@@ -19,6 +19,7 @@ import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
 import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSkins, type CustomSkin } from "@/lib/customSkinStorage";
 import { getThemeForSkin } from "@/lib/skinThemes";
 import { AdBanner } from "@/components/AdBanner";
+import { SEO } from "@/components/SEO";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -296,7 +297,13 @@ export default function Home() {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
+    <>
+      <SEO 
+        title="AIスラングメーカー - 無料で言葉を言い換え"
+        type="website"
+        path="/"
+      />
+      <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
       {/* Tutorial Modal */}
       {showTutorial && (
         <Tutorial onClose={handleCloseTutorial} />
@@ -1028,5 +1035,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

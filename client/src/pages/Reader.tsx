@@ -12,6 +12,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { getThemeForSkin } from "@/lib/skinThemes";
 import { AdBanner } from "@/components/AdBanner";
+import { SEO } from "@/components/SEO";
 import {
   Dialog,
   DialogContent,
@@ -153,7 +154,14 @@ export default function Reader() {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
+    <>
+      <SEO 
+        title={`変換結果: ${data.skin} - AIスラングメーカー`}
+        description={data.result.output.substring(0, 100) + '...'}
+        path="/reader"
+        type="article"
+      />
+      <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
       <div className="container max-w-6xl py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -338,6 +346,7 @@ export default function Reader() {
         skinName={data.skin}
       />
     </div>
+    </>
   );
 }
 

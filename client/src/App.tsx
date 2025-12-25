@@ -12,11 +12,13 @@ import History from "./pages/History";
 import Compare from "./pages/Compare";
 import FAQ from "./pages/FAQ";
 import Gallery from "./pages/Gallery";
+import LandingPage from "./pages/LandingPage";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/lp"} component={LandingPage} />
       <Route path={"/about"} component={About} />
       <Route path={"/guide"} component={Guide} />
       <Route path={"/reader"} component={Reader} />
@@ -30,15 +32,19 @@ function Router() {
   );
 }
 
+import { HelmetProvider } from 'react-helmet-async';
+
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <HelmetProvider>
+        <ThemeProvider defaultTheme="light">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 }

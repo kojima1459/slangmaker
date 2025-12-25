@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AdBanner } from "@/components/AdBanner";
+import { SEO } from "@/components/SEO";
 
 export default function Gallery() {
   const [, setLocation] = useLocation();
@@ -199,7 +200,13 @@ export default function Gallery() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <>
+      <SEO 
+        title="スラング・ギャラリー - みんなの変換結果" 
+        description="AIスラングメーカーで生成された面白い変換結果一覧。みんなの投稿を見て楽しもう。"
+        path="/gallery"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
       {/* Header */}
       <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b z-50">
         <div className="container max-w-5xl mx-auto px-4 py-4">
@@ -315,5 +322,6 @@ export default function Gallery() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </>
   );
 }
