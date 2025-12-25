@@ -32,7 +32,9 @@ export default function Home() {
   
   // Compare mode states
   const [compareMode, setCompareMode] = useState(false);
+  const [skinCount, setSkinCount] = useState<2 | 3>(2);
   const [selectedSkin2, setSelectedSkin2] = useState("detached_lit");
+  const [selectedSkin3, setSelectedSkin3] = useState("gen_z_slang");
   
   // Custom skin states
   const [customSkins, setCustomSkins] = useState<CustomSkin[]>([]);
@@ -128,40 +130,47 @@ export default function Home() {
       }
 
       if (compareMode) {
-        // Compare mode: transform with two skins in parallel
+        // Compare mode: transform with multiple skins in parallel
         const skin1 = selectedSkin;
         const skin2 = selectedSkin2;
+        const skin3 = skinCount === 3 ? selectedSkin3 : null;
         
         // Get custom skin prompts if needed
         const customPrompt1 = skin1.startsWith('custom_') ? getCustomSkinById(skin1)?.prompt : undefined;
         const customPrompt2 = skin2.startsWith('custom_') ? getCustomSkinById(skin2)?.prompt : undefined;
+        const customPrompt3 = skin3?.startsWith('custom_') ? getCustomSkinById(skin3)?.prompt : undefined;
         
-        const [result1, result2] = await Promise.all([
+        const transformPromises = [
           transformWithGemini({
             extracted: articleText,
             skin: skin1,
             customPrompt: customPrompt1,
-            params: {
-              temperature,
-              topP,
-              maxOutputTokens: maxTokens,
-              lengthRatio,
-            },
+            params: { temperature, topP, maxOutputTokens: maxTokens, lengthRatio },
             apiKey: savedApiKey,
           }),
           transformWithGemini({
             extracted: articleText,
             skin: skin2,
             customPrompt: customPrompt2,
-            params: {
-              temperature,
-              topP,
-              maxOutputTokens: maxTokens,
-              lengthRatio,
-            },
+            params: { temperature, topP, maxOutputTokens: maxTokens, lengthRatio },
             apiKey: savedApiKey,
           }),
-        ]);
+        ];
+        
+        if (skin3) {
+          transformPromises.push(
+            transformWithGemini({
+              extracted: articleText,
+              skin: skin3,
+              customPrompt: customPrompt3,
+              params: { temperature, topP, maxOutputTokens: maxTokens, lengthRatio },
+              apiKey: savedApiKey,
+            })
+          );
+        }
+        
+        const results = await Promise.all(transformPromises);
+        const [result1, result2, result3] = results;
 
         // Show confetti animation
         confetti({
@@ -170,44 +179,38 @@ export default function Home() {
           origin: { y: 0.6 }
         });
 
-        // Save to history (localStorage)
-        try {
-          const skinName1 = Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin;
-          const skinName2 = Object.values(SKINS).find((s: any) => s.key === selectedSkin2)?.name || selectedSkin2;
-          HistoryStorage.add({
-            originalText: articleText,
-            transformedText: result1.output,
-            skinKey: selectedSkin,
-            skinName: skinName1,
-            isCompareMode: true,
-            skinKey2: selectedSkin2,
-            skinName2: skinName2,
-            transformedText2: result2.output,
-          });
-        } catch (historyError) {
-          console.error("Failed to save history:", historyError);
-        }
+        // Get skin names
+        const getSkinName = (key: string) => Object.values(SKINS).find((s: any) => s.key === key)?.name || key;
 
         // Save compare result to sessionStorage
-        const compareData = {
+        const compareData: any = {
           originalText: articleText,
           result1: {
             output: result1.output,
             skinKey: selectedSkin,
-            skinName: Object.values(SKINS).find((s: any) => s.key === selectedSkin)?.name || selectedSkin,
+            skinName: getSkinName(selectedSkin),
           },
           result2: {
             output: result2.output,
             skinKey: selectedSkin2,
-            skinName: Object.values(SKINS).find((s: any) => s.key === selectedSkin2)?.name || selectedSkin2,
+            skinName: getSkinName(selectedSkin2),
           },
         };
+        
+        if (result3 && skin3) {
+          compareData.result3 = {
+            output: result3.output,
+            skinKey: selectedSkin3,
+            skinName: getSkinName(selectedSkin3),
+          };
+        }
+        
         sessionStorage.setItem('compareData', JSON.stringify(compareData));
 
         // Navigate to compare page
         setLocation("/compare");
 
-        toast.success("比較変換が完了しました！");
+        toast.success(`${skinCount}スキン比較変換が完了しました！`);
       } else {
         // Normal mode: single transformation
         const skinToUse = selectedSkin;
@@ -515,22 +518,49 @@ export default function Home() {
             </div>
 
             {/* Compare Mode Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-              <div className="flex items-center gap-3">
-                <Columns className="h-5 w-5 text-purple-600" />
-                <div>
-                  <p className="font-semibold text-gray-800">スキン比較モード</p>
-                  <p className="text-xs text-gray-600">同じテキストを2つのスキンで同時変換</p>
+            <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Columns className="h-5 w-5 text-purple-600" />
+                  <div>
+                    <p className="font-semibold text-gray-800">スキン比較モード</p>
+                    <p className="text-xs text-gray-600">同じテキストを複数スキンで同時変換</p>
+                  </div>
                 </div>
+                <Button
+                  variant={compareMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCompareMode(!compareMode)}
+                  className={compareMode ? "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600" : ""}
+                >
+                  {compareMode ? "ON" : "OFF"}
+                </Button>
               </div>
-              <Button
-                variant={compareMode ? "default" : "outline"}
-                size="sm"
-                onClick={() => setCompareMode(!compareMode)}
-                className={compareMode ? "bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600" : ""}
-              >
-                {compareMode ? "ON" : "OFF"}
-              </Button>
+              
+              {/* Skin count selector */}
+              {compareMode && (
+                <div className="mt-4 pt-4 border-t border-purple-200">
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">比較するスキン数</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={skinCount === 2 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSkinCount(2)}
+                      className={skinCount === 2 ? "bg-purple-600 hover:bg-purple-700" : ""}
+                    >
+                      2つ
+                    </Button>
+                    <Button
+                      variant={skinCount === 3 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSkinCount(3)}
+                      className={skinCount === 3 ? "bg-purple-600 hover:bg-purple-700" : ""}
+                    >
+                      3つ
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Custom Skins Section */}
@@ -655,6 +685,33 @@ export default function Home() {
                         selectedSkin2 === key
                           ? 'border-pink-500 bg-pink-50 shadow-md ring-2 ring-pink-200'
                           : 'border-gray-200 hover:border-pink-300'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
+                      <div className="text-xs text-gray-600 line-clamp-2">
+                        {t(`skin.${key}.desc`) || skin.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Skin 3 Selection (Compare Mode with 3 skins) */}
+            {compareMode && skinCount === 3 && (
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">スキン3を選択</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {Object.entries(SKINS).map(([key, skin]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedSkin3(key)}
+                      disabled={isLoading}
+                      className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                        selectedSkin3 === key
+                          ? 'border-orange-500 bg-orange-50 shadow-md ring-2 ring-orange-200'
+                          : 'border-gray-200 hover:border-orange-300'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>

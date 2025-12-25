@@ -6,18 +6,17 @@ import { ArrowLeft, Copy, Columns, Share2 } from "lucide-react";
 import { FaXTwitter, FaLine, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { toast } from "sonner";
 
+interface CompareResult {
+  output: string;
+  skinKey: string;
+  skinName: string;
+}
+
 interface CompareData {
   originalText: string;
-  result1: {
-    output: string;
-    skinKey: string;
-    skinName: string;
-  };
-  result2: {
-    output: string;
-    skinKey: string;
-    skinName: string;
-  };
+  result1: CompareResult;
+  result2: CompareResult;
+  result3?: CompareResult;
 }
 
 export default function Compare() {
@@ -29,7 +28,6 @@ export default function Compare() {
     if (stored) {
       setData(JSON.parse(stored));
     } else {
-      // No data, redirect to home
       setLocation("/");
     }
   }, [setLocation]);
@@ -37,6 +35,9 @@ export default function Compare() {
   if (!data) {
     return null;
   }
+
+  const results = [data.result1, data.result2, data.result3].filter(Boolean) as CompareResult[];
+  const siteUrl = 'https://slangmaker.sexinator.com';
 
   const handleCopy = (text: string, skinName: string) => {
     navigator.clipboard.writeText(text);
@@ -49,35 +50,34 @@ export default function Compare() {
   };
 
   const handleTwitterShare = () => {
-    const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(tweetUrl, '_blank', 'width=550,height=420');
+    const skinNames = results.map(r => r.skinName).join(', ');
+    const text = `AIスラングメーカーで${results.length}スキン比較！\n\n${results.map(r => `【${r.skinName}】\n${r.output.substring(0, 50)}...`).join('\n\n')}\n\n${siteUrl}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const handleLineShare = () => {
-    const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n${siteUrl}\n\n#BuiltwithManus`;
-    const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    const text = `AIスラングメーカーで${results.length}スキン比較！\n\n${siteUrl}`;
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(text)}`, '_blank');
   };
 
   const handleFacebookShare = () => {
-    const siteUrl = 'https://slang-maker.manus.space';
-    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(`AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n#BuiltwithManus`)}`;
-    window.open(shareUrl, '_blank', 'width=550,height=420');
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}`, '_blank');
   };
 
   const handleLinkedInShare = () => {
-    const siteUrl = 'https://slang-maker.manus.space';
-    const text = `AIスラングメーカーで比較変換しました！\n\n【${data.result1.skinName}】\n${data.result1.output.substring(0, 80)}...\n\n【${data.result2.skinName}】\n${data.result2.output.substring(0, 80)}...\n\n#BuiltwithManus`;
-    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}&summary=${encodeURIComponent(text)}`;
-    window.open(shareUrl, '_blank', 'width=550,height=420');
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`, '_blank');
   };
 
   const handleInstagramShare = () => {
-    toast.info('Instagramへのシェアはテキストをコピーして、#BuiltwithManusタグを追加してご利用ください');
+    toast.info('Instagramへはテキストをコピーしてシェアしてください');
   };
+
+  // Colors for each skin result
+  const cardStyles = [
+    { border: 'border-purple-200', header: 'from-purple-50 to-purple-100', title: 'text-purple-700', hover: 'hover:bg-purple-50' },
+    { border: 'border-pink-200', header: 'from-pink-50 to-pink-100', title: 'text-pink-700', hover: 'hover:bg-pink-50' },
+    { border: 'border-orange-200', header: 'from-orange-50 to-orange-100', title: 'text-orange-700', hover: 'hover:bg-orange-50' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
@@ -118,74 +118,48 @@ export default function Compare() {
         </Card>
 
         {/* Comparison Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Result 1 */}
-          <Card className="shadow-lg border-2 border-purple-200">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-purple-700">
-                  {data.result1.skinName}
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(data.result1.output, data.result1.skinName)}
-                  className="bg-white hover:bg-purple-50"
-                >
-                  <Copy className="h-4 w-4 mr-1.5" />
-                  コピー
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="prose prose-sm max-w-none">
-                <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
-                  {data.result1.output}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Result 2 */}
-          <Card className="shadow-lg border-2 border-pink-200">
-            <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg text-pink-700">
-                  {data.result2.skinName}
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCopy(data.result2.output, data.result2.skinName)}
-                  className="bg-white hover:bg-pink-50"
-                >
-                  <Copy className="h-4 w-4 mr-1.5" />
-                  コピー
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="prose prose-sm max-w-none">
-                <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
-                  {data.result2.output}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className={`grid gap-6 ${results.length === 3 ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 lg:grid-cols-2'}`}>
+          {results.map((result, index) => (
+            <Card key={index} className={`shadow-lg border-2 ${cardStyles[index].border}`}>
+              <CardHeader className={`bg-gradient-to-r ${cardStyles[index].header}`}>
+                <div className="flex items-center justify-between">
+                  <CardTitle className={`text-lg ${cardStyles[index].title}`}>
+                    {result.skinName}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopy(result.output, result.skinName)}
+                    className={`bg-white ${cardStyles[index].hover}`}
+                  >
+                    <Copy className="h-4 w-4 mr-1.5" />
+                    コピー
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">
+                    {result.output}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Actions */}
         <div className="mt-6 flex flex-col items-center gap-6">
           <Button
             onClick={() => {
-              const combined = `【${data.result1.skinName}】\n${data.result1.output}\n\n【${data.result2.skinName}】\n${data.result2.output}`;
+              const combined = results.map(r => `【${r.skinName}】\n${r.output}`).join('\n\n');
               navigator.clipboard.writeText(combined);
-              toast.success("両方の変換結果をコピーしました");
+              toast.success("全ての変換結果をコピーしました");
             }}
             className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
           >
             <Copy className="h-4 w-4 mr-2" />
-            両方をコピー
+            全てコピー ({results.length}件)
           </Button>
 
           {/* SNS Share Buttons */}
