@@ -12,10 +12,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
-  getGalleryPosts, 
-  getPopularPosts, 
-  likePost, 
-  reportPost,
   type GalleryPost 
 } from '@/lib/galleryService';
 import { getThemeForSkin } from '@/lib/skinThemes';
@@ -33,83 +29,28 @@ import {
 import { AdBanner } from "@/components/AdBanner";
 import { SEO } from "@/components/SEO";
 
+import { useGallery } from '@/hooks/useGallery';
+
 export default function Gallery() {
   const [, setLocation] = useLocation();
-  const [posts, setPosts] = useState<GalleryPost[]>([]);
-  const [popularPosts, setPopularPosts] = useState<GalleryPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
-  const [reportingPost, setReportingPost] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('new');
+  const [reportingPost, setReportingPost] = useState<string | null>(null);
 
-  // Load liked posts from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('gallery_liked_posts');
-    if (stored) {
-      setLikedPosts(new Set(JSON.parse(stored)));
-    }
-  }, []);
-
-  // Fetch posts
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const fetchPosts = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const [newPosts, popular] = await Promise.all([
-        getGalleryPosts(50),
-        getPopularPosts(20)
-      ]);
-      setPosts(newPosts);
-      setPopularPosts(popular);
-    } catch (err: any) {
-      console.error('Failed to fetch gallery:', err);
-      setError('ギャラリーの読み込みに失敗しました');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLike = async (postId: string) => {
-    if (likedPosts.has(postId)) {
-      toast.info('すでにいいねしています');
-      return;
-    }
-
-    try {
-      await likePost(postId);
-      
-      // Update local state
-      setPosts(prev => prev.map(p => 
-        p.id === postId ? { ...p, likes: p.likes + 1 } : p
-      ));
-      setPopularPosts(prev => prev.map(p => 
-        p.id === postId ? { ...p, likes: p.likes + 1 } : p
-      ));
-      
-      // Save to localStorage
-      const newLiked = new Set(likedPosts).add(postId);
-      setLikedPosts(newLiked);
-      localStorage.setItem('gallery_liked_posts', JSON.stringify([...newLiked]));
-      
-      toast.success('いいねしました！');
-    } catch (err) {
-      toast.error('いいねに失敗しました');
-    }
-  };
+  // [REFACTOR: A] Use custom hook for logic separation
+  const { 
+    posts, 
+    popularPosts, 
+    isLoading, 
+    error, 
+    likedPosts, 
+    fetchPosts, 
+    handleLike, 
+    handleReport: reportPostService 
+  } = useGallery();
 
   const handleReport = async (postId: string) => {
-    try {
-      await reportPost(postId, 'ユーザー通報');
-      toast.success('通報を受け付けました');
-      setReportingPost(null);
-    } catch (err) {
-      toast.error('通報に失敗しました');
-    }
+    await reportPostService(postId);
+    setReportingPost(null);
   };
 
   const handleCopy = (text: string) => {

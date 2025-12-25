@@ -70,6 +70,21 @@ const NG_WORDS = [
   'フォロー', 'プロフ見て', 'こちらから',
 ];
 
+// Custom Error Classes for better error handling [REFACTOR: A]
+export class GalleryError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = 'GalleryError';
+  }
+}
+
+export class ValidationError extends GalleryError {
+  constructor(message: string) {
+    super(message, 'VALIDATION_ERROR');
+    this.name = 'ValidationError';
+  }
+}
+
 /**
  * Check if text contains NG words
  */
@@ -82,40 +97,53 @@ function containsNGWords(text: string): boolean {
  * Create a new gallery post
  */
 export async function createGalleryPost(data: CreatePostData): Promise<GalleryPost | null> {
-  // Validate input
+  // [REFACTOR: A] Strict input validation
   if (!data.originalText || !data.transformedText || !data.nickname) {
-    throw new Error('必須項目が入力されていません');
+    throw new ValidationError('必須項目が入力されていません');
+  }
+
+  const MAX_ORIGINAL_LENGTH = 500;
+  const MAX_TRANSFORMED_LENGTH = 2000;
+  const MAX_NICKNAME_LENGTH = 20;
+
+  if (data.originalText.length > MAX_ORIGINAL_LENGTH) {
+    throw new ValidationError(`元のテキストは${MAX_ORIGINAL_LENGTH}文字以内で入力してください`);
+  }
+  if (data.transformedText.length > MAX_TRANSFORMED_LENGTH) {
+    throw new ValidationError(`変換テキストは${MAX_TRANSFORMED_LENGTH}文字以内で入力してください`);
+  }
+  if (data.nickname.length > MAX_NICKNAME_LENGTH) {
+    throw new ValidationError(`ニックネームは${MAX_NICKNAME_LENGTH}文字以内で入力してください`);
   }
 
   // Check for NG words
   if (containsNGWords(data.originalText) || containsNGWords(data.transformedText) || containsNGWords(data.nickname)) {
-    throw new Error('不適切な表現が含まれています');
+    throw new ValidationError('不適切な表現が含まれています');
   }
 
-  // Limit text lengths
-  const originalText = data.originalText.slice(0, 500);
-  const transformedText = data.transformedText.slice(0, 2000);
-  const nickname = data.nickname.slice(0, 20);
-
   const postData = {
-    originalText,
-    transformedText,
+    originalText: data.originalText,
+    transformedText: data.transformedText,
     skinKey: data.skinKey,
     skinName: data.skinName,
-    nickname,
+    nickname: data.nickname,
     likes: 0,
     reportCount: 0,
     createdAt: serverTimestamp(),
     isHidden: false,
   };
 
-  const docRef = await addDoc(collection(db, GALLERY_COLLECTION), postData);
-  
-  return {
-    id: docRef.id,
-    ...postData,
-    createdAt: Timestamp.now(),
-  } as GalleryPost;
+  try {
+    const docRef = await addDoc(collection(db, GALLERY_COLLECTION), postData);
+    
+    return {
+      id: docRef.id,
+      ...postData,
+      createdAt: Timestamp.now(),
+    } as GalleryPost;
+  } catch (error: any) {
+    throw new GalleryError('投稿の保存に失敗しました', 'DB_ERROR');
+  }
 }
 
 /**

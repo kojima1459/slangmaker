@@ -71,6 +71,19 @@ function useTypewriter(text: string, speed: number = 20) {
   return { displayText, isComplete, skipToEnd };
 }
 
+// [REFACTOR: A] Type Guard for ReaderData
+function isReaderData(data: any): data is ReaderData {
+  return (
+    data &&
+    typeof data === 'object' &&
+    typeof data.article === 'object' &&
+    typeof data.article.contentText === 'string' &&
+    typeof data.result === 'object' &&
+    typeof data.result.output === 'string' &&
+    typeof data.skin === 'string'
+  );
+}
+
 export default function Reader() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<ReaderData | null>(null);
@@ -83,11 +96,21 @@ export default function Reader() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('readerData');
-    if (stored) {
-      setData(JSON.parse(stored));
-    } else {
-      // No data, redirect to home
+    try {
+      const stored = sessionStorage.getItem('readerData');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (isReaderData(parsed)) {
+          setData(parsed);
+        } else {
+          console.error('Invalid reader data format');
+          setLocation("/");
+        }
+      } else {
+        setLocation("/");
+      }
+    } catch (e) {
+      console.error('Failed to parse reader data', e);
       setLocation("/");
     }
   }, [setLocation]);
