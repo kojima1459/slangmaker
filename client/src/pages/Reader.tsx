@@ -12,7 +12,6 @@ import DOMPurify from "isomorphic-dompurify";
 import { ImageGenerator } from "@/components/ImageGenerator";
 import { getThemeForSkin } from "@/lib/skinThemes";
 import { AdBanner } from "@/components/AdBanner";
-import { SEO } from "@/components/SEO";
 import {
   Dialog,
   DialogContent,
@@ -71,19 +70,6 @@ function useTypewriter(text: string, speed: number = 20) {
   return { displayText, isComplete, skipToEnd };
 }
 
-// [REFACTOR: A] Type Guard for ReaderData
-function isReaderData(data: any): data is ReaderData {
-  return (
-    data &&
-    typeof data === 'object' &&
-    typeof data.article === 'object' &&
-    typeof data.article.contentText === 'string' &&
-    typeof data.result === 'object' &&
-    typeof data.result.output === 'string' &&
-    typeof data.skin === 'string'
-  );
-}
-
 export default function Reader() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<ReaderData | null>(null);
@@ -96,21 +82,11 @@ export default function Reader() {
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem('readerData');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (isReaderData(parsed)) {
-          setData(parsed);
-        } else {
-          console.error('Invalid reader data format');
-          setLocation("/");
-        }
-      } else {
-        setLocation("/");
-      }
-    } catch (e) {
-      console.error('Failed to parse reader data', e);
+    const stored = sessionStorage.getItem('readerData');
+    if (stored) {
+      setData(JSON.parse(stored));
+    } else {
+      // No data, redirect to home
       setLocation("/");
     }
   }, [setLocation]);
@@ -177,24 +153,23 @@ export default function Reader() {
   };
 
   return (
-    <>
-      <SEO 
-        title={`変換結果: ${data.skin} - AIスラングメーカー`}
-        description={data.result.output.substring(0, 100) + '...'}
-        path="/reader"
-        type="article"
-      />
-      <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
-      <div className="container max-w-6xl py-8">
+    <div className="min-h-screen bg-[#0f0f13] text-white">
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-purple-900/15 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[10%] w-[500px] h-[500px] bg-blue-900/15 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 container max-w-6xl py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" onClick={handleBack}>
+          <Button variant="ghost" onClick={handleBack} className="text-gray-300 hover:text-white hover:bg-white/5">
             <ArrowLeft className="mr-2 h-4 w-4" />
             戻る
           </Button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">{data.article.title}</h1>
-            <p className="text-sm text-gray-600">
+            <h1 className="text-2xl font-bold text-white">{data.article.title}</h1>
+            <p className="text-sm text-gray-400">
               {data.article.site} • スキン: {data.skin}
             </p>
           </div>
@@ -204,16 +179,16 @@ export default function Reader() {
         <div className={`grid gap-6 ${compareMode ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
           {/* Original Article (Compare Mode) */}
           {compareMode && (
-            <Card className="shadow-lg">
+            <Card className="bg-[#1a1a23]/80 backdrop-blur-xl border border-white/10">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-gray-600" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <FileText className="h-5 w-5 text-gray-400" />
                   原文
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="prose prose-sm max-w-none">
-                  <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                <div className="prose prose-sm max-w-none prose-invert">
+                  <p className="whitespace-pre-wrap text-gray-300 leading-relaxed">
                     {data.article.contentText}
                   </p>
                 </div>
@@ -222,9 +197,9 @@ export default function Reader() {
           )}
 
           {/* Transformed Output */}
-          <Card className="shadow-lg">
+          <Card className="bg-[#1a1a23]/80 backdrop-blur-xl border border-white/10">
             <CardHeader>
-              <CardTitle className="mb-4">AISlang Maker • スキン: {data.skin}</CardTitle>
+              <CardTitle className="mb-4 text-white">AISlang Maker • スキン: {data.skin}</CardTitle>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant={compareMode ? "default" : "outline"}
@@ -239,6 +214,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleCopy}
+                  className="border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
                 >
                   <Copy className="mr-2 h-4 w-4" />
                   コピー
@@ -247,7 +223,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleTwitterShare}
-                  className="bg-sky-50 hover:bg-sky-100 border-sky-200"
+                  className="border-sky-500/30 text-sky-400 hover:bg-sky-500/10"
                 >
                   <Twitter className="mr-2 h-4 w-4 text-sky-500" />
                   X
@@ -256,7 +232,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleLineShare}
-                  className="bg-green-50 hover:bg-green-100 border-green-200"
+                  className="border-green-500/30 text-green-400 hover:bg-green-500/10"
                 >
                   <svg className="mr-2 h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.771.039 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
@@ -267,7 +243,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleFacebookShare}
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                  className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
                 >
                   <Facebook className="mr-2 h-4 w-4 text-blue-600" />
                   Facebook
@@ -276,7 +252,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleLinkedInShare}
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-300"
+                  className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10"
                 >
                   <Linkedin className="mr-2 h-4 w-4 text-blue-700" />
                   LinkedIn
@@ -285,7 +261,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={handleInstagramShare}
-                  className="bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border-pink-200"
+                  className="border-pink-500/30 text-pink-400 hover:bg-pink-500/10"
                 >
                   <Instagram className="mr-2 h-4 w-4 text-pink-600" />
                   Instagram
@@ -294,7 +270,7 @@ export default function Reader() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowShareModal(true)}
-                  className="bg-gradient-to-r from-green-50 to-teal-50 hover:from-green-100 hover:to-teal-100 border-green-300"
+                  className="border-green-500/30 text-green-400 hover:bg-green-500/10"
                 >
                   <Send className="mr-2 h-4 w-4 text-green-600" />
                   ギャラリー投稿
@@ -304,13 +280,13 @@ export default function Reader() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-gradient-to-r from-orange-50 to-pink-50 hover:from-orange-100 hover:to-pink-100 border-orange-200"
+                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
                     >
                       <ImageIcon className="mr-2 h-4 w-4 text-orange-600" />
                       画像化
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto">
+                  <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-y-auto bg-[#1a1a23] border border-white/10 text-white">
                     <DialogHeader>
                       <DialogTitle>画像として保存</DialogTitle>
                       <DialogDescription>
@@ -327,10 +303,10 @@ export default function Reader() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-lg max-w-none">
-                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+              <div className="prose prose-lg max-w-none prose-invert">
+                <p className="whitespace-pre-wrap text-gray-200 leading-relaxed">
                   {displayText}
-                  {!isComplete && <span className="animate-pulse">|</span>}
+                  {!isComplete && <span className="animate-pulse text-purple-400">|</span>}
                 </p>
               </div>
               {/* Skip button */}
@@ -340,7 +316,7 @@ export default function Reader() {
                     variant="outline"
                     size="sm"
                     onClick={skipToEnd}
-                    className="gap-2"
+                    className="gap-2 border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
                   >
                     <SkipForward className="h-4 w-4" />
                     スキップ
@@ -353,7 +329,7 @@ export default function Reader() {
       </div>
 
       {/* Ad Banner */}
-      <div className="container max-w-6xl pb-8">
+      <div className="relative z-10 container max-w-6xl pb-8">
         <div className="flex justify-center">
           <AdBanner />
         </div>
@@ -369,7 +345,6 @@ export default function Reader() {
         skinName={data.skin}
       />
     </div>
-    </>
   );
 }
 

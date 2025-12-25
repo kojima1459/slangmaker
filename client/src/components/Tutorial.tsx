@@ -28,7 +28,7 @@ export function Tutorial({ onClose }: TutorialProps) {
     },
     {
       title: t('tutorial.step2.title', 'スキンを選択'),
-      description: t('tutorial.step2.description', 'お好みのスキン（文体）を選択します。関西ノリ風、おじさん構文風など13種類から選べます'),
+      description: t('tutorial.step2.description', 'お好みのスキン（文体）を選択します。関西ノリ風、おじさん構文風など15種類から選べます'),
       icon: '🎨',
       animation: 'select',
     },
@@ -63,13 +63,13 @@ export function Tutorial({ onClose }: TutorialProps) {
   const step = steps[currentStep];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-2xl w-full">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <Card className="max-w-2xl w-full bg-[#1a1a23] border border-white/10">
         <CardContent className="p-8">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -81,10 +81,10 @@ export function Tutorial({ onClose }: TutorialProps) {
                 key={index}
                 className={`h-2 rounded-full transition-all ${
                   index === currentStep
-                    ? 'w-8 bg-purple-600'
+                    ? 'w-8 bg-purple-500'
                     : index < currentStep
-                    ? 'w-2 bg-purple-300'
-                    : 'w-2 bg-gray-300'
+                    ? 'w-2 bg-purple-500/50'
+                    : 'w-2 bg-white/20'
                 }`}
               />
             ))}
@@ -97,8 +97,8 @@ export function Tutorial({ onClose }: TutorialProps) {
               {step.icon}
             </div>
 
-            <h2 className="text-3xl font-bold mb-4">{step.title}</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">{step.description}</p>
+            <h2 className="text-3xl font-bold mb-4 text-white">{step.title}</h2>
+            <p className="text-lg text-gray-400">{step.description}</p>
           </div>
 
           {/* Navigation */}
@@ -107,7 +107,7 @@ export function Tutorial({ onClose }: TutorialProps) {
               variant="outline"
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="gap-2"
+              className="gap-2 border-white/10 text-gray-300 hover:bg-white/5 hover:text-white"
             >
               <ChevronLeft className="w-4 h-4" />
               {t('tutorial.prev', '前へ')}
@@ -117,7 +117,7 @@ export function Tutorial({ onClose }: TutorialProps) {
               {currentStep + 1} / {steps.length}
             </div>
 
-            <Button onClick={handleNext} className="gap-2">
+            <Button onClick={handleNext} className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0">
               {currentStep === steps.length - 1
                 ? t('tutorial.start', '始める')
                 : t('tutorial.next', '次へ')}
@@ -129,7 +129,7 @@ export function Tutorial({ onClose }: TutorialProps) {
           <div className="text-center mt-4">
             <button
               onClick={onClose}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
             >
               {t('tutorial.skip', 'スキップ')}
             </button>

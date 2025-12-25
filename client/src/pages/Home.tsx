@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { transformWithGemini } from "@/lib/gemini";
 import { toast } from "sonner";
 import { SKINS } from "../../../shared/skins";
-import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle, Twitter, MessageCircle } from "lucide-react";
+import { Loader2, Sparkles, ChevronDown, BookOpen, ExternalLink, History, Columns, TrendingUp, Users, Zap, Plus, Trash2, Edit2, Share2, HelpCircle, Twitter, MessageCircle, Moon, Sun } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { Tutorial } from "@/components/Tutorial";
@@ -19,7 +19,7 @@ import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
 import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSkins, type CustomSkin } from "@/lib/customSkinStorage";
 import { getThemeForSkin } from "@/lib/skinThemes";
 import { AdBanner } from "@/components/AdBanner";
-import { SEO } from "@/components/SEO";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -45,6 +45,7 @@ export default function Home() {
   const [editingSkin, setEditingSkin] = useState<CustomSkin | undefined>(undefined);
 
   const { t } = useTranslation();
+  const { theme, toggleTheme, switchable } = useTheme();
   
   // Get current theme based on selected skin
   const currentTheme = getThemeForSkin(selectedSkin);
@@ -297,20 +298,20 @@ export default function Home() {
   };
 
   return (
-    <>
-      <SEO 
-        title="AIスラングメーカー - 無料で言葉を言い換え"
-        type="website"
-        path="/"
-      />
-      <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0f0f13] text-white' : 'bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 text-gray-900'} selection:bg-purple-500/30`}>
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px]" />
+      </div>
+
       {/* Tutorial Modal */}
       {showTutorial && (
         <Tutorial onClose={handleCloseTutorial} />
       )}
 
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+      <div className="fixed top-0 left-0 right-0 bg-black/40 backdrop-blur-md border-b border-white/5 z-50">
         <div className="container max-w-5xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
             {/* Left: Navigation */}
@@ -319,7 +320,7 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocation("/guide")}
-                className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+                className="text-gray-300 hover:text-purple-400 hover:bg-white/5 transition-colors"
               >
                 <BookOpen className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">{t('howToUse')}</span>
@@ -346,7 +347,7 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocation("/gallery")}
-                className="text-gray-700 hover:text-green-700 hover:bg-green-50 transition-colors"
+                className="text-gray-300 hover:text-green-400 hover:bg-white/5 transition-colors"
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">ギャラリー</span>
@@ -358,11 +359,11 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n\nhttps://slang-maker.manus.space`;
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n15種類のスタイルでテキストを変換！\n\nhttps://slang-maker.manus.space`;
                   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
                   window.open(twitterUrl, '_blank');
                 }}
-                className="text-gray-700 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                className="text-gray-300 hover:text-blue-400 hover:bg-white/5 transition-colors"
                 title="Xでシェア"
               >
                 <Twitter className="h-4 w-4" />
@@ -372,24 +373,36 @@ export default function Home() {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n13種類のスタイルでテキストを変換！\n\nhttps://slang-maker.manus.space`;
+                  const shareText = `${t('appTitle')} - ${t('tagline1')}\n\n15種類のスタイルでテキストを変換！\n\nhttps://slang-maker.manus.space`;
                   const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(shareText)}`;
                   window.open(lineUrl, '_blank');
                 }}
-                className="text-gray-700 hover:text-green-500 hover:bg-green-50 transition-colors"
+                className="text-gray-300 hover:text-green-400 hover:bg-white/5 transition-colors"
                 title="LINEでシェア"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span className="hidden sm:inline ml-1.5">LINE</span>
               </Button>
               <LanguageSwitcher />
+              {/* Theme Toggle */}
+              {switchable && toggleTheme && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="text-gray-300 hover:text-yellow-400 hover:bg-white/5 transition-colors"
+                  title={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
       
       {/* Main Content */}
-      <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
+      <div className="relative z-10 container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
           {/* Manus Campaign Badge */}
@@ -416,27 +429,27 @@ export default function Home() {
             </h1>
           </div>
           <div className="space-y-2">
-            <p className="text-2xl font-semibold text-gray-800">
+            <p className="text-2xl font-semibold text-white">
               {t('tagline1') || "3秒で文体マジック✨"}
             </p>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-400">
               {t('tagline2') || "言葉を着せ替え、表現を楽しむ"}
             </p>
           </div>
         </div>
 
         {/* Main Card */}
-        <Card className="shadow-2xl border-0">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-orange-50">
-            <CardTitle className="text-2xl">{t('transformArticle') || "テキストを変換"}</CardTitle>
-            <CardDescription className="text-base">
+        <Card className="bg-[#1a1a23]/80 backdrop-blur-xl border border-white/10 shadow-2xl">
+          <CardHeader className="bg-white/5 border-b border-white/5">
+            <CardTitle className="text-2xl text-white">{t('transformArticle') || "テキストを変換"}</CardTitle>
+            <CardDescription className="text-base text-gray-400">
               {t('pasteArticle') || "テキストを貼り付けて、好きなスタイルに変換しましょう"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pt-6">
             {/* API Key Input - Required for Firebase version */}
-            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <Label htmlFor="apiKey" className="text-sm font-semibold text-blue-800">
+            <div className="space-y-3 p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+              <Label htmlFor="apiKey" className="text-sm font-semibold text-purple-300">
                 🔑 Gemini API キー
               </Label>
               <div className="flex gap-2">
@@ -446,18 +459,18 @@ export default function Home() {
                   placeholder="AIza..."
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 bg-[#0f0f13] border-white/10 text-white"
                 />
-                <Button onClick={handleSaveApiKey} variant="outline" size="sm">
+                <Button onClick={handleSaveApiKey} variant="outline" size="sm" className="border-purple-500/30 text-purple-300 hover:bg-purple-500/20">
                   保存
                 </Button>
               </div>
-              <p className="text-xs text-blue-700">
+              <p className="text-xs text-purple-400">
                 <a 
                   href="https://makersuite.google.com/app/apikey" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="underline hover:text-blue-900"
+                  className="underline hover:text-purple-300"
                 >
                   Google AI Studio
                 </a>
@@ -473,39 +486,39 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Button
                   variant="outline"
-                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-purple-50 hover:border-purple-300 transition-all"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 bg-white/5 border-white/10 hover:bg-purple-500/10 hover:border-purple-500/30 transition-all"
                   onClick={() => {
                     setArticleText("日本の経済は2024年第3四半期に前期比0.9%の成長を記録しました。個人消費が堅調に推移し、企業の設備投資も増加しています。政府はこのトレンドが続くと予測していますが、国際情勢の不確実性がリスク要因となっています。");
                     setSelectedSkin("kansai_banter");
                     toast.success(t('sample.economy.toast'));
                   }}
                 >
-                  <span className="font-semibold text-purple-700">{t('sample.economy.title')}</span>
-                  <span className="text-xs text-gray-600">{t('sample.economy.desc')}</span>
+                  <span className="font-semibold text-purple-400">{t('sample.economy.title')}</span>
+                  <span className="text-xs text-gray-400">{t('sample.economy.desc')}</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-pink-50 hover:border-pink-300 transition-all"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 bg-white/5 border-white/10 hover:bg-pink-500/10 hover:border-pink-500/30 transition-all"
                   onClick={() => {
                     setArticleText("政府は新しい環境政策を発表しました。、2030年までに二酸化炭素排出量の46%削減を目指し、再生可能エネルギーの利用を拡大します。この政策には賛否両論があり、産業界からは懸念の声が上がっていますが、環境団体は歓迎しています。");
                     setSelectedSkin("gen_z_slang");
                     toast.success(t('sample.politics.toast'));
                   }}
                 >
-                  <span className="font-semibold text-pink-700">{t('sample.politics.title')}</span>
-                  <span className="text-xs text-gray-600">{t('sample.politics.desc')}</span>
+                  <span className="font-semibold text-pink-400">{t('sample.politics.title')}</span>
+                  <span className="text-xs text-gray-400">{t('sample.politics.desc')}</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 hover:bg-orange-50 hover:border-orange-300 transition-all"
+                  className="h-auto py-4 px-4 text-left flex flex-col items-start gap-2 bg-white/5 border-white/10 hover:bg-orange-500/10 hover:border-orange-500/30 transition-all"
                   onClick={() => {
                     setArticleText("今日、東京都内で大規模な交通渋滞が発生しました。朝の通勤ラッシュ時に電車の信号トラブルが発生し、約100万人の通勤・通学者に影響が出ました。鉄道会社は代替輸送を手配しましたが、多くの人が遅刻を余儀なくされました。");
                     setSelectedSkin("rap_style");
                     toast.success(t('sample.social.toast'));
                   }}
                 >
-                  <span className="font-semibold text-orange-700">{t('sample.social.title')}</span>
-                  <span className="text-xs text-gray-600">{t('sample.social.desc')}</span>
+                  <span className="font-semibold text-orange-400">{t('sample.social.title')}</span>
+                  <span className="text-xs text-gray-400">{t('sample.social.desc')}</span>
                 </Button>
               </div>
             </div>
@@ -517,7 +530,7 @@ export default function Home() {
               </Label>
               <textarea
                 id="articleText"
-                className="w-full min-h-[200px] p-4 border-2 rounded-xl resize-y focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full min-h-[200px] p-4 bg-[#0f0f13] border border-white/10 rounded-xl resize-y text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 placeholder={t('articlePlaceholder') || "変換したいテキストを貼り付けてください..."}
                 value={articleText}
                 onChange={(e) => setArticleText(e.target.value)}
@@ -539,13 +552,13 @@ export default function Home() {
             </div>
 
             {/* Compare Mode Toggle */}
-            <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+            <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Columns className="h-5 w-5 text-purple-600" />
+                  <Columns className="h-5 w-5 text-purple-400" />
                   <div>
-                    <p className="font-semibold text-gray-800">スキン比較モード</p>
-                    <p className="text-xs text-gray-600">同じテキストを複数スキンで同時変換</p>
+                    <p className="font-semibold text-white">スキン比較モード</p>
+                    <p className="text-xs text-gray-400">同じテキストを複数スキンで同時変換</p>
                   </div>
                 </div>
                 <Button
@@ -560,8 +573,8 @@ export default function Home() {
               
               {/* Skin count selector */}
               {compareMode && (
-                <div className="mt-4 pt-4 border-t border-purple-200">
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">比較するスキン数</Label>
+                <div className="mt-4 pt-4 border-t border-purple-500/20">
+                  <Label className="text-sm font-medium text-gray-300 mb-2 block">比較するスキン数</Label>
                   <div className="flex gap-2">
                     <Button
                       variant={skinCount === 2 ? "default" : "outline"}
@@ -585,11 +598,11 @@ export default function Home() {
             </div>
 
             {/* Custom Skins Section */}
-            <div className="space-y-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-300">
+            <div className="space-y-4 p-4 bg-amber-500/10 rounded-xl border border-amber-500/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label className="text-lg font-semibold text-amber-900">カスタムスキン</Label>
-                  <p className="text-xs text-amber-700 mt-1">
+                  <Label className="text-lg font-semibold text-amber-300">カスタムスキン</Label>
+                  <p className="text-xs text-amber-400 mt-1">
                     {customSkins.length} / {getMaxCustomSkins()} 作成済み
                   </p>
                 </div>
@@ -607,7 +620,7 @@ export default function Home() {
               
               {customSkins.length === 0 ? (
                 <div className="text-center py-4">
-                  <p className="text-sm text-amber-700 mb-3">
+                  <p className="text-sm text-amber-400 mb-3">
                     独自のプロンプトで、あなただけのスキンを作成できます
                   </p>
                   <Button
@@ -676,14 +689,14 @@ export default function Home() {
                     type="button"
                     onClick={() => setSelectedSkin(key)}
                     disabled={isLoading}
-                    className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                    className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
                       selectedSkin === key
-                        ? 'border-purple-500 bg-purple-50 shadow-md ring-2 ring-purple-200'
-                        : 'border-gray-200 hover:border-purple-300'
+                        ? 'border-purple-500 bg-purple-500/20 shadow-md ring-2 ring-purple-500/30'
+                        : 'border-white/10 bg-white/5 hover:border-purple-500/30'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
-                    <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                    <div className="text-xs text-gray-600 line-clamp-2">
+                    <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
+                    <div className="text-xs text-gray-400 line-clamp-2">
                       {t(`skin.${key}.desc`) || skin.description}
                     </div>
                   </button>
@@ -702,14 +715,14 @@ export default function Home() {
                       type="button"
                       onClick={() => setSelectedSkin2(key)}
                       disabled={isLoading}
-                      className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
                         selectedSkin2 === key
-                          ? 'border-pink-500 bg-pink-50 shadow-md ring-2 ring-pink-200'
-                          : 'border-gray-200 hover:border-pink-300'
+                          ? 'border-pink-500 bg-pink-500/20 shadow-md ring-2 ring-pink-500/30'
+                          : 'border-white/10 bg-white/5 hover:border-pink-500/30'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                      <div className="text-xs text-gray-600 line-clamp-2">
+                      <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
+                      <div className="text-xs text-gray-400 line-clamp-2">
                         {t(`skin.${key}.desc`) || skin.description}
                       </div>
                     </button>
@@ -729,14 +742,14 @@ export default function Home() {
                       type="button"
                       onClick={() => setSelectedSkin3(key)}
                       disabled={isLoading}
-                      className={`p-4 border-2 rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
+                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
                         selectedSkin3 === key
-                          ? 'border-orange-500 bg-orange-50 shadow-md ring-2 ring-orange-200'
-                          : 'border-gray-200 hover:border-orange-300'
+                          ? 'border-orange-500 bg-orange-500/20 shadow-md ring-2 ring-orange-500/30'
+                          : 'border-white/10 bg-white/5 hover:border-orange-500/30'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      <div className="font-semibold text-sm mb-1">{t(`skin.${key}`) || skin.name}</div>
-                      <div className="text-xs text-gray-600 line-clamp-2">
+                      <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
+                      <div className="text-xs text-gray-400 line-clamp-2">
                         {t(`skin.${key}.desc`) || skin.description}
                       </div>
                     </button>
@@ -748,17 +761,17 @@ export default function Home() {
             {/* Advanced Settings */}
             <Collapsible>
               <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white">
                   <ChevronDown className="h-4 w-4 mr-2" />
                   {t('advancedSettings') || "詳細設定"}
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-6 mt-4 p-4 border rounded-xl bg-gray-50">
+              <CollapsibleContent className="space-y-6 mt-4 p-4 border border-white/10 rounded-xl bg-white/5">
                 {/* Temperature */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label>{t('temperature') || "Temperature"}</Label>
-                    <span className="text-sm font-medium text-gray-600">{temperature.toFixed(1)}</span>
+                    <span className="text-sm font-medium text-purple-400">{temperature.toFixed(1)}</span>
                   </div>
                   <Slider
                     value={[temperature]}
@@ -768,7 +781,7 @@ export default function Home() {
                     step={0.1}
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-400">
                     {t('temperatureDescription') || "高いほど創造的、低いほど安定的"}
                   </p>
                 </div>
@@ -777,7 +790,7 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label>{t('topP') || "Top-p"}</Label>
-                    <span className="text-sm font-medium text-gray-600">{topP.toFixed(2)}</span>
+                    <span className="text-sm font-medium text-purple-400">{topP.toFixed(2)}</span>
                   </div>
                   <Slider
                     value={[topP]}
@@ -787,7 +800,7 @@ export default function Home() {
                     step={0.01}
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-400">
                     {t('topPDescription') || "多様性のコントロール"}
                   </p>
                 </div>
@@ -796,7 +809,7 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label>{t('maxTokens') || "最大トークン数"}</Label>
-                    <span className="text-sm font-medium text-gray-600">{maxTokens}</span>
+                    <span className="text-sm font-medium text-purple-400">{maxTokens}</span>
                   </div>
                   <Slider
                     value={[maxTokens]}
@@ -806,7 +819,7 @@ export default function Home() {
                     step={50}
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-400">
                     {t('maxTokensDescription') || "出力の最大長"}
                   </p>
                 </div>
@@ -825,7 +838,7 @@ export default function Home() {
                     step={0.1}
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-400">
                     {t('lengthRatioDescription') || "元のテキストに対する出力の長さ"}
                   </p>
                 </div>
@@ -977,8 +990,7 @@ export default function Home() {
         />
       </div>
       
-      {/* Footer */}
-      <footer className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white py-12 mt-16">
+      {/* Footer */}\n      <footer className="relative z-10 border-t border-white/5 bg-[#0f0f13] text-white py-12 mt-16">
         <div className="container max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             {/* Left Column: Creator & Contact */}
@@ -1011,7 +1023,7 @@ export default function Home() {
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4">{t('footer.about') || 'このサイトについて'}</h3>
               <p className="text-sm text-gray-300">
-                {t('footer.description') || 'AIスラングメーカーは、13種類のスタイルでテキストを変換できる無料ツールです。日本語のスラングや言い回しを学ぶこともできます。'}
+                {t('footer.description') || 'AIスラングメーカーは、15種類のスタイルでテキストを変換できる無料ツールです。ギャラリーで他のユーザーの変換結果を見たり、自分の作品を投稿したりもできます。'}
               </p>
             </div>
           </div>
@@ -1035,6 +1047,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-    </>
   );
 }

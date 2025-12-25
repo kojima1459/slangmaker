@@ -57,19 +57,37 @@ export default function FAQ() {
       question: t('faq.q12') || "モバイルでも使えますか？",
       answer: t('faq.a12') || "はい、レスポンシブデザインに対応しているため、スマートフォンやタブレットでも快適に使用できます。",
     },
+    {
+      question: "ギャラリー機能とは何ですか？",
+      answer: "ギャラリーは、他のユーザーが投稿した変換結果を閲覧できるコミュニティ機能です。面白い変換結果を発見したり、自分の作品を投稿して共有することができます。",
+    },
+    {
+      question: "ギャラリーに投稿するにはどうすればいいですか？",
+      answer: "テキストを変換した後、結果画面で「ギャラリーへ投稿」ボタンをクリックしてください。ニックネームを入力するだけで簡単に投稿できます。",
+    },
+    {
+      question: "利用可能なスキンは何種類ありますか？",
+      answer: "現在15種類のスキン（文体）を用意しています。関西ノリ風、おじさん構文風、Z世代スラング風、ギャル語風、学術論文風など、様々なスタイルでテキストを楽しめます。",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-[#0f0f13] text-white">
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+      <div className="fixed top-0 left-0 right-0 bg-black/40 backdrop-blur-md border-b border-white/5 z-50">
         <div className="container max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation("/")}
-              className="text-gray-700 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+              className="text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               <span>{t('backToTop') || 'トップに戻る'}</span>
@@ -79,16 +97,16 @@ export default function FAQ() {
       </div>
 
       {/* Main Content */}
-      <div className="container max-w-5xl mx-auto px-4 pt-24 pb-12">
+      <div className="relative z-10 container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <HelpCircle className="w-12 h-12 text-purple-600" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">
+            <HelpCircle className="w-12 h-12 text-purple-400" />
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-500 bg-clip-text text-transparent">
               {t('faq.title') || 'よくある質問'}
             </h1>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-400">
             {t('faq.subtitle') || 'AIスラングメーカーに関するよくある質問と回答'}
           </p>
         </div>
@@ -96,9 +114,9 @@ export default function FAQ() {
         {/* FAQ List */}
         <div className="space-y-6">
           {faqs.map((faq, index) => (
-            <Card key={index} className="shadow-lg border-0 hover:shadow-xl transition-shadow">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-orange-50">
-                <CardTitle className="text-xl flex items-start gap-3">
+            <Card key={index} className="bg-[#1a1a23]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/30 transition-all">
+              <CardHeader className="bg-white/5">
+                <CardTitle className="text-xl flex items-start gap-3 text-white">
                   <span className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                     Q{index + 1}
                   </span>
@@ -107,10 +125,10 @@ export default function FAQ() {
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="flex items-start gap-3">
-                  <span className="flex-shrink-0 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                  <span className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                     A
                   </span>
-                  <p className="flex-1 text-gray-700 leading-relaxed">{faq.answer}</p>
+                  <p className="flex-1 text-gray-300 leading-relaxed">{faq.answer}</p>
                 </div>
               </CardContent>
             </Card>
@@ -118,23 +136,23 @@ export default function FAQ() {
         </div>
 
         {/* Contact Section */}
-        <Card className="mt-12 shadow-2xl border-0 bg-gradient-to-r from-purple-100 via-pink-100 to-orange-100">
+        <Card className="mt-12 bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-white/10">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">
+            <CardTitle className="text-2xl text-center text-white">
               {t('faq.contactTitle') || 'その他のご質問'}
             </CardTitle>
-            <CardDescription className="text-center text-base">
+            <CardDescription className="text-center text-base text-gray-400">
               {t('faq.contactDesc') || 'FAQに記載されていない質問がある場合は、お気軽にお問い合わせください'}
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-lg mb-4">
+            <p className="text-lg mb-4 text-white">
               <strong>{t('footer.contact') || '問い合わせ'}:</strong>{' '}
-              <a href="mailto:mk19830920@gmail.com" className="text-blue-600 hover:text-blue-700 transition-colors">
+              <a href="mailto:mk19830920@gmail.com" className="text-purple-400 hover:text-purple-300 transition-colors">
                 mk19830920@gmail.com
               </a>
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-500">
               {t('faq.responseTime') || '通常、24時間以内に返信いたします'}
             </p>
           </CardContent>

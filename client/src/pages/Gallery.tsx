@@ -12,6 +12,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
+  getGalleryPosts, 
+  getPopularPosts, 
+  likePost, 
+  reportPost,
   type GalleryPost 
 } from '@/lib/galleryService';
 import { getThemeForSkin } from '@/lib/skinThemes';
@@ -27,30 +31,84 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AdBanner } from "@/components/AdBanner";
-import { SEO } from "@/components/SEO";
-
-import { useGallery } from '@/hooks/useGallery';
 
 export default function Gallery() {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState('new');
+  const [posts, setPosts] = useState<GalleryPost[]>([]);
+  const [popularPosts, setPopularPosts] = useState<GalleryPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [reportingPost, setReportingPost] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('new');
 
-  // [REFACTOR: A] Use custom hook for logic separation
-  const { 
-    posts, 
-    popularPosts, 
-    isLoading, 
-    error, 
-    likedPosts, 
-    fetchPosts, 
-    handleLike, 
-    handleReport: reportPostService 
-  } = useGallery();
+  // Load liked posts from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('gallery_liked_posts');
+    if (stored) {
+      setLikedPosts(new Set(JSON.parse(stored)));
+    }
+  }, []);
+
+  // Fetch posts
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [newPosts, popular] = await Promise.all([
+        getGalleryPosts(50),
+        getPopularPosts(20)
+      ]);
+      setPosts(newPosts);
+      setPopularPosts(popular);
+    } catch (err: any) {
+      console.error('Failed to fetch gallery:', err);
+      setError('ギャラリーの読み込みに失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    if (likedPosts.has(postId)) {
+      toast.info('すでにいいねしています');
+      return;
+    }
+
+    try {
+      await likePost(postId);
+      
+      // Update local state
+      setPosts(prev => prev.map(p => 
+        p.id === postId ? { ...p, likes: p.likes + 1 } : p
+      ));
+      setPopularPosts(prev => prev.map(p => 
+        p.id === postId ? { ...p, likes: p.likes + 1 } : p
+      ));
+      
+      // Save to localStorage
+      const newLiked = new Set(likedPosts).add(postId);
+      setLikedPosts(newLiked);
+      localStorage.setItem('gallery_liked_posts', JSON.stringify([...newLiked]));
+      
+      toast.success('いいねしました！');
+    } catch (err) {
+      toast.error('いいねに失敗しました');
+    }
+  };
 
   const handleReport = async (postId: string) => {
-    await reportPostService(postId);
-    setReportingPost(null);
+    try {
+      await reportPost(postId, 'ユーザー通報');
+      toast.success('通報を受け付けました');
+      setReportingPost(null);
+    } catch (err) {
+      toast.error('通報に失敗しました');
+    }
   };
 
   const handleCopy = (text: string) => {
@@ -74,11 +132,11 @@ export default function Gallery() {
     const skinInfo = SKINS[post.skinKey];
     
     return (
-      <Card className={`overflow-hidden border-2 ${theme.border} hover:shadow-lg transition-shadow`}>
-        <CardHeader className={`py-3 bg-gradient-to-r ${theme.bgGradient}`}>
+      <Card className={`overflow-hidden border border-white/10 bg-[#1a1a23]/80 backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10 transition-all`}>
+        <CardHeader className="py-3 bg-white/5">
           <div className="flex justify-between items-start">
             <div>
-              <span className={`text-sm font-medium ${theme.textAccent}`}>
+              <span className="text-sm font-medium text-purple-400">
                 {skinInfo?.name || post.skinName}
               </span>
               <p className="text-xs text-gray-500 mt-0.5">
@@ -102,21 +160,21 @@ export default function Gallery() {
           {/* Original text (truncated) */}
           <div className="mb-3">
             <p className="text-xs text-gray-500 mb-1">元テキスト</p>
-            <p className="text-sm text-gray-600 line-clamp-2">
+            <p className="text-sm text-gray-400 line-clamp-2">
               {post.originalText}
             </p>
           </div>
           
           {/* Transformed text */}
-          <div className="bg-gray-50 rounded-lg p-3">
+          <div className="bg-white/5 rounded-lg p-3 border border-white/5">
             <p className="text-sm text-gray-500 mb-1">変換後</p>
-            <p className="text-gray-800 whitespace-pre-wrap line-clamp-4">
+            <p className="text-gray-200 whitespace-pre-wrap line-clamp-4">
               {post.transformedText}
             </p>
           </div>
           
           {/* Actions */}
-          <div className="flex justify-between mt-3 pt-3 border-t">
+          <div className="flex justify-between mt-3 pt-3 border-t border-white/5">
             <Button
               variant="ghost"
               size="sm"
@@ -141,22 +199,22 @@ export default function Gallery() {
   };
 
   return (
-    <>
-      <SEO 
-        title="スラング・ギャラリー - みんなの変換結果" 
-        description="AIスラングメーカーで生成された面白い変換結果一覧。みんなの投稿を見て楽しもう。"
-        path="/gallery"
-      />
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-[#0f0f13] text-white">
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b z-50">
+      <div className="sticky top-0 bg-black/40 backdrop-blur-md border-b border-white/5 z-50">
         <div className="container max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation('/')}
-              className="text-gray-600"
+              className="text-gray-300 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-1.5" />
               戻る
@@ -177,12 +235,12 @@ export default function Gallery() {
       </div>
 
       {/* Main Content */}
-      <div className="container max-w-5xl mx-auto px-4 py-6">
+      <div className="relative z-10 container max-w-5xl mx-auto px-4 py-6">
         {error ? (
-          <Card className="p-8 text-center">
+          <Card className="p-8 text-center bg-[#1a1a23]/80 border border-white/10">
             <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-            <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={fetchPosts}>再読み込み</Button>
+            <p className="text-gray-400 mb-4">{error}</p>
+            <Button onClick={fetchPosts} className="bg-purple-600 hover:bg-purple-700">再読み込み</Button>
           </Card>
         ) : isLoading ? (
           <div className="flex items-center justify-center py-20">
@@ -190,7 +248,7 @@ export default function Gallery() {
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/5 border border-white/10">
               <TabsTrigger value="new" className="gap-2">
                 <Clock className="h-4 w-4" />
                 新着
@@ -203,9 +261,9 @@ export default function Gallery() {
 
             <TabsContent value="new">
               {posts.length === 0 ? (
-                <Card className="p-8 text-center">
-                  <p className="text-gray-500">まだ投稿がありません</p>
-                  <p className="text-sm text-gray-400 mt-2">
+                <Card className="p-8 text-center bg-[#1a1a23]/80 border border-white/10">
+                  <p className="text-gray-400">まだ投稿がありません</p>
+                  <p className="text-sm text-gray-500 mt-2">
                     変換結果を投稿して、最初の投稿者になろう！
                   </p>
                 </Card>
@@ -263,6 +321,5 @@ export default function Gallery() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-    </>
   );
 }
