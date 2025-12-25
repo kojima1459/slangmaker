@@ -17,6 +17,7 @@ import confetti from "canvas-confetti";
 import { HistoryStorage } from "@/types/history";
 import { CreateCustomSkinModal } from "@/components/CreateCustomSkinModal";
 import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSkins, type CustomSkin } from "@/lib/customSkinStorage";
+import { getThemeForSkin } from "@/lib/skinThemes";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -42,6 +43,9 @@ export default function Home() {
   const [editingSkin, setEditingSkin] = useState<CustomSkin | undefined>(undefined);
 
   const { t } = useTranslation();
+  
+  // Get current theme based on selected skin
+  const currentTheme = getThemeForSkin(selectedSkin);
   
   const handleCustomSkinSaved = (skin: CustomSkin) => {
     // Reload all custom skins
@@ -291,7 +295,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
       {/* Tutorial Modal */}
       {showTutorial && (
         <Tutorial onClose={handleCloseTutorial} />

@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Instagram, Columns, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, FileText, Share2, Twitter, Facebook, Linkedin, Instagram, Columns, Image as ImageIcon, SkipForward } from "lucide-react";
 import { toast } from "sonner";
-import { Streamdown } from "streamdown";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import DOMPurify from "isomorphic-dompurify";
 import { ImageGenerator } from "@/components/ImageGenerator";
+import { getThemeForSkin } from "@/lib/skinThemes";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,39 @@ interface ReaderData {
   skin: string;
 }
 
+// Typewriter effect hook
+function useTypewriter(text: string, speed: number = 20) {
+  const [displayText, setDisplayText] = useState('');
+  const [isComplete, setIsComplete] = useState(false);
+
+  useEffect(() => {
+    if (!text) return;
+    
+    setDisplayText('');
+    setIsComplete(false);
+    
+    let index = 0;
+    const timer = setInterval(() => {
+      if (index < text.length) {
+        setDisplayText(text.slice(0, index + 1));
+        index++;
+      } else {
+        setIsComplete(true);
+        clearInterval(timer);
+      }
+    }, speed);
+    
+    return () => clearInterval(timer);
+  }, [text, speed]);
+
+  const skipToEnd = () => {
+    setDisplayText(text);
+    setIsComplete(true);
+  };
+
+  return { displayText, isComplete, skipToEnd };
+}
+
 export default function Reader() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<ReaderData | null>(null);
@@ -54,6 +87,18 @@ export default function Reader() {
       setLocation("/");
     }
   }, [setLocation]);
+
+  // Get theme based on skin
+  const currentTheme = useMemo(() => {
+    if (!data?.skin) return getThemeForSkin('');
+    return getThemeForSkin(data.skin);
+  }, [data?.skin]);
+
+  // Typewriter effect for the output
+  const { displayText, isComplete, skipToEnd } = useTypewriter(
+    data?.result?.output || '',
+    15 // Speed: 15ms per character (faster for long texts)
+  );
 
   if (!data) {
     return null;
@@ -105,7 +150,7 @@ export default function Reader() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.bgGradient} transition-all duration-500`}>
       <div className="container max-w-6xl py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -240,8 +285,25 @@ export default function Reader() {
             </CardHeader>
             <CardContent>
               <div className="prose prose-lg max-w-none">
-                <Streamdown>{DOMPurify.sanitize(data.result.output)}</Streamdown>
+                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                  {displayText}
+                  {!isComplete && <span className="animate-pulse">|</span>}
+                </p>
               </div>
+              {/* Skip button */}
+              {!isComplete && (
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={skipToEnd}
+                    className="gap-2"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                    スキップ
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
