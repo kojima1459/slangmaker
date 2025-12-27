@@ -6,6 +6,7 @@ import { HistoryStorage, HistoryItem } from "@/types/history";
 import { toast } from "sonner";
 import { ArrowLeft, Trash2, Eye, FileText, Calendar, Tag, Columns } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SEO } from "@/components/SEO";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -83,6 +84,7 @@ export default function History() {
 
   return (
     <div className="min-h-screen bg-[#0f0f13] text-white">
+      <SEO title={t('history')} path="/history" />
       {/* Ambient Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />

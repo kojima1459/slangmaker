@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 interface SEOProps {
   title?: string;
@@ -9,24 +10,33 @@ interface SEOProps {
   structuredData?: Record<string, any>;
 }
 
-export function SEO({ 
-  title = 'AIスラングメーカー - 言葉を遊びに変えるAIツール',
-  description = '文章を関西弁、ギャル語、武士語などに一瞬で変換。AIが文脈を理解して面白い言い回しを生成します。登録不要、完全無料で楽しめます。',
-  image = 'https://slangmaker-11c54.web.app/og-image.png', // 後でデフォルト画像を作成・配置する必要があります
+export function SEO({
+  title,
+  description,
+  image = 'https://slangmaker.sexinator.com/ogp-image.png',
   path = '/',
   type = 'website',
   structuredData
 }: SEOProps) {
-  const siteUrl = 'https://slangmaker.sexinator.com'; // カスタムドメイン
+  const { t, i18n } = useTranslation();
+
+  const siteUrl = 'https://slangmaker.sexinator.com'; // Primary custom domain
   const fullUrl = `${siteUrl}${path}`;
-  const fullTitle = title.includes('AIスラングメーカー') ? title : `${title} | AIスラングメーカー`;
+
+  // Use localized defaults if title/description not provided
+  const seoTitle = title || t('appTitle');
+  const seoDescription = description || t('appDescription');
+
+  const fullTitle = seoTitle.includes('AIスラングメーカー') || seoTitle.includes('AI Slang Maker')
+    ? seoTitle
+    : `${seoTitle} | ${t('appTitle')}`;
 
   const jsonLd = structuredData || {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "AIスラングメーカー",
+    "name": t('appTitle'),
     "url": siteUrl,
-    "description": description,
+    "description": seoDescription,
     "applicationCategory": "EntertainmentApplication",
     "operatingSystem": "Any",
     "offers": {
@@ -36,26 +46,40 @@ export function SEO({
     }
   };
 
+  const languages = ['ja', 'en', 'zh'];
+
   return (
     <Helmet>
       {/* Basic Meta Tags */}
       <title>{fullTitle}</title>
-      <meta name="description" content={description} />
+      <meta name="description" content={seoDescription} />
       <link rel="canonical" href={fullUrl} />
+
+      {/* hreflang for international SEO */}
+      {languages.map((lang) => (
+        <link
+          key={lang}
+          rel="alternate"
+          hreflang={lang}
+          href={`${siteUrl}${path === '/' ? '' : path}?lng=${lang}`}
+        />
+      ))}
+      <link rel="alternate" hreflang="x-default" href={`${siteUrl}${path}`} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={fullUrl} />
       <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
+      <meta property="og:description" content={seoDescription} />
       <meta property="og:image" content={image} />
-      <meta property="og:site_name" content="AIスラングメーカー" />
+      <meta property="og:site_name" content={t('appTitle')} />
+      <meta property="og:locale" content={i18n.language === 'ja' ? 'ja_JP' : i18n.language === 'zh' ? 'zh_CN' : 'en_US'} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={fullUrl} />
       <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:description" content={seoDescription} />
       <meta name="twitter:image" content={image} />
 
       {/* Structured Data */}

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles, BookOpen, Languages } from 'lucide-react';
+import { SEO } from '@/components/SEO';
 
 export default function About() {
   const { t } = useTranslation();
@@ -36,6 +37,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <SEO title={t('footer.about')} path="/about" />
       <div className="container mx-auto px-4 py-16">
         {/* ヒーローセクション */}
         <div className="text-center mb-16">

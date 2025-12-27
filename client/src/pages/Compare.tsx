@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, Columns, Share2 } from "lucide-react";
 import { FaXTwitter, FaLine, FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa6";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { SEO } from "@/components/SEO";
 
 interface CompareResult {
   output: string;
@@ -22,6 +24,7 @@ interface CompareData {
 export default function Compare() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<CompareData | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const stored = sessionStorage.getItem('compareData');
@@ -81,6 +84,7 @@ export default function Compare() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <SEO title="スキン比較" path="/compare" />
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="container max-w-7xl mx-auto px-4 py-4">

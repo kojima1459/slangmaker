@@ -1,65 +1,63 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIスラングメーカー - 言葉を遊びに変えるAIツール</title>
+
+    <!-- Primary Meta Tags -->
     <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>AIスラングメーカー - テキストを様々なスタイルで変換</title>
-    
-    <!-- OGP Meta Tags -->
-    <meta property="og:title" content="AIスラングメーカー - テキストも13種類のスタイルで変換" />
-    <meta property="og:description" content="テキストを関西弁、Z世代スラング、ラップ、学術論文など13種類のユニークな文体で変換。日本語のスラングや言い回しを楽しく学べるツール。" />
-    <meta property="og:image" content="/ogp-image.png" />
-    <meta property="og:url" content="https://slang-maker.manus.space" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="AIスラングメーカー" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="AIスラングメーカー - テキストも13種類のスタイルで変換" />
-    <meta name="twitter:description" content="テキストを関西弁、Z世代スラング、ラップ、学術論文など13種類のユニークな文体で変換。日本語のスラングや言い回しを楽しく学べるツール。" />
-    <meta name="twitter:image" content="/ogp-image.png" />
-    
+      name="title"
+      content="AIスラングメーカー - 言葉を遊びに変えるAIツール"
+    />
+
     <!-- General Meta Tags -->
-    <meta name="description" content="テキストを関西弁、Z世代スラング、ラップ、学術論文など13種類のユニークな文体で変換。日本語のスラングや言い回しを楽しく学べるツール。" />
-    <meta name="keywords" content="AIスラング,テキスト変換,スキン,関西弁,Z世代,ラップ,学術論文,日本語学習,スラング" />
-    
+    <meta
+      name="keywords"
+      content="AIスラング,テキスト変換,スキン,関西弁,Z世代,ラップ,学術論文,日本語学習,スラング"
+    />
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#9333ea" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="スラングメーカー" />
-    
+
     <!-- Google Fonts: 洗練されたタイポグラフィ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Inter: モダンで読みやすい欧文フォント -->
     <!-- Noto Sans JP: 日本語に最適化されたフォント -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
+
     <!-- Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('Service Worker registered:', registration);
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then(registration => {
+              console.log("Service Worker registered:", registration);
             })
-            .catch((error) => {
-              console.log('Service Worker registration failed:', error);
+            .catch(error => {
+              console.log("Service Worker registration failed:", error);
             });
         });
       }
@@ -67,7 +65,7 @@
     <script
       defer
       src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"
+    ></script>
   </body>
-
 </html>

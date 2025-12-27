@@ -6,17 +6,17 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  ArrowLeft, Heart, Flag, TrendingUp, Clock, Copy, 
-  Loader2, AlertTriangle, RefreshCw 
+import {
+  ArrowLeft, Heart, Flag, TrendingUp, Clock, Copy,
+  Loader2, AlertTriangle, RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { 
-  getGalleryPosts, 
-  getPopularPosts, 
-  likePost, 
+import {
+  getGalleryPosts,
+  getPopularPosts,
+  likePost,
   reportPost,
-  type GalleryPost 
+  type GalleryPost
 } from '@/lib/galleryService';
 import { getThemeForSkin } from '@/lib/skinThemes';
 import { SKINS } from '../../../shared/skins';
@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AdBanner } from "@/components/AdBanner";
+import { SEO } from "@/components/SEO";
 
 export default function Gallery() {
   const [, setLocation] = useLocation();
@@ -81,20 +82,20 @@ export default function Gallery() {
 
     try {
       await likePost(postId);
-      
+
       // Update local state
-      setPosts(prev => prev.map(p => 
+      setPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, likes: p.likes + 1 } : p
       ));
-      setPopularPosts(prev => prev.map(p => 
+      setPopularPosts(prev => prev.map(p =>
         p.id === postId ? { ...p, likes: p.likes + 1 } : p
       ));
-      
+
       // Save to localStorage
       const newLiked = new Set(likedPosts).add(postId);
       setLikedPosts(newLiked);
       localStorage.setItem('gallery_liked_posts', JSON.stringify([...newLiked]));
-      
+
       toast.success('いいねしました！');
     } catch (err) {
       toast.error('いいねに失敗しました');
@@ -130,7 +131,7 @@ export default function Gallery() {
   const PostCard = ({ post }: { post: GalleryPost }) => {
     const theme = getThemeForSkin(post.skinKey);
     const skinInfo = SKINS[post.skinKey];
-    
+
     return (
       <Card className={`overflow-hidden border border-white/10 bg-[#1a1a23]/80 backdrop-blur-sm hover:shadow-lg hover:shadow-purple-500/10 transition-all`}>
         <CardHeader className="py-3 bg-white/5">
@@ -164,7 +165,7 @@ export default function Gallery() {
               {post.originalText}
             </p>
           </div>
-          
+
           {/* Transformed text */}
           <div className="bg-white/5 rounded-lg p-3 border border-white/5">
             <p className="text-sm text-gray-500 mb-1">変換後</p>
@@ -172,7 +173,7 @@ export default function Gallery() {
               {post.transformedText}
             </p>
           </div>
-          
+
           {/* Actions */}
           <div className="flex justify-between mt-3 pt-3 border-t border-white/5">
             <Button
@@ -200,6 +201,7 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-[#0f0f13] text-white">
+      <SEO title="ギャラリー" path="/gallery" />
       {/* Ambient Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />

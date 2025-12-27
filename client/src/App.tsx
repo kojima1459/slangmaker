@@ -33,11 +33,13 @@ function Router() {
 }
 
 import { HelmetProvider } from 'react-helmet-async';
+import { LanguageLinker } from './components/LanguageLinker';
 
 function App() {
   return (
     <ErrorBoundary>
       <HelmetProvider>
+        <LanguageLinker />
         <ThemeProvider defaultTheme="dark" switchable={true}>
           <TooltipProvider>
             <Toaster />

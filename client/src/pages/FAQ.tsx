@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, HelpCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { SEO } from "@/components/SEO";
 
 export default function FAQ() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
 
   const faqs = [
+    // ... (omitting faqs array for brevity as I'm replacing lines 5-9 and then after that)
     {
       question: t('faq.q1') || "APIキーは必要ですか？",
       answer: t('faq.a1') || "いいえ、APIキーは不要です。Manus Built-in LLM APIを使用しているため、サーバー側で自動的に処理されます。",
@@ -73,6 +75,7 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen bg-[#0f0f13] text-white">
+      <SEO title={t('faq.title')} path="/faq" />
       {/* Ambient Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />

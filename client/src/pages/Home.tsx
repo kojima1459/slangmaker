@@ -20,6 +20,7 @@ import { getCustomSkins, getCustomSkinById, deleteCustomSkinById, getMaxCustomSk
 import { getThemeForSkin } from "@/lib/skinThemes";
 import { AdBanner } from "@/components/AdBanner";
 import { useTheme } from "@/contexts/ThemeContext";
+import { SEO } from "@/components/SEO";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -32,13 +33,13 @@ export default function Home() {
   const [lengthRatio, setLengthRatio] = useState(1.0);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Compare mode states
   const [compareMode, setCompareMode] = useState(false);
   const [skinCount, setSkinCount] = useState<2 | 3>(2);
   const [selectedSkin2, setSelectedSkin2] = useState("detached_lit");
   const [selectedSkin3, setSelectedSkin3] = useState("gen_z_slang");
-  
+
   // Custom skin states
   const [customSkins, setCustomSkins] = useState<CustomSkin[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -46,10 +47,10 @@ export default function Home() {
 
   const { t } = useTranslation();
   const { theme, toggleTheme, switchable } = useTheme();
-  
+
   // Get current theme based on selected skin
   const currentTheme = getThemeForSkin(selectedSkin);
-  
+
   const handleCustomSkinSaved = (skin: CustomSkin) => {
     // Reload all custom skins
     setCustomSkins(getCustomSkins());
@@ -57,7 +58,7 @@ export default function Home() {
     setSelectedSkin(skin.id);
     setEditingSkin(undefined);
   };
-  
+
   const handleDeleteCustomSkin = (skinId: string, skinName: string) => {
     if (window.confirm(`「${skinName}」を削除してもよろしいですか？`)) {
       deleteCustomSkinById(skinId);
@@ -69,12 +70,12 @@ export default function Home() {
       toast.success("カスタムスキンを削除しました");
     }
   };
-  
+
   const handleEditCustomSkin = (skin: CustomSkin) => {
     setEditingSkin(skin);
     setShowCreateModal(true);
   };
-  
+
   // Stats are disabled in Firebase simple mode (no backend)
   const stats = null;
   const popularSkins = null;
@@ -86,7 +87,7 @@ export default function Home() {
       setApiKey(savedApiKey);
     }
   }, []);
-  
+
   // Load custom skins from localStorage
   useEffect(() => {
     setCustomSkins(getCustomSkins());
@@ -141,12 +142,12 @@ export default function Home() {
         const skin1 = selectedSkin;
         const skin2 = selectedSkin2;
         const skin3 = skinCount === 3 ? selectedSkin3 : null;
-        
+
         // Get custom skin prompts if needed
         const customPrompt1 = skin1.startsWith('custom_') ? getCustomSkinById(skin1)?.prompt : undefined;
         const customPrompt2 = skin2.startsWith('custom_') ? getCustomSkinById(skin2)?.prompt : undefined;
         const customPrompt3 = skin3?.startsWith('custom_') ? getCustomSkinById(skin3)?.prompt : undefined;
-        
+
         const transformPromises = [
           transformWithGemini({
             extracted: articleText,
@@ -163,7 +164,7 @@ export default function Home() {
             apiKey: savedApiKey,
           }),
         ];
-        
+
         if (skin3) {
           transformPromises.push(
             transformWithGemini({
@@ -175,7 +176,7 @@ export default function Home() {
             })
           );
         }
-        
+
         const results = await Promise.all(transformPromises);
         const [result1, result2, result3] = results;
 
@@ -203,7 +204,7 @@ export default function Home() {
             skinName: getSkinName(selectedSkin2),
           },
         };
-        
+
         if (result3 && skin3) {
           compareData.result3 = {
             output: result3.output,
@@ -211,7 +212,7 @@ export default function Home() {
             skinName: getSkinName(selectedSkin3),
           };
         }
-        
+
         sessionStorage.setItem('compareData', JSON.stringify(compareData));
 
         // Navigate to compare page
@@ -222,10 +223,10 @@ export default function Home() {
         // Normal mode: single transformation
         const skinToUse = selectedSkin;
         const savedApiKey = localStorage.getItem('geminiApiKey')!;
-        
+
         // Get custom skin prompt if needed
         const customPrompt = skinToUse.startsWith('custom_') ? getCustomSkinById(skinToUse)?.prompt : undefined;
-        
+
         const result = await transformWithGemini({
           extracted: articleText,
           skin: skinToUse,
@@ -284,7 +285,7 @@ export default function Home() {
       }
     } catch (error: any) {
       console.error("Transform error:", error);
-      
+
       if (error.message?.includes('timeout')) {
         toast.error(t('transformTimeout') || "変換がタイムアウトしました。もう一度お試しください。");
       } else if (error.message?.includes('rate limit')) {
@@ -299,6 +300,7 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0f0f13] text-white' : 'bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 text-gray-900'} selection:bg-purple-500/30`}>
+      <SEO />
       {/* Ambient Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />
@@ -400,7 +402,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="relative z-10 container max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Hero Section */}
@@ -418,7 +420,7 @@ export default function Home() {
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-          
+
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
               <Sparkles className="w-12 h-12 text-purple-600 animate-pulse" />
@@ -466,9 +468,9 @@ export default function Home() {
                 </Button>
               </div>
               <p className="text-xs text-purple-400">
-                <a 
-                  href="https://makersuite.google.com/app/apikey" 
-                  target="_blank" 
+                <a
+                  href="https://makersuite.google.com/app/apikey"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-purple-300"
                 >
@@ -541,11 +543,10 @@ export default function Home() {
                 <p className="text-sm text-gray-500">
                   {t('characterWarning') || "最大10,000文字まで"}
                 </p>
-                <p className={`text-sm font-medium ${
-                  articleText.length > 10000 ? 'text-red-600' :
+                <p className={`text-sm font-medium ${articleText.length > 10000 ? 'text-red-600' :
                   articleText.length > 5000 ? 'text-orange-600' :
-                  'text-gray-500'
-                }`}>
+                    'text-gray-500'
+                  }`}>
                   {articleText.length} / 10000{t('characters') || "文字"}
                 </p>
               </div>
@@ -570,7 +571,7 @@ export default function Home() {
                   {compareMode ? "ON" : "OFF"}
                 </Button>
               </div>
-              
+
               {/* Skin count selector */}
               {compareMode && (
                 <div className="mt-4 pt-4 border-t border-purple-500/20">
@@ -617,7 +618,7 @@ export default function Home() {
                   </Button>
                 )}
               </div>
-              
+
               {customSkins.length === 0 ? (
                 <div className="text-center py-4">
                   <p className="text-sm text-amber-400 mb-3">
@@ -636,11 +637,10 @@ export default function Home() {
                   {customSkins.map((skin) => (
                     <div
                       key={skin.id}
-                      className={`relative p-4 border-2 rounded-xl transition-all ${
-                        selectedSkin === skin.id
-                          ? 'border-amber-500 bg-amber-100 shadow-md ring-2 ring-amber-300'
-                          : 'border-amber-300 hover:border-amber-400 bg-white'
-                      }`}
+                      className={`relative p-4 border-2 rounded-xl transition-all ${selectedSkin === skin.id
+                        ? 'border-amber-500 bg-amber-100 shadow-md ring-2 ring-amber-300'
+                        : 'border-amber-300 hover:border-amber-400 bg-white'
+                        }`}
                     >
                       <button
                         type="button"
@@ -689,11 +689,10 @@ export default function Home() {
                     type="button"
                     onClick={() => setSelectedSkin(key)}
                     disabled={isLoading}
-                    className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
-                      selectedSkin === key
-                        ? 'border-purple-500 bg-purple-500/20 shadow-md ring-2 ring-purple-500/30'
-                        : 'border-white/10 bg-white/5 hover:border-purple-500/30'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${selectedSkin === key
+                      ? 'border-purple-500 bg-purple-500/20 shadow-md ring-2 ring-purple-500/30'
+                      : 'border-white/10 bg-white/5 hover:border-purple-500/30'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
                     <div className="text-xs text-gray-400 line-clamp-2">
@@ -715,11 +714,10 @@ export default function Home() {
                       type="button"
                       onClick={() => setSelectedSkin2(key)}
                       disabled={isLoading}
-                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
-                        selectedSkin2 === key
-                          ? 'border-pink-500 bg-pink-500/20 shadow-md ring-2 ring-pink-500/30'
-                          : 'border-white/10 bg-white/5 hover:border-pink-500/30'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${selectedSkin2 === key
+                        ? 'border-pink-500 bg-pink-500/20 shadow-md ring-2 ring-pink-500/30'
+                        : 'border-white/10 bg-white/5 hover:border-pink-500/30'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
                       <div className="text-xs text-gray-400 line-clamp-2">
@@ -742,11 +740,10 @@ export default function Home() {
                       type="button"
                       onClick={() => setSelectedSkin3(key)}
                       disabled={isLoading}
-                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${
-                        selectedSkin3 === key
-                          ? 'border-orange-500 bg-orange-500/20 shadow-md ring-2 ring-orange-500/30'
-                          : 'border-white/10 bg-white/5 hover:border-orange-500/30'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      className={`p-4 border rounded-xl text-left transition-all hover:shadow-lg transform hover:scale-105 ${selectedSkin3 === key
+                        ? 'border-orange-500 bg-orange-500/20 shadow-md ring-2 ring-orange-500/30'
+                        : 'border-white/10 bg-white/5 hover:border-orange-500/30'
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       <div className="font-semibold text-sm mb-1 text-white">{t(`skin.${key}`) || skin.name}</div>
                       <div className="text-xs text-gray-400 line-clamp-2">
@@ -923,36 +920,33 @@ export default function Home() {
                       <div className="flex gap-2 mb-3">
                         <button
                           onClick={() => setRankingPeriod("24h")}
-                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                            rankingPeriod === "24h"
-                              ? "bg-orange-600 text-white"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${rankingPeriod === "24h"
+                            ? "bg-orange-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
                         >
                           24時間
                         </button>
                         <button
                           onClick={() => setRankingPeriod("7d")}
-                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                            rankingPeriod === "7d"
-                              ? "bg-orange-600 text-white"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${rankingPeriod === "7d"
+                            ? "bg-orange-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
                         >
                           7日間
                         </button>
                         <button
                           onClick={() => setRankingPeriod("30d")}
-                          className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                            rankingPeriod === "30d"
-                              ? "bg-orange-600 text-white"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
+                          className={`px-3 py-1 text-xs rounded-full transition-colors ${rankingPeriod === "30d"
+                            ? "bg-orange-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
                         >
                           30日間
                         </button>
                       </div>
-                      
+
                       {/* Popular skins list */}
                       <p className="text-sm text-gray-600 mb-2">
                         {rankingPeriod === "24h" && "24時間人気スキン"}
@@ -980,7 +974,7 @@ export default function Home() {
             </CardContent>
           </Card>
         )}
-        
+
         {/* Create Custom Skin Modal */}
         <CreateCustomSkinModal
           open={showCreateModal}
@@ -989,7 +983,7 @@ export default function Home() {
           initialSkin={editingSkin}
         />
       </div>
-      
+
       {/* Footer */}\n      <footer className="relative z-10 border-t border-white/5 bg-[#0f0f13] text-white py-12 mt-16">
         <div className="container max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -1018,7 +1012,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            
+
             {/* Right Column: About */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4">{t('footer.about') || 'このサイトについて'}</h3>
@@ -1027,7 +1021,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          
+
           {/* Bottom Bar */}
           <div className="border-t border-gray-600 pt-6 mt-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-300">
